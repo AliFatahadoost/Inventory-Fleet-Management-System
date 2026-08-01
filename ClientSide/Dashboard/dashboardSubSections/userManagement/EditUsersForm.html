@@ -1,0 +1,2067 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Users Form</title>
+    <style>
+        :root {
+            --bg-body: #eef2f7;
+            --bg-card: #ffffff;
+            --bg-input: #f8fafc;
+            --bg-table-header: #f1f5f9;
+            --bg-table-row-even: #fafbfc;
+            --bg-table-row-hover: #eef2ff;
+            --bg-pill-default: #e2e7ef;
+            --bg-pill-active: #4a6fa5;
+            --bg-pill-role: #e8edf4;
+            --bg-button-primary: #4a6fa5;
+            --bg-button-hover: #3b5998;
+            --bg-button-danger: #f43f5e;
+            --bg-button-danger-hover: #e11d48;
+            --bg-overlay: rgba(0, 0, 0, 0.55);
+            --bg-modal: #ffffff;
+            --bg-badge: #e8edf4;
+            --bg-avatar: #4a6fa5;
+            --bg-add-bubble: #4a6fa5;
+            --bg-add-bubble-hover: #3b5998;
+            --bg-role-bubble: #e8edf4;
+            --bg-role-bubble-hover: #d5dce8;
+            --bg-pagination: #f1f5f9;
+            --bg-pagination-active: #4a6fa5;
+            --bg-search: #ffffff;
+            --text-primary: #1e293b;
+            --text-secondary: #475569;
+            --text-muted: #94a3b8;
+            --text-pill-default: #475569;
+            --text-pill-active: #ffffff;
+            --text-button: #ffffff;
+            --text-label: #334155;
+            --text-input: #1e293b;
+            --text-role: #334155;
+            --text-pagination: #475569;
+            --text-pagination-active: #ffffff;
+            --border-card: #dde4ef;
+            --border-input: #d5dce8;
+            --border-table: #e2e8f0;
+            --border-pill: #d5dce8;
+            --border-modal: #dde4ef;
+            --border-pagination: #d5dce8;
+            --shadow-card: 0 4px 24px rgba(0, 0, 0, 0.05), 0 1px 6px rgba(0, 0, 0, 0.03);
+            --shadow-card-hover: 0 8px 30px rgba(0, 0, 0, 0.1);
+            --shadow-button: 0 2px 10px rgba(74, 111, 165, 0.3);
+            --shadow-input-focus: 0 0 0 4px rgba(74, 111, 165, 0.1);
+            --shadow-modal: 0 20px 60px rgba(0, 0, 0, 0.2);
+            --accent: #4a6fa5;
+            --accent-light: #5a8fc7;
+            --accent-soft: #e8edf4;
+            --accent-green: #22c55e;
+            --accent-amber: #f59e0b;
+            --accent-rose: #f43f5e;
+            --radius-sm: 6px;
+            --radius-md: 10px;
+            --radius-lg: 14px;
+            --radius-xl: 18px;
+            --radius-full: 9999px;
+            --transition-fast: 0.18s cubic-bezier(0.4, 0, 0.2, 1);
+            --transition-smooth: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            --font-stack: 'Segoe UI', 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Helvetica Neue', sans-serif;
+            --letter-spacing-tight: -0.01em;
+            --letter-spacing-normal: 0.01em;
+            --bg-scrollbar: #c8d2e0;
+            --bg-scrollbar-track: #f1f5f9;
+        }
+
+        body.dark-mode {
+            --bg-body: #171a21;
+            --bg-card: #1e2128;
+            --bg-input: #252830;
+            --bg-table-header: #252830;
+            --bg-table-row-even: #1f2229;
+            --bg-table-row-hover: #282d38;
+            --bg-pill-default: #2a2f3a;
+            --bg-pill-active: #5a8fc7;
+            --bg-pill-role: #2a2f3a;
+            --bg-button-primary: #5a8fc7;
+            --bg-button-hover: #4a7db5;
+            --bg-button-danger: #f43f5e;
+            --bg-button-danger-hover: #e11d48;
+            --bg-overlay: rgba(0, 0, 0, 0.7);
+            --bg-modal: #1e2128;
+            --bg-badge: #252d3a;
+            --bg-avatar: #5a8fc7;
+            --bg-add-bubble: #5a8fc7;
+            --bg-add-bubble-hover: #4a7db5;
+            --bg-role-bubble: #2a2f3a;
+            --bg-role-bubble-hover: #3a404d;
+            --bg-pagination: #252830;
+            --bg-pagination-active: #5a8fc7;
+            --bg-search: #252830;
+            --text-primary: #e2e6ec;
+            --text-secondary: #b0b8c4;
+            --text-muted: #6b7280;
+            --text-pill-default: #c5cad4;
+            --text-pill-active: #ffffff;
+            --text-button: #ffffff;
+            --text-label: #c5cad4;
+            --text-input: #e2e6ec;
+            --text-role: #c5cad4;
+            --text-pagination: #c5cad4;
+            --text-pagination-active: #ffffff;
+            --border-card: #2e333d;
+            --border-input: #3a404d;
+            --border-table: #2a2f3a;
+            --border-pill: #3a404d;
+            --border-modal: #2e333d;
+            --border-pagination: #3a404d;
+            --shadow-card: 0 4px 24px rgba(0, 0, 0, 0.25), 0 1px 6px rgba(0, 0, 0, 0.2);
+            --shadow-card-hover: 0 8px 30px rgba(0, 0, 0, 0.35);
+            --shadow-button: 0 2px 10px rgba(90, 143, 199, 0.35);
+            --shadow-input-focus: 0 0 0 4px rgba(90, 143, 199, 0.15);
+            --shadow-modal: 0 20px 60px rgba(0, 0, 0, 0.45);
+            --bg-scrollbar: #3a404d;
+            --bg-scrollbar-track: #1e2128;
+        }
+
+        * {
+            box-sizing: border-box;
+            font-family: var(--font-stack);
+            letter-spacing: var(--letter-spacing-normal);
+        }
+
+        html,
+        body {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            background-color: var(--bg-body);
+            transition: background-color var(--transition-smooth);
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            overflow: hidden;
+        }
+
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: var(--bg-scrollbar-track);
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: var(--bg-scrollbar);
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--accent);
+        }
+
+        /* ─── MAIN LAYOUT ─── */
+        .main-container {
+            display: flex;
+            height: 100%;
+            width: 100%;
+            overflow: hidden;
+            transition: all var(--transition-smooth);
+            gap: 0;
+        }
+
+        /* ─── TABLE PANEL ─── */
+        .table-panel {
+            flex: 1 1 100%;
+            min-width: 0;
+            display: flex;
+            flex-direction: column;
+            background-color: var(--bg-card);
+            border-right: 2px solid var(--border-card);
+            transition: all var(--transition-smooth);
+            overflow: hidden;
+            position: relative;
+            z-index: 1;
+        }
+
+        .table-panel.shrunk {
+            flex: 0 0 50%;
+            max-width: 50%;
+        }
+
+        @media (max-width: 768px) {
+            .table-panel.shrunk {
+                flex: 0 0 40%;
+                max-width: 40%;
+            }
+        }
+
+        @media (max-width: 600px) {
+            .main-container {
+                flex-direction: column;
+            }
+            .table-panel.shrunk {
+                flex: 0 0 45%;
+                max-width: 100%;
+                max-height: 45%;
+            }
+        }
+
+        .table-panel-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px 20px;
+            border-bottom: 2px solid var(--border-table);
+            flex-shrink: 0;
+            gap: 12px;
+            background-color: var(--bg-card);
+        }
+
+        .table-panel-title {
+            font-size: 1.05rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            letter-spacing: var(--letter-spacing-tight);
+            margin: 0;
+            white-space: nowrap;
+        }
+
+        .table-panel-subtitle {
+            font-size: 0.73rem;
+            color: var(--text-muted);
+            margin: 2px 0 0 0;
+            white-space: nowrap;
+        }
+
+        .btn-add-user {
+            width: 38px;
+            height: 38px;
+            border-radius: var(--radius-md);
+            background: var(--bg-button-primary);
+            color: #ffffff;
+            border: none;
+            cursor: pointer;
+            font-size: 1.3rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all var(--transition-fast);
+            box-shadow: var(--shadow-button);
+            flex-shrink: 0;
+            line-height: 1;
+            user-select: none;
+        }
+        .btn-add-user:hover {
+            background: var(--bg-button-hover);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 16px rgba(74, 111, 165, 0.4);
+        }
+        .btn-add-user:active {
+            transform: translateY(0);
+            box-shadow: var(--shadow-button);
+        }
+
+        .search-row {
+            display: flex;
+            gap: 8px;
+            padding: 10px 20px;
+            flex-wrap: wrap;
+            align-items: center;
+            border-bottom: 1px solid var(--border-table);
+            background-color: var(--bg-table-header);
+            flex-shrink: 0;
+        }
+        .search-row .search-group {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            flex: 1;
+            min-width: 130px;
+        }
+        .search-row input {
+            padding: 7px 10px;
+            border: 2px solid var(--border-input);
+            border-radius: var(--radius-sm);
+            background-color: var(--bg-search);
+            color: var(--text-input);
+            font-size: 0.8rem;
+            font-weight: 500;
+            outline: none;
+            transition: all var(--transition-fast);
+            width: 100%;
+            max-width: 160px;
+        }
+        .search-row input:focus {
+            border-color: var(--accent);
+            box-shadow: var(--shadow-input-focus);
+        }
+        .search-row .search-btn {
+            padding: 7px 11px;
+            border-radius: var(--radius-sm);
+            border: 2px solid var(--accent);
+            background-color: var(--accent);
+            color: #fff;
+            cursor: pointer;
+            font-size: 0.75rem;
+            font-weight: 700;
+            transition: all var(--transition-fast);
+            white-space: nowrap;
+        }
+        .search-row .search-btn:hover {
+            background-color: var(--bg-button-hover);
+            border-color: var(--bg-button-hover);
+        }
+        .search-row .search-clear {
+            background-color: transparent;
+            border: 2px solid var(--border-input);
+            color: var(--text-muted);
+        }
+        .search-row .search-clear:hover {
+            border-color: var(--accent-rose);
+            color: var(--accent-rose);
+            background-color: transparent;
+        }
+
+        .table-wrapper {
+            flex: 1;
+            overflow-y: auto;
+            overflow-x: auto;
+            padding: 0;
+            position: relative;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            table-layout: auto;
+            min-width: 400px;
+        }
+
+        thead {
+            position: sticky;
+            top: 0;
+            z-index: 2;
+            background-color: var(--bg-table-header);
+        }
+
+        thead th {
+            padding: 12px 14px;
+            text-align: left;
+            font-size: 0.78rem;
+            font-weight: 700;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            border-bottom: 2px solid var(--border-table);
+            white-space: nowrap;
+            user-select: none;
+            background-color: var(--bg-table-header);
+        }
+
+        thead th.radio-col {
+            width: 48px;
+            text-align: center;
+            padding: 12px 8px;
+        }
+
+        tbody td {
+            padding: 11px 14px;
+            font-size: 0.88rem;
+            color: var(--text-primary);
+            border-bottom: 1px solid var(--border-table);
+            white-space: nowrap;
+            transition: background-color var(--transition-fast);
+        }
+
+        tbody td.radio-col {
+            text-align: center;
+            padding: 11px 8px;
+            width: 48px;
+        }
+
+        tbody tr {
+            transition: background-color var(--transition-fast);
+        }
+        tbody tr:nth-child(even) {
+            background-color: var(--bg-table-row-even);
+        }
+        tbody tr:hover {
+            background-color: var(--bg-table-row-hover);
+        }
+        tbody tr.selected-row {
+            background-color: var(--accent-soft);
+            outline: 2px solid var(--accent);
+            outline-offset: -2px;
+        }
+        body.dark-mode tbody tr.selected-row {
+            background-color: rgba(90, 143, 199, 0.15);
+            outline: 2px solid var(--accent-light);
+        }
+
+        input[type="radio"] {
+            appearance: none;
+            -webkit-appearance: none;
+            width: 20px;
+            height: 20px;
+            border: 2px solid var(--border-input);
+            border-radius: var(--radius-full);
+            cursor: pointer;
+            transition: all var(--transition-fast);
+            background-color: var(--bg-card);
+            position: relative;
+            flex-shrink: 0;
+            margin: 0;
+        }
+        input[type="radio"]:checked {
+            border-color: var(--accent);
+            background-color: var(--accent);
+            box-shadow: 0 0 0 4px rgba(74, 111, 165, 0.15);
+        }
+        input[type="radio"]:checked::after {
+            content: '';
+            position: absolute;
+            top: 4px;
+            left: 4px;
+            width: 8px;
+            height: 8px;
+            border-radius: var(--radius-full);
+            background-color: #ffffff;
+        }
+        input[type="radio"]:hover {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 6px rgba(74, 111, 165, 0.06);
+        }
+
+        .btn-show-roles {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 30px;
+            height: 30px;
+            border-radius: var(--radius-sm);
+            border: 1.5px solid var(--border-input);
+            background: var(--bg-card);
+            color: var(--text-secondary);
+            cursor: pointer;
+            font-size: 0.85rem;
+            transition: all var(--transition-fast);
+            position: relative;
+            user-select: none;
+        }
+        .btn-show-roles:hover {
+            background: var(--accent-soft);
+            border-color: var(--accent);
+            color: var(--accent);
+            box-shadow: 0 2px 8px rgba(74, 111, 165, 0.15);
+        }
+
+        .pagination-container {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 20px;
+            border-top: 2px solid var(--border-table);
+            flex-wrap: wrap;
+            gap: 10px;
+            background-color: var(--bg-pagination);
+            flex-shrink: 0;
+        }
+        .pagination-info {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+        .pagination-controls {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+        .pagination-btn {
+            width: 34px;
+            height: 34px;
+            border-radius: var(--radius-sm);
+            border: 2px solid var(--border-pagination);
+            background-color: var(--bg-card);
+            color: var(--text-pagination);
+            cursor: pointer;
+            font-weight: 700;
+            font-size: 0.85rem;
+            transition: all var(--transition-fast);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            user-select: none;
+        }
+        .pagination-btn:hover:not(:disabled) {
+            border-color: var(--accent);
+            color: var(--accent);
+            background-color: var(--accent-soft);
+        }
+        .pagination-btn:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+        }
+        .pagination-btn.active {
+            background-color: var(--bg-pagination-active);
+            color: var(--text-pagination-active);
+            border-color: var(--bg-pagination-active);
+            box-shadow: 0 2px 6px rgba(74, 111, 165, 0.3);
+        }
+        .pagination-ellipsis {
+            width: 34px;
+            height: 34px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-muted);
+            font-weight: 700;
+            user-select: none;
+        }
+        .pagination-arrow {
+            font-size: 1.1rem;
+        }
+
+        /* ─── FORM PANEL ─── */
+        .form-panel {
+            flex: 0 0 0%;
+            max-width: 0%;
+            overflow: hidden;
+            background-color: var(--bg-card);
+            border-left: 2px solid var(--border-card);
+            transition: all var(--transition-smooth);
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            z-index: 1;
+            opacity: 0;
+        }
+
+        .form-panel.open {
+            flex: 0 0 50%;
+            max-width: 50%;
+            opacity: 1;
+            overflow-y: auto;
+        }
+
+        @media (max-width: 768px) {
+            .form-panel.open {
+                flex: 0 0 60%;
+                max-width: 60%;
+            }
+        }
+        @media (max-width: 600px) {
+            .form-panel.open {
+                flex: 1 1 55%;
+                max-width: 100%;
+                max-height: 55%;
+            }
+        }
+
+        .form-panel-inner {
+            padding: 20px 24px;
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+            min-width: 300px;
+            height: 100%;
+            overflow-y: auto;
+        }
+
+        .btn-close-form {
+            position: absolute;
+            top: 14px;
+            right: 16px;
+            width: 34px;
+            height: 34px;
+            border-radius: var(--radius-md);
+            border: 2px solid transparent;
+            background: transparent;
+            color: var(--text-muted);
+            cursor: pointer;
+            font-size: 1.2rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all var(--transition-fast);
+            z-index: 5;
+            user-select: none;
+            line-height: 1;
+        }
+        .btn-close-form:hover {
+            background: #fef2f2;
+            border-color: #fecaca;
+            color: #dc2626;
+            box-shadow: 0 2px 8px rgba(220, 38, 38, 0.12);
+        }
+        body.dark-mode .btn-close-form:hover {
+            background: rgba(244, 63, 94, 0.1);
+            border-color: rgba(244, 63, 94, 0.3);
+            color: #f87171;
+        }
+
+        .form-title {
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            letter-spacing: var(--letter-spacing-tight);
+            margin: 0 0 4px 0;
+            padding-right: 40px;
+        }
+        .form-subtitle {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            margin: 0;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+        .form-group label {
+            font-size: 0.8rem;
+            font-weight: 700;
+            color: var(--text-label);
+            letter-spacing: var(--letter-spacing-tight);
+            text-transform: uppercase;
+        }
+        .input-row {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+        .input-row input {
+            flex: 1;
+            padding: 10px 14px;
+            border: 2px solid var(--border-input);
+            border-radius: var(--radius-md);
+            font-size: 0.9rem;
+            color: var(--text-input);
+            background-color: var(--bg-input);
+            transition: all var(--transition-fast);
+            min-width: 0;
+            letter-spacing: var(--letter-spacing-normal);
+        }
+        .input-row input:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: var(--shadow-input-focus);
+        }
+        .input-row input:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            background-color: var(--bg-table-header);
+        }
+
+        .btn-input-action {
+            padding: 10px 16px;
+            border-radius: var(--radius-md);
+            border: 2px solid var(--border-input);
+            background: var(--bg-card);
+            color: var(--text-secondary);
+            cursor: pointer;
+            font-size: 0.82rem;
+            font-weight: 700;
+            white-space: nowrap;
+            transition: all var(--transition-fast);
+            user-select: none;
+            letter-spacing: var(--letter-spacing-tight);
+            min-width: 70px;
+            text-align: center;
+        }
+        .btn-input-action:hover {
+            border-color: var(--accent);
+            color: var(--accent);
+            background: var(--accent-soft);
+            box-shadow: 0 2px 8px rgba(74, 111, 165, 0.12);
+        }
+        .btn-input-action.saved {
+            background: #f0fdf4;
+            border-color: #bbf7d0;
+            color: #16a34a;
+        }
+        body.dark-mode .btn-input-action.saved {
+            background: rgba(34, 197, 94, 0.1);
+            border-color: rgba(34, 197, 94, 0.3);
+            color: #4ade80;
+        }
+
+        .roles-section-label {
+            font-size: 0.8rem;
+            font-weight: 700;
+            color: var(--text-label);
+            letter-spacing: var(--letter-spacing-tight);
+            text-transform: uppercase;
+            margin-bottom: 2px;
+        }
+
+        .roles-bubbles-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            align-items: center;
+            padding: 4px 0;
+        }
+
+        .role-bubble {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: var(--bg-role-bubble);
+            color: var(--text-role);
+            padding: 7px 10px 7px 14px;
+            border-radius: var(--radius-full);
+            font-size: 0.8rem;
+            font-weight: 600;
+            letter-spacing: var(--letter-spacing-tight);
+            border: 1.5px solid var(--border-pill);
+            transition: all var(--transition-fast);
+            user-select: none;
+            white-space: nowrap;
+        }
+        .role-bubble:hover {
+            background: var(--bg-role-bubble-hover);
+            border-color: var(--text-muted);
+        }
+
+        .role-bubble .btn-remove-role {
+            width: 20px;
+            height: 20px;
+            border-radius: var(--radius-full);
+            border: none;
+            background: #fecaca;
+            color: #dc2626;
+            cursor: pointer;
+            font-size: 0.7rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all var(--transition-fast);
+            line-height: 1;
+            padding: 0;
+            flex-shrink: 0;
+        }
+        .role-bubble .btn-remove-role:hover {
+            background: #dc2626;
+            color: #ffffff;
+            transform: scale(1.1);
+        }
+        body.dark-mode .role-bubble .btn-remove-role {
+            background: rgba(244, 63, 94, 0.25);
+            color: #f87171;
+        }
+        body.dark-mode .role-bubble .btn-remove-role:hover {
+            background: #dc2626;
+            color: #fff;
+        }
+
+        .bubble-add-role {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 34px;
+            height: 34px;
+            border-radius: var(--radius-full);
+            background: var(--bg-add-bubble);
+            color: #ffffff;
+            border: none;
+            cursor: pointer;
+            font-size: 1.2rem;
+            font-weight: 700;
+            transition: all var(--transition-fast);
+            box-shadow: var(--shadow-button);
+            flex-shrink: 0;
+            line-height: 1;
+            user-select: none;
+        }
+        .bubble-add-role:hover:not(:disabled) {
+            background: var(--bg-add-bubble-hover);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 16px rgba(74, 111, 165, 0.4);
+        }
+        .bubble-add-role:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+            box-shadow: none;
+            transform: none;
+        }
+        .bubble-add-role:active:not(:disabled) {
+            transform: translateY(0);
+            box-shadow: var(--shadow-button);
+        }
+
+        .no-roles-msg {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            font-style: italic;
+            padding: 6px 0;
+        }
+
+        /* ─── MODAL ─── */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: var(--bg-overlay);
+            z-index: 100;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            visibility: hidden;
+            transition: all var(--transition-smooth);
+            pointer-events: none;
+        }
+        .modal-overlay.visible {
+            opacity: 1;
+            visibility: visible;
+            pointer-events: auto;
+        }
+
+        .modal-dialog {
+            background: var(--bg-modal);
+            border: 2px solid var(--border-modal);
+            border-radius: var(--radius-xl);
+            box-shadow: var(--shadow-modal);
+            width: 90%;
+            max-width: 600px;
+            max-height: 75vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            transition: all var(--transition-smooth);
+            transform: translateY(20px);
+        }
+        .modal-overlay.visible .modal-dialog {
+            transform: translateY(0);
+        }
+
+        .modal-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px 20px;
+            border-bottom: 2px solid var(--border-table);
+            flex-shrink: 0;
+            gap: 12px;
+        }
+        .modal-header h3 {
+            margin: 0;
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            letter-spacing: var(--letter-spacing-tight);
+        }
+        .btn-modal-close {
+            width: 30px;
+            height: 30px;
+            border-radius: var(--radius-sm);
+            border: none;
+            background: transparent;
+            color: var(--text-muted);
+            cursor: pointer;
+            font-size: 1.1rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all var(--transition-fast);
+            user-select: none;
+        }
+        .btn-modal-close:hover {
+            background: #fef2f2;
+            color: #dc2626;
+        }
+        body.dark-mode .btn-modal-close:hover {
+            background: rgba(244, 63, 94, 0.1);
+            color: #f87171;
+        }
+
+        .modal-body {
+            flex: 1;
+            overflow-y: auto;
+            padding: 8px 0;
+        }
+        .modal-body table {
+            min-width: 300px;
+        }
+        .modal-body thead th {
+            background-color: var(--bg-table-header);
+        }
+        .modal-body tbody tr {
+            cursor: pointer;
+            transition: all var(--transition-fast);
+        }
+        .modal-body tbody tr:hover {
+            background-color: var(--bg-table-row-hover);
+        }
+        .modal-body tbody tr.selected-modal-row {
+            background-color: var(--accent-soft);
+            outline: 2px solid var(--accent);
+            outline-offset: -2px;
+        }
+        body.dark-mode .modal-body tbody tr.selected-modal-row {
+            background-color: rgba(90, 143, 199, 0.2);
+            outline: 2px solid var(--accent-light);
+        }
+
+        .modal-footer {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            padding: 14px 20px;
+            border-top: 2px solid var(--border-table);
+            flex-shrink: 0;
+        }
+        .btn-modal-cancel {
+            padding: 10px 18px;
+            border-radius: var(--radius-md);
+            border: 2px solid var(--border-input);
+            background: var(--bg-card);
+            color: var(--text-secondary);
+            cursor: pointer;
+            font-size: 0.85rem;
+            font-weight: 600;
+            transition: all var(--transition-fast);
+            user-select: none;
+        }
+        .btn-modal-cancel:hover {
+            border-color: var(--text-muted);
+            background: var(--bg-table-header);
+        }
+        .btn-modal-select {
+            padding: 10px 22px;
+            border-radius: var(--radius-md);
+            border: none;
+            background: var(--bg-button-primary);
+            color: var(--text-button);
+            cursor: pointer;
+            font-size: 0.85rem;
+            font-weight: 700;
+            transition: all var(--transition-fast);
+            box-shadow: var(--shadow-button);
+            user-select: none;
+        }
+        .btn-modal-select:hover:not(:disabled) {
+            background: var(--bg-button-hover);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 16px rgba(74, 111, 165, 0.4);
+        }
+        .btn-modal-select:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+            box-shadow: none;
+        }
+
+        /* ─── TOAST ─── */
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background-color: #1e293b;
+            color: #fff;
+            padding: 12px 22px;
+            border-radius: var(--radius-md);
+            font-weight: 600;
+            font-size: 0.85rem;
+            z-index: 9999;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.35s ease;
+            pointer-events: none;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+            letter-spacing: var(--letter-spacing-tight);
+            max-width: 90vw;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .toast.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        body.dark-mode .toast {
+            background-color: #f8fafc;
+            color: #1e293b;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+        }
+
+        @media (max-width: 480px) {
+            .toast {
+                bottom: 16px;
+                right: 16px;
+                left: 16px;
+                text-align: center;
+                max-width: none;
+                white-space: normal;
+                font-size: 0.8rem;
+                padding: 10px 16px;
+            }
+        }
+
+        .empty-table-state {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 40px 20px;
+            color: var(--text-muted);
+            gap: 8px;
+            text-align: center;
+        }
+        .empty-table-state .empty-icon {
+            font-size: 3rem;
+            opacity: 0.6;
+        }
+        .empty-table-state .empty-text {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+        }
+        .empty-table-state .empty-subtext {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+
+        .loading-spinner-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            width: 100%;
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+        .loading-spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid var(--border-input);
+            border-top-color: var(--accent);
+            border-radius: var(--radius-full);
+            animation: spin 0.7s linear infinite;
+        }
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .roles-popover {
+            position: absolute;
+            z-index: 50;
+            background: var(--bg-card);
+            border: 2px solid var(--border-card);
+            border-radius: var(--radius-md);
+            box-shadow: var(--shadow-card-hover);
+            padding: 10px 14px;
+            min-width: 140px;
+            max-width: 240px;
+            pointer-events: none;
+            opacity: 0;
+            transform: translateY(6px);
+            transition: all var(--transition-fast);
+            white-space: normal;
+        }
+        .roles-popover.visible {
+            opacity: 1;
+            transform: translateY(0);
+            pointer-events: auto;
+        }
+        .roles-popover .popover-role-tag {
+            display: inline-block;
+            background: var(--bg-role-bubble);
+            color: var(--text-role);
+            padding: 4px 10px;
+            border-radius: var(--radius-full);
+            font-size: 0.73rem;
+            font-weight: 600;
+            margin: 3px 4px;
+            letter-spacing: var(--letter-spacing-tight);
+        }
+        .roles-popover .popover-empty {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            font-style: italic;
+        }
+
+        .error-message {
+            color: #dc2626;
+            font-size: 0.75rem;
+            margin-top: 2px;
+            display: none;
+        }
+        body.dark-mode .error-message {
+            color: #f87171;
+        }
+
+        #btnCreateUser {
+            display: none;
+            background: var(--bg-button-primary);
+            color: #fff;
+            border: none;
+            padding: 10px 22px;
+            border-radius: var(--radius-md);
+            font-weight: 700;
+            cursor: pointer;
+            box-shadow: var(--shadow-button);
+            transition: all var(--transition-fast);
+        }
+        #btnCreateUser:hover {
+            background: var(--bg-button-hover);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 16px rgba(74, 111, 165, 0.4);
+        }
+    </style>
+</head>
+<body>
+    <div class="main-container" id="mainContainer">
+        <div class="table-panel" id="tablePanel">
+            <div class="table-panel-header">
+                <div>
+                    <p class="table-panel-title">👥 Users</p>
+                    <p class="table-panel-subtitle" id="userCountLabel">Loading...</p>
+                </div>
+                <button class="btn-add-user" id="btnAddUser" title="Add New User">+</button>
+            </div>
+            <div class="search-row" id="searchRow">
+                <div class="search-group">
+                    <input type="text" id="searchUserId" placeholder="Search User ID...">
+                </div>
+                <div class="search-group">
+                    <input type="text" id="searchUsername" placeholder="Search Username...">
+                </div>
+                <button class="search-btn" id="btnSearch">🔍</button>
+                <button class="search-btn search-clear" id="btnClearSearch">✕ Clear</button>
+            </div>
+            <div class="table-wrapper" id="tableWrapper">
+                <div class="loading-spinner-container" id="tableLoadingContainer">
+                    <div class="loading-spinner"></div>
+                </div>
+                <table id="usersTable" style="display:none;">
+                    <thead>
+                        <tr>
+                            <th class="radio-col"></th>
+                            <th>User ID</th>
+                            <th>Username</th>
+                            <th>Roles</th>
+                        </tr>
+                    </thead>
+                    <tbody id="usersTableBody"></tbody>
+                </table>
+                <div class="empty-table-state" id="emptyTableState" style="display:none;">
+                    <div class="empty-icon">📭</div>
+                    <p class="empty-text">No users found</p>
+                    <p class="empty-subtext">Click the + button to add a new user</p>
+                </div>
+            </div>
+            <div class="pagination-container" id="paginationContainer" style="display:none;">
+                <span class="pagination-info" id="paginationInfo">Showing 0 of 0 records</span>
+                <div class="pagination-controls" id="paginationControls"></div>
+            </div>
+        </div>
+
+        <div class="form-panel" id="formPanel">
+            <button class="btn-close-form" id="btnCloseForm" title="Close form">✕</button>
+            <div class="form-panel-inner" id="formPanelInner">
+                <div>
+                    <p class="form-title" id="formTitle">User Details</p>
+                    <p class="form-subtitle" id="formSubtitle">Select a user or add new</p>
+                </div>
+
+                <div class="form-group">
+                    <label for="usernameInput">Username</label>
+                    <div class="input-row">
+                        <input type="text" id="usernameInput" placeholder="Enter username" disabled />
+                        <button class="btn-input-action" id="btnUsernameAction" disabled>Change</button>
+                    </div>
+                    <span class="error-message" id="usernameError">Duplicate username is not allowed.</span>
+                </div>
+
+                <div class="form-group">
+                    <label for="passwordInput">Password</label>
+                    <div class="input-row">
+                        <input type="password" id="passwordInput" placeholder="Enter password" disabled />
+                        <button class="btn-input-action" id="btnPasswordAction" disabled>Change</button>
+                    </div>
+                </div>
+
+                <div style="display: flex; justify-content: flex-end; margin-top: 4px;">
+                    <button id="btnCreateUser">Create User</button>
+                </div>
+
+                <div>
+                    <p class="roles-section-label">Assigned Roles</p>
+                    <div class="roles-bubbles-container" id="rolesBubblesContainer">
+                        <span class="no-roles-msg" id="noRolesMsg">No roles assigned</span>
+                    </div>
+                    <button class="bubble-add-role" id="bubbleAddRole" title="Add Role" disabled>+</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="modalOverlay">
+        <div class="modal-dialog">
+            <div class="modal-header">
+                <h3>Select a Role to Add</h3>
+                <button class="btn-modal-close" id="btnModalClose" title="Close">✕</button>
+            </div>
+            <div class="modal-body" id="modalBody">
+                <div class="loading-spinner-container" id="modalLoadingContainer" style="position:relative; height:80px;">
+                    <div class="loading-spinner"></div>
+                </div>
+                <table id="modalRolesTable" style="display:none;">
+                    <thead>
+                        <tr>
+                            <th class="radio-col"></th>
+                            <th>Role Code</th>
+                            <th>Role Title</th>
+                        </tr>
+                    </thead>
+                    <tbody id="modalRolesTableBody"></tbody>
+                </table>
+                <div class="empty-table-state" id="modalEmptyState" style="display:none;">
+                    <div class="empty-icon">📋</div>
+                    <p class="empty-text">No available roles</p>
+                    <p class="empty-subtext">All roles have been assigned</p>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-modal-cancel" id="btnModalCancel">Cancel</button>
+                <button class="btn-modal-select" id="btnModalSelect" disabled>Select</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="toast" id="toast"></div>
+    <div class="roles-popover" id="rolesPopover"></div>
+
+    <script>
+        (function() {
+            // ---- GLOBALS ----
+            let selectedUserId = null;
+            let isAdd = false;
+
+            let usersData = [];
+            let allRolesData = [];
+            let currentFormRoles = [];
+            let usernameSet = false;
+            let passwordSet = false;
+            let currentUsernameValue = '';
+            let currentPasswordValue = '';
+
+            let selectedModalRoleCode = null;
+            let activePopoverUserId = null;
+
+            let searchUserIdTerm = '';
+            let searchUsernameTerm = '';
+            const ROWS_PER_PAGE = 10;
+            let currentPage = 1;
+
+            // DOM refs
+            const mainContainer = document.getElementById('mainContainer');
+            const tablePanel = document.getElementById('tablePanel');
+            const formPanel = document.getElementById('formPanel');
+            const btnAddUser = document.getElementById('btnAddUser');
+            const btnCloseForm = document.getElementById('btnCloseForm');
+            const tableWrapper = document.getElementById('tableWrapper');
+            const usersTable = document.getElementById('usersTable');
+            const usersTableBody = document.getElementById('usersTableBody');
+            const tableLoadingContainer = document.getElementById('tableLoadingContainer');
+            const emptyTableState = document.getElementById('emptyTableState');
+            const userCountLabel = document.getElementById('userCountLabel');
+            const formTitle = document.getElementById('formTitle');
+            const formSubtitle = document.getElementById('formSubtitle');
+            const usernameInput = document.getElementById('usernameInput');
+            const passwordInput = document.getElementById('passwordInput');
+            const btnUsernameAction = document.getElementById('btnUsernameAction');
+            const btnPasswordAction = document.getElementById('btnPasswordAction');
+            const btnCreateUser = document.getElementById('btnCreateUser');
+            const usernameError = document.getElementById('usernameError');
+            const rolesBubblesContainer = document.getElementById('rolesBubblesContainer');
+            const noRolesMsg = document.getElementById('noRolesMsg');
+            const bubbleAddRole = document.getElementById('bubbleAddRole');
+            const modalOverlay = document.getElementById('modalOverlay');
+            const modalBody = document.getElementById('modalBody');
+            const modalLoadingContainer = document.getElementById('modalLoadingContainer');
+            const modalRolesTable = document.getElementById('modalRolesTable');
+            const modalRolesTableBody = document.getElementById('modalRolesTableBody');
+            const modalEmptyState = document.getElementById('modalEmptyState');
+            const btnModalClose = document.getElementById('btnModalClose');
+            const btnModalCancel = document.getElementById('btnModalCancel');
+            const btnModalSelect = document.getElementById('btnModalSelect');
+            const rolesPopover = document.getElementById('rolesPopover');
+            const toastEl = document.getElementById('toast');
+
+            const searchUserId = document.getElementById('searchUserId');
+            const searchUsername = document.getElementById('searchUsername');
+            const btnSearch = document.getElementById('btnSearch');
+            const btnClearSearch = document.getElementById('btnClearSearch');
+            const paginationContainer = document.getElementById('paginationContainer');
+            const paginationInfo = document.getElementById('paginationInfo');
+            const paginationControls = document.getElementById('paginationControls');
+            const API_BASE = "http://192.168.100.11:55952";
+
+            // ---- Dark mode sync ----
+            function getDarkModeState() {
+                try {
+                    if (parent && parent.parent && parent.parent.document) {
+                        const gpBody = parent.parent.document.querySelector('body');
+                        if (gpBody) return gpBody.classList.contains('dark-mode');
+                    }
+                } catch (e) {}
+                try {
+                    if (parent && parent.document) {
+                        const pBody = parent.document.querySelector('body');
+                        if (pBody) return pBody.classList.contains('dark-mode');
+                    }
+                } catch (e) {}
+                return document.body.classList.contains('dark-mode');
+            }
+
+            function applyDarkMode() {
+                if (getDarkModeState()) {
+                    document.body.classList.add('dark-mode');
+                } else {
+                    document.body.classList.remove('dark-mode');
+                }
+            }
+            applyDarkMode();
+
+            try {
+                if (parent && parent.document) {
+                    const pBody = parent.document.querySelector('body');
+                    if (pBody) {
+                        const observer = new MutationObserver(() => applyDarkMode());
+                        observer.observe(pBody, { attributes: true, attributeFilter: ['class'] });
+                    }
+                }
+            } catch (e) {}
+            try {
+                if (parent && parent.parent && parent.parent.document) {
+                    const gpBody = parent.parent.document.querySelector('body');
+                    if (gpBody) {
+                        const gpObserver = new MutationObserver(() => applyDarkMode());
+                        gpObserver.observe(gpBody, { attributes: true, attributeFilter: ['class'] });
+                    }
+                }
+            } catch (e) {}
+
+            window.addEventListener('storage', function(e) {
+                if (e.key === 'dashboardTheme') applyDarkMode();
+            });
+
+            // ---- Toast ----
+            let toastTimeout;
+            function showToast(message, duration = 2500) {
+                toastEl.textContent = message;
+                toastEl.classList.add('show');
+                clearTimeout(toastTimeout);
+                toastTimeout = setTimeout(() => toastEl.classList.remove('show'), duration);
+            }
+
+            // ---- API calls ----
+            async function fetchUsersWithRoles() {
+                try {
+                    const response = await fetch(API_BASE + '/usersRoleListAPI', { method: 'POST' });
+                    if (!response.ok) throw new Error('API response not OK: ' + response.status);
+                    const data = await response.json();
+                    const grouped = {};
+                    data.forEach(row => {
+                        const uid = row.SYS_USER_ID;
+                        if (!grouped[uid]) grouped[uid] = { sysUserId: uid, username: row.USERNAME, roles: [] };
+                        if (row.ROLES_TITLE && !grouped[uid].roles.includes(row.ROLES_TITLE)) {
+                            grouped[uid].roles.push(row.ROLES_TITLE);
+                        }
+                    });
+                    usersData = Object.values(grouped);
+                    usersData.sort((a, b) => a.sysUserId - b.sysUserId);
+                    return usersData;
+                } catch (error) {
+                    console.error('Error fetching users:', error);
+                    showToast('❌ Failed to load users.');
+                    throw error;
+                }
+            }
+
+            async function fetchAllRoles() {
+                try {
+                    const response = await fetch(API_BASE + '/roleListAPI', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: '{}'
+                    });
+                    if (!response.ok) throw new Error('API response not OK: ' + response.status);
+                    const data = await response.json();
+                    allRolesData = data.map(row => ({
+                        roleCode: row.ROLE_CODE,
+                        rolesTitle: row.ROLES_TITLE
+                    }));
+                    allRolesData.sort((a, b) => a.roleCode - b.roleCode);
+                    return allRolesData;
+                } catch (error) {
+                    console.error('Error fetching roles:', error);
+                    showToast('❌ Failed to load roles.');
+                    throw error;
+                }
+            }
+
+            async function createNewUserAPI(username, password) {
+                const res = await fetch(API_BASE + '/createNewUserAPI', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, password })
+                });
+                if (!res.ok) throw new Error('Create user API failed: ' + res.status);
+            }
+
+            async function addRevokeRolesAPI(shouldRevoke, userId, roleCode) {
+                const res = await fetch(API_BASE + '/addRevokeRolesAPI', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ shouldRevoke, user_id: userId, role_code: roleCode })
+                });
+                if (!res.ok) throw new Error('Role change API failed: ' + res.status);
+            }
+
+            async function updateUserCredByAdminAPI(userId, changePassword, changedThing) {
+                const res = await fetch(API_BASE + '/updateUserCredByAdmin', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ user_id: userId, changePassword, changedThing })
+                });
+                if (!res.ok) throw new Error('Update cred API failed: ' + res.status);
+            }
+
+            // ---- Table rendering ----
+            function getFilteredUsers() {
+                return usersData.filter(user => {
+                    const idMatch = searchUserIdTerm ? user.sysUserId.toString().includes(searchUserIdTerm) : true;
+                    const nameMatch = searchUsernameTerm ? user.username.toLowerCase().includes(searchUsernameTerm.toLowerCase()) : true;
+                    return idMatch && nameMatch;
+                });
+            }
+
+            function renderTable() {
+                tableLoadingContainer.style.display = 'none';
+                if (usersData.length === 0) {
+                    usersTable.style.display = 'none';
+                    emptyTableState.style.display = 'flex';
+                    paginationContainer.style.display = 'none';
+                    userCountLabel.textContent = 'No users';
+                    return;
+                }
+
+                const filtered = getFilteredUsers();
+                const totalFiltered = filtered.length;
+                const totalPages = Math.ceil(totalFiltered / ROWS_PER_PAGE);
+                if (currentPage > totalPages) currentPage = Math.max(1, totalPages);
+                const start = (currentPage - 1) * ROWS_PER_PAGE;
+                const end = start + ROWS_PER_PAGE;
+                const pageData = filtered.slice(start, end);
+
+                userCountLabel.textContent = usersData.length + ' user' + (usersData.length !== 1 ? 's' : '');
+
+                if (totalFiltered === 0) {
+                    usersTable.style.display = 'none';
+                    emptyTableState.style.display = 'flex';
+                    paginationContainer.style.display = 'none';
+                    const emptyText = emptyTableState.querySelector('.empty-text');
+                    const emptySub = emptyTableState.querySelector('.empty-subtext');
+                    if (searchUserIdTerm || searchUsernameTerm) {
+                        emptyText.textContent = 'No matching users';
+                        emptySub.textContent = 'Try adjusting your search filters';
+                    } else {
+                        emptyText.textContent = 'No users found';
+                        emptySub.textContent = 'Click the + button to add a new user';
+                    }
+                    return;
+                }
+
+                emptyTableState.style.display = 'none';
+                usersTable.style.display = '';
+                paginationContainer.style.display = 'flex';
+
+                usersTableBody.innerHTML = '';
+                pageData.forEach(user => {
+                    const tr = document.createElement('tr');
+                    tr.setAttribute('data-user-id', user.sysUserId);
+                    if (selectedUserId === user.sysUserId && !isAdd) {
+                        tr.classList.add('selected-row');
+                    }
+
+                    const tdRadio = document.createElement('td');
+                    tdRadio.classList.add('radio-col');
+                    const radio = document.createElement('input');
+                    radio.type = 'radio';
+                    radio.name = 'userRadio';
+                    radio.value = user.sysUserId;
+                    if (selectedUserId === user.sysUserId && !isAdd) radio.checked = true;
+                    radio.addEventListener('change', function() {
+                        if (this.checked) handleUserSelect(user.sysUserId);
+                    });
+                    tdRadio.appendChild(radio);
+                    tr.appendChild(tdRadio);
+
+                    const tdId = document.createElement('td');
+                    tdId.textContent = user.sysUserId;
+                    tr.appendChild(tdId);
+
+                    const tdUsername = document.createElement('td');
+                    tdUsername.textContent = user.username;
+                    tr.appendChild(tdUsername);
+
+                    const tdRoles = document.createElement('td');
+                    const btnShowRoles = document.createElement('button');
+                    btnShowRoles.classList.add('btn-show-roles');
+                    btnShowRoles.textContent = '👁';
+                    btnShowRoles.title = 'Show roles';
+                    btnShowRoles.addEventListener('click', function(e) {
+                        e.stopPropagation();
+                        toggleRolesPopover(user.sysUserId, btnShowRoles);
+                    });
+                    tdRoles.appendChild(btnShowRoles);
+                    const badge = document.createElement('span');
+                    badge.style.cssText = 'display:inline-block;margin-left:6px;font-size:0.7rem;color:var(--text-muted);background:var(--bg-badge);padding:2px 7px;border-radius:var(--radius-full);';
+                    badge.textContent = user.roles.length;
+                    tdRoles.appendChild(badge);
+                    tr.appendChild(tdRoles);
+
+                    usersTableBody.appendChild(tr);
+                });
+
+                renderPagination(totalFiltered, totalPages, start, end);
+            }
+
+            function renderPagination(totalItems, totalPages, startIndex, endIndex) {
+                const showingStart = totalItems > 0 ? startIndex + 1 : 0;
+                const showingEnd = Math.min(endIndex, totalItems);
+                paginationInfo.textContent = `Showing ${showingStart}–${showingEnd} of ${totalItems} record${totalItems !== 1 ? 's' : ''}`;
+                paginationControls.innerHTML = '';
+
+                if (totalPages <= 1) {
+                    const btn = document.createElement('button');
+                    btn.className = 'pagination-btn active';
+                    btn.textContent = '1';
+                    btn.disabled = true;
+                    paginationControls.appendChild(btn);
+                    return;
+                }
+
+                const leftArrow = document.createElement('button');
+                leftArrow.className = 'pagination-btn pagination-arrow';
+                leftArrow.textContent = '‹';
+                leftArrow.disabled = currentPage === 1;
+                leftArrow.addEventListener('click', () => {
+                    if (currentPage > 1) { currentPage--; renderTable(); tableWrapper.scrollTop = 0; }
+                });
+                paginationControls.appendChild(leftArrow);
+
+                const maxVisible = 7;
+                let pages = [];
+                if (totalPages <= maxVisible) {
+                    for (let i = 1; i <= totalPages; i++) pages.push(i);
+                } else {
+                    pages.push(1);
+                    let startPage = Math.max(2, currentPage - 2);
+                    let endPage = Math.min(totalPages - 1, currentPage + 2);
+                    if (currentPage <= 3) { startPage = 2; endPage = 5; }
+                    if (currentPage >= totalPages - 2) { startPage = totalPages - 4; endPage = totalPages - 1; }
+                    if (startPage > 2) pages.push('...');
+                    for (let i = startPage; i <= endPage; i++) pages.push(i);
+                    if (endPage < totalPages - 1) pages.push('...');
+                    pages.push(totalPages);
+                }
+
+                pages.forEach(p => {
+                    if (p === '...') {
+                        const span = document.createElement('span');
+                        span.className = 'pagination-ellipsis';
+                        span.textContent = '…';
+                        paginationControls.appendChild(span);
+                    } else {
+                        const btn = document.createElement('button');
+                        btn.className = 'pagination-btn';
+                        if (p === currentPage) btn.classList.add('active');
+                        btn.textContent = p;
+                        btn.addEventListener('click', () => { currentPage = p; renderTable(); tableWrapper.scrollTop = 0; });
+                        paginationControls.appendChild(btn);
+                    }
+                });
+
+                const rightArrow = document.createElement('button');
+                rightArrow.className = 'pagination-btn pagination-arrow';
+                rightArrow.textContent = '›';
+                rightArrow.disabled = currentPage === totalPages;
+                rightArrow.addEventListener('click', () => {
+                    if (currentPage < totalPages) { currentPage++; renderTable(); tableWrapper.scrollTop = 0; }
+                });
+                paginationControls.appendChild(rightArrow);
+            }
+
+            function performSearch() {
+                searchUserIdTerm = searchUserId.value.trim();
+                searchUsernameTerm = searchUsername.value.trim();
+                currentPage = 1;
+                renderTable();
+            }
+            btnSearch.addEventListener('click', performSearch);
+            btnClearSearch.addEventListener('click', () => {
+                searchUserId.value = '';
+                searchUsername.value = '';
+                searchUserIdTerm = '';
+                searchUsernameTerm = '';
+                currentPage = 1;
+                renderTable();
+            });
+            searchUserId.addEventListener('keydown', (e) => { if (e.key === 'Enter') performSearch(); });
+            searchUsername.addEventListener('keydown', (e) => { if (e.key === 'Enter') performSearch(); });
+
+            // ---- Roles popover ----
+            function toggleRolesPopover(userId, anchorEl) {
+                if (activePopoverUserId === userId) { hideRolesPopover(); return; }
+                activePopoverUserId = userId;
+                const user = usersData.find(u => u.sysUserId === userId);
+                if (!user) { hideRolesPopover(); return; }
+                let html = '';
+                if (user.roles.length === 0) {
+                    html = '<span class="popover-empty">No roles assigned</span>';
+                } else {
+                    user.roles.forEach(role => { html += '<span class="popover-role-tag">' + escapeHTML(role) + '</span>'; });
+                }
+                rolesPopover.innerHTML = html;
+                const rect = anchorEl.getBoundingClientRect();
+                const popoverWidth = 200;
+                let left = rect.left;
+                let top = rect.bottom + 6;
+                if (left + popoverWidth > window.innerWidth - 10) left = window.innerWidth - popoverWidth - 10;
+                if (left < 10) left = 10;
+                if (top + 100 > window.innerHeight) top = rect.top - 100 - 6;
+                rolesPopover.style.left = left + 'px';
+                rolesPopover.style.top = top + 'px';
+                rolesPopover.classList.add('visible');
+                setTimeout(() => document.addEventListener('click', handlePopoverOutsideClick, { once: true }), 50);
+            }
+            function handlePopoverOutsideClick(e) {
+                if (!rolesPopover.contains(e.target)) hideRolesPopover();
+            }
+            function hideRolesPopover() {
+                rolesPopover.classList.remove('visible');
+                activePopoverUserId = null;
+                document.removeEventListener('click', handlePopoverOutsideClick);
+            }
+
+            // ---- User selection ----
+            function handleUserSelect(userId) {
+                if (isAdd) resetAddModeState();
+                isAdd = false;
+                selectedUserId = userId;
+                const user = usersData.find(u => u.sysUserId === userId);
+                if (!user) { showToast('⚠️ User not found'); return; }
+                currentFormRoles = [...user.roles];
+                currentUsernameValue = user.username;
+                currentPasswordValue = '';
+                usernameSet = true;
+                passwordSet = false;
+                openFormPanel('edit');
+                populateFormForEdit(user);
+                renderTable();
+                hideRolesPopover();
+            }
+
+            function handleAddUser() {
+                if (isAdd && formPanel.classList.contains('open')) return;
+                resetAddModeState();
+                isAdd = true;
+                selectedUserId = null;
+                currentFormRoles = [];
+                currentUsernameValue = '';
+                currentPasswordValue = '';
+                usernameSet = false;
+                passwordSet = false;
+                openFormPanel('add');
+                populateFormForAdd();
+                renderTable();
+                hideRolesPopover();
+            }
+
+            function openFormPanel(mode) {
+                tablePanel.classList.add('shrunk');
+                formPanel.classList.add('open');
+                if (mode === 'add') {
+                    formTitle.textContent = 'Add New User';
+                    formSubtitle.textContent = 'Fill in details and set credentials';
+                } else {
+                    formTitle.textContent = 'Edit User';
+                    formSubtitle.textContent = 'User ID: ' + selectedUserId;
+                }
+            }
+
+            function closeForm() {
+                tablePanel.classList.remove('shrunk');
+                formPanel.classList.remove('open');
+                resetAddModeState();
+                isAdd = false;
+                selectedUserId = null;
+                currentFormRoles = [];
+                currentUsernameValue = '';
+                currentPasswordValue = '';
+                usernameSet = false;
+                passwordSet = false;
+                const radios = document.querySelectorAll('input[name="userRadio"]');
+                radios.forEach(r => r.checked = false);
+                renderTable();
+                hideRolesPopover();
+            }
+
+            function resetAddModeState() {
+                usernameSet = false;
+                passwordSet = false;
+                currentUsernameValue = '';
+                currentPasswordValue = '';
+                usernameInput.value = '';
+                passwordInput.value = '';
+                usernameInput.disabled = true;
+                passwordInput.disabled = true;
+                btnUsernameAction.textContent = 'Change';
+                btnPasswordAction.textContent = 'Change';
+                btnUsernameAction.classList.remove('saved');
+                btnPasswordAction.classList.remove('saved');
+                btnUsernameAction.disabled = true;
+                btnPasswordAction.disabled = true;
+                btnCreateUser.style.display = 'none';
+                bubbleAddRole.disabled = true;
+                usernameError.style.display = 'none';
+                updateRolesBubbles();
+            }
+
+            function populateFormForEdit(user) {
+                usernameInput.value = user.username;
+                passwordInput.value = '';
+                usernameInput.disabled = true;
+                passwordInput.disabled = true;
+                btnUsernameAction.textContent = 'Change';
+                btnPasswordAction.textContent = 'Change';
+                btnUsernameAction.classList.remove('saved');
+                btnPasswordAction.classList.remove('saved');
+                btnUsernameAction.disabled = false;
+                btnPasswordAction.disabled = false;
+                btnUsernameAction.style.display = '';
+                btnPasswordAction.style.display = '';
+                btnCreateUser.style.display = 'none';
+                bubbleAddRole.disabled = false;
+                usernameSet = true;
+                passwordSet = false;
+                currentUsernameValue = user.username;
+                currentPasswordValue = '';
+                currentFormRoles = [...user.roles];
+                updateRolesBubbles();
+                usernameError.style.display = 'none';
+            }
+
+            function populateFormForAdd() {
+                usernameInput.value = '';
+                passwordInput.value = '';
+                usernameInput.disabled = false;
+                passwordInput.disabled = false;
+                btnUsernameAction.style.display = 'none';
+                btnPasswordAction.style.display = 'none';
+                btnCreateUser.style.display = 'inline-block';
+                bubbleAddRole.disabled = true;
+                usernameSet = false;
+                passwordSet = false;
+                currentUsernameValue = '';
+                currentPasswordValue = '';
+                currentFormRoles = [];
+                updateRolesBubbles();
+                usernameError.style.display = 'none';
+                usernameInput.focus();
+            }
+
+            // ---- Username / password edit handlers ----
+            btnUsernameAction.addEventListener('click', async function() {
+                if (isAdd) return; // not used in add mode
+                if (usernameInput.disabled) {
+                    // Enable editing
+                    usernameInput.disabled = false;
+                    btnUsernameAction.textContent = 'Save';
+                    btnUsernameAction.classList.remove('saved');
+                    usernameInput.focus();
+                } else {
+                    const newUsername = usernameInput.value.trim();
+                    if (!newUsername) { showToast('⚠️ Username cannot be empty'); return; }
+                    // Call API to update username (changePassword=0)
+                    try {
+                        await updateUserCredByAdminAPI(selectedUserId, 0, newUsername);
+                        currentUsernameValue = newUsername;
+                        usernameInput.disabled = true;
+                        btnUsernameAction.textContent = 'Change';
+                        btnUsernameAction.classList.add('saved');
+                        showToast('✅ Username updated');
+                        const user = usersData.find(u => u.sysUserId === selectedUserId);
+                        if (user) user.username = newUsername;
+                        renderTable();
+                    } catch (err) {
+                        showToast('❌ Failed to update username');
+                        console.error(err);
+                    }
+                }
+            });
+
+            btnPasswordAction.addEventListener('click', async function() {
+                if (isAdd) return;
+                if (passwordInput.disabled) {
+                    passwordInput.disabled = false;
+                    btnPasswordAction.textContent = 'Save';
+                    btnPasswordAction.classList.remove('saved');
+                    passwordInput.value = '';
+                    passwordInput.focus();
+                } else {
+                    const newPassword = passwordInput.value;
+                    if (!newPassword) { showToast('⚠️ Password cannot be empty'); return; }
+                    try {
+                        await updateUserCredByAdminAPI(selectedUserId, 1, newPassword);
+                        currentPasswordValue = newPassword;
+                        passwordInput.disabled = true;
+                        btnPasswordAction.textContent = 'Change';
+                        btnPasswordAction.classList.add('saved');
+                        showToast('✅ Password updated');
+                    } catch (err) {
+                        showToast('❌ Failed to update password');
+                        console.error(err);
+                    }
+                }
+            });
+
+            // ---- Create user button ----
+            btnCreateUser.addEventListener('click', async function() {
+                const username = usernameInput.value.trim();
+                const password = passwordInput.value;
+                if (!username) { showToast('⚠️ Please enter a username'); return; }
+                if (!password) { showToast('⚠️ Please enter a password'); return; }
+
+                // Duplicate check
+                if (usersData.some(u => u.username.toLowerCase() === username.toLowerCase())) {
+                    usernameError.style.display = 'block';
+                    usernameInput.style.borderColor = '#dc2626';
+                    showToast('⚠️ Duplicate username is not allowed');
+                    return;
+                }
+                usernameError.style.display = 'none';
+                usernameInput.style.borderColor = '';
+
+                try {
+                    // Call API to create user
+                    await createNewUserAPI(username, password);
+                    // Refresh full user list
+                    await fetchUsersWithRoles();
+                    // Find the newly created user by username
+                    const newUser = usersData.find(u => u.username === username);
+                    if (!newUser) {
+                        showToast('❌ User created but not found in list. close this menu and chart will update.');
+                        return;
+                    }
+                    // Switch to edit mode for the new user
+                    isAdd = false;
+                    selectedUserId = newUser.sysUserId;
+                    currentFormRoles = [];
+                    currentUsernameValue = newUser.username;
+                    currentPasswordValue = '';
+                    usernameSet = true;
+                    passwordSet = false;
+                    openFormPanel('edit');
+                    populateFormForEdit(newUser);
+                    renderTable();
+                    showToast('✅ User created successfully');
+                } catch (err) {
+                    showToast('❌ Failed to create user');
+                    console.error(err);
+                }
+            });
+
+            // ---- Roles ----
+            function updateRolesBubbles() {
+                const existing = rolesBubblesContainer.querySelectorAll('.role-bubble');
+                existing.forEach(b => b.remove());
+                if (currentFormRoles.length === 0) {
+                    noRolesMsg.style.display = '';
+                } else {
+                    noRolesMsg.style.display = 'none';
+                    currentFormRoles.forEach(roleTitle => {
+                        const bubble = document.createElement('span');
+                        bubble.classList.add('role-bubble');
+                        bubble.innerHTML = '<span class="role-bubble-text">' + escapeHTML(roleTitle) + '</span><button class="btn-remove-role" title="Remove role">✕</button>';
+                        bubble.querySelector('.btn-remove-role').addEventListener('click', function() {
+                            removeRoleFromCurrentUser(roleTitle);
+                        });
+                        rolesBubblesContainer.appendChild(bubble);
+                    });
+                }
+            }
+
+            async function removeRoleFromCurrentUser(roleTitle) {
+                if (!selectedUserId) return;
+                const roleObj = allRolesData.find(r => r.rolesTitle === roleTitle);
+                if (!roleObj) return;
+                try {
+                    await addRevokeRolesAPI(1, selectedUserId, roleObj.roleCode);
+                    currentFormRoles = currentFormRoles.filter(r => r !== roleTitle);
+                    updateRolesBubbles();
+                    const user = usersData.find(u => u.sysUserId === selectedUserId);
+                    if (user) user.roles = user.roles.filter(r => r !== roleTitle);
+                    renderTable();
+                    showToast('🗑️ Role removed');
+                } catch (err) {
+                    showToast('❌ Failed to remove role');
+                    console.error(err);
+                }
+            }
+
+            async function addRoleToCurrentUser(roleTitle) {
+                if (!selectedUserId) return;
+                if (currentFormRoles.includes(roleTitle)) return;
+                const roleObj = allRolesData.find(r => r.rolesTitle === roleTitle);
+                if (!roleObj) return;
+                try {
+                    await addRevokeRolesAPI(0, selectedUserId, roleObj.roleCode);
+                    currentFormRoles.push(roleTitle);
+                    updateRolesBubbles();
+                    const user = usersData.find(u => u.sysUserId === selectedUserId);
+                    if (user && !user.roles.includes(roleTitle)) user.roles.push(roleTitle);
+                    renderTable();
+                } catch (err) {
+                    showToast('❌ Failed to add role');
+                    console.error(err);
+                }
+            }
+
+            // ---- Modal for adding roles ----
+            bubbleAddRole.addEventListener('click', function() {
+                if (bubbleAddRole.disabled) return;
+                openRoleModal();
+            });
+
+            async function openRoleModal() {
+                selectedModalRoleCode = null;
+                btnModalSelect.disabled = true;
+                modalOverlay.classList.add('visible');
+                modalLoadingContainer.style.display = 'flex';
+                modalRolesTable.style.display = 'none';
+                modalEmptyState.style.display = 'none';
+                modalRolesTableBody.innerHTML = '';
+
+                try {
+                    if (allRolesData.length === 0) await fetchAllRoles();
+                    const availableRoles = allRolesData.filter(r => !currentFormRoles.includes(r.rolesTitle));
+                    modalLoadingContainer.style.display = 'none';
+                    if (availableRoles.length === 0) {
+                        modalRolesTable.style.display = 'none';
+                        modalEmptyState.style.display = 'flex';
+                        return;
+                    }
+                    modalEmptyState.style.display = 'none';
+                    modalRolesTable.style.display = '';
+                    modalRolesTableBody.innerHTML = '';
+                    availableRoles.forEach(role => {
+                        const tr = document.createElement('tr');
+                        tr.setAttribute('data-role-code', role.roleCode);
+                        const tdRadio = document.createElement('td');
+                        tdRadio.classList.add('radio-col');
+                        const radio = document.createElement('input');
+                        radio.type = 'radio';
+                        radio.name = 'modalRoleRadio';
+                        radio.value = role.roleCode;
+                        radio.addEventListener('change', function() {
+                            if (this.checked) {
+                                selectedModalRoleCode = role.roleCode;
+                                btnModalSelect.disabled = false;
+                                modalRolesTableBody.querySelectorAll('tr').forEach(r => r.classList.remove('selected-modal-row'));
+                                tr.classList.add('selected-modal-row');
+                            }
+                        });
+                        tdRadio.appendChild(radio);
+                        tr.appendChild(tdRadio);
+                        const tdCode = document.createElement('td');
+                        tdCode.textContent = role.roleCode;
+                        tr.appendChild(tdCode);
+                        const tdTitle = document.createElement('td');
+                        tdTitle.textContent = role.rolesTitle;
+                        tr.appendChild(tdTitle);
+                        tr.addEventListener('click', function(e) {
+                            if (e.target.tagName === 'INPUT') return;
+                            radio.checked = true;
+                            radio.dispatchEvent(new Event('change'));
+                        });
+                        modalRolesTableBody.appendChild(tr);
+                    });
+                } catch (error) {
+                    modalLoadingContainer.style.display = 'none';
+                    showToast('❌ Failed to load roles for modal');
+                }
+            }
+
+            function closeRoleModal() {
+                modalOverlay.classList.remove('visible');
+                selectedModalRoleCode = null;
+                btnModalSelect.disabled = true;
+            }
+            btnModalClose.addEventListener('click', closeRoleModal);
+            btnModalCancel.addEventListener('click', closeRoleModal);
+            modalOverlay.addEventListener('click', function(e) { if (e.target === modalOverlay) closeRoleModal(); });
+
+            btnModalSelect.addEventListener('click', async function() {
+                if (!selectedModalRoleCode) return;
+                const selectedRole = allRolesData.find(r => r.roleCode === selectedModalRoleCode);
+                if (selectedRole) {
+                    await addRoleToCurrentUser(selectedRole.rolesTitle);
+                    showToast('✅ Role added');
+                }
+                closeRoleModal();
+            });
+
+            // ---- Close form ----
+            btnCloseForm.addEventListener('click', () => { closeForm(); showToast('↩️ Form closed'); });
+            btnAddUser.addEventListener('click', handleAddUser);
+
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape') {
+                    if (modalOverlay.classList.contains('visible')) closeRoleModal();
+                    else if (formPanel.classList.contains('open')) closeForm();
+                    hideRolesPopover();
+                }
+            });
+
+            function escapeHTML(str) {
+                const div = document.createElement('div');
+                div.textContent = str;
+                return div.innerHTML;
+            }
+
+            // ---- Init ----
+            async function init() {
+                tableLoadingContainer.style.display = 'flex';
+                usersTable.style.display = 'none';
+                emptyTableState.style.display = 'none';
+                paginationContainer.style.display = 'none';
+                userCountLabel.textContent = 'Loading...';
+                try {
+                    await fetchUsersWithRoles();
+                    renderTable();
+                    await fetchAllRoles();
+                } catch (error) {
+                    tableLoadingContainer.style.display = 'none';
+                    emptyTableState.style.display = 'flex';
+                    userCountLabel.textContent = 'Error loading';
+                }
+                tablePanel.classList.remove('shrunk');
+                formPanel.classList.remove('open');
+                resetAddModeState();
+            }
+
+            init();
+            console.log('✅ Users Edit Form initialized');
+        })();
+    </script>
+</body>
+</html>

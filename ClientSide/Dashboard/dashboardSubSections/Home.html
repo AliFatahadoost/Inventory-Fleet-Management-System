@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HOME · Fleet Inventory</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,600;14..32,700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-body: #eef2f7;
+            --bg-card: #ffffff;
+            --bg-accent-soft: #e8edf4;
+            --text-primary: #1e293b;
+            --text-secondary: #475569;
+            --text-muted: #64748b;
+            --border-subtle: #dde4ef;
+            --border-accent: rgba(37, 99, 235, 0.15);
+            --shadow-card: 0 20px 35px -15px rgba(0, 20, 40, 0.2),
+                0 8px 20px -8px rgba(0, 0, 0, 0.08);
+            --accent-blue: #2563eb;
+            --accent-purple: #7c3aed;
+            --gradient-line: linear-gradient(90deg, #2563eb, #7c3aed, #2563eb);
+            --radius-sm: 12px;
+            --radius-md: 24px;
+            --radius-lg: 48px;
+            --radius-full: 9999px;
+            --transition-fast: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            --transition-smooth: 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+            --font-stack: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif;
+            --bg-badge: #f1f6fe;
+            --bg-badge-hover: #e3edfe;
+            --bg-credit: linear-gradient(135deg, #eef6fe, #f2f0ff);
+            --bg-footnote: #eef4fa70;
+            --color-version: #1f3a5f;
+            --scrollbar-thumb: #c8d2e0;
+            --scrollbar-track: #f1f5f9;
+        }
+
+        body.dark-mode {
+            --bg-body: #171a21;
+            --bg-card: #1e2128;
+            --bg-accent-soft: #252d3a;
+            --text-primary: #e2e6ec;
+            --text-secondary: #b0b8c4;
+            --text-muted: #8b95a5;
+            --border-subtle: #2e333d;
+            --border-accent: rgba(90, 143, 199, 0.2);
+            --shadow-card: 0 20px 35px -15px rgba(0, 0, 0, 0.5),
+                0 8px 20px -8px rgba(0, 0, 0, 0.3);
+            --accent-blue: #5a8fc7;
+            --accent-purple: #9b7ef0;
+            --gradient-line: linear-gradient(90deg, #5a8fc7, #9b7ef0, #5a8fc7);
+            --bg-badge: #252d3a;
+            --bg-badge-hover: #2e3540;
+            --bg-credit: linear-gradient(135deg, #1e2635, #242a38);
+            --bg-footnote: #1e212870;
+            --color-version: #c5cad4;
+            --scrollbar-thumb: #3a404d;
+            --scrollbar-track: #1e2128;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html, body {
+            height: 100%;
+        }
+
+        body {
+            background-color: var(--bg-body);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: var(--font-stack);
+            padding: 1.5rem;
+            transition: background-color var(--transition-smooth);
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            overflow: auto; /* allow scrolling if card is taller than iframe */
+            min-height: 100vh;
+        }
+
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: var(--scrollbar-track);
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: var(--scrollbar-thumb);
+            border-radius: 10px;
+        }
+
+        .readme-card {
+            max-width: 880px;
+            width: 100%;
+            background: var(--bg-card);
+            border-radius: var(--radius-lg);
+            padding: 3rem 3.5rem;
+            box-shadow: var(--shadow-card);
+            border: 1px solid var(--border-subtle);
+            transition: all var(--transition-smooth);
+            position: relative;
+            overflow: hidden;
+            margin: auto; /* helps centering when scrolling */
+        }
+
+        .readme-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 3.5rem;
+            right: 3.5rem;
+            height: 4px;
+            background: var(--gradient-line);
+            background-size: 200% 100%;
+            border-radius: 0 0 12px 12px;
+            animation: shimmer 6s ease-in-out infinite;
+            z-index: 2;
+        }
+
+        @keyframes shimmer {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .readme-card .side-accent {
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 6px;
+            background: var(--gradient-line);
+            background-size: 200% 100%;
+            opacity: 0.7;
+            border-radius: 0 4px 4px 0;
+            animation: shimmer 6s ease-in-out infinite;
+        }
+
+        h1 {
+            font-size: 2.6rem;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+            color: var(--text-primary);
+            margin-bottom: 0.35rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+            position: relative;
+            z-index: 3;
+        }
+
+        h1 small {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--color-version);
+            background: var(--bg-accent-soft);
+            padding: 0.2rem 1rem;
+            border-radius: var(--radius-full);
+            letter-spacing: 0.3px;
+            margin-left: 0.25rem;
+            border: 1px solid var(--border-accent);
+            text-transform: uppercase;
+        }
+
+        .subhead {
+            font-size: 0.95rem;
+            color: var(--text-secondary);
+            background: var(--bg-accent-soft);
+            display: inline-block;
+            padding: 0.3rem 1.4rem;
+            border-radius: var(--radius-full);
+            font-weight: 500;
+            margin-top: 0.2rem;
+            margin-bottom: 2rem;
+            border: 1px solid var(--border-accent);
+            position: relative;
+            z-index: 3;
+        }
+
+        .badge-stack {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.6rem 0.9rem;
+            margin: 1.8rem 0 2.2rem 0;
+            padding: 0.25rem 0;
+            position: relative;
+            z-index: 3;
+        }
+
+        .tech-badge {
+            background: var(--bg-badge);
+            padding: 0.5rem 1.2rem;
+            border-radius: var(--radius-full);
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            letter-spacing: 0.2px;
+            border: 1px solid var(--border-accent);
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.03);
+            transition: all var(--transition-fast);
+        }
+
+        .tech-badge:hover {
+            background: var(--bg-badge-hover);
+            border-color: var(--accent-blue);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 14px -8px rgba(37, 99, 235, 0.2);
+        }
+
+        .tech-badge span {
+            font-weight: 300;
+            color: var(--text-muted);
+            margin-right: 4px;
+        }
+
+        .divider {
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--border-accent), var(--border-accent), transparent);
+            margin: 2rem 0 2rem 0;
+            width: 100%;
+            position: relative;
+            z-index: 3;
+        }
+
+        .content-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 1.2rem;
+            position: relative;
+            z-index: 3;
+        }
+
+        .readme-line {
+            font-size: 1.05rem;
+            line-height: 1.6;
+            color: var(--text-primary);
+            padding: 0.5rem 1rem 0.5rem 1.8rem;
+            background: var(--bg-accent-soft);
+            border-radius: var(--radius-md);
+            border-left: 4px solid var(--accent-blue);
+            transition: all var(--transition-fast);
+            position: relative;
+        }
+
+        .readme-line:hover {
+            background: var(--bg-badge-hover);
+            border-left-color: var(--accent-purple);
+        }
+
+        .readme-line strong {
+            color: var(--text-primary);
+            font-weight: 600;
+        }
+
+        .readme-line .highlight {
+            background: rgba(37, 99, 235, 0.1);
+            padding: 0.15rem 0.6rem;
+            border-radius: var(--radius-full);
+            font-weight: 500;
+            color: var(--accent-blue);
+            font-size: 0.9em;
+        }
+
+        .credit-line {
+            margin-top: 2.2rem;
+            padding: 1.2rem 2rem;
+            background: var(--bg-credit);
+            border-radius: var(--radius-full);
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem 1rem;
+            flex-wrap: wrap;
+            border: 1px solid var(--border-accent);
+            backdrop-filter: blur(2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+            position: relative;
+            z-index: 3;
+        }
+
+        .credit-line span {
+            font-weight: 400;
+            color: var(--text-secondary);
+        }
+
+        .credit-line .name {
+            font-weight: 700;
+            background: rgba(255, 255, 255, 0.6);
+            padding: 0.2rem 1.2rem;
+            border-radius: var(--radius-full);
+            color: var(--text-primary);
+            border: 1px solid rgba(0, 0, 0, 0.02);
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.03);
+            letter-spacing: 0.3px;
+        }
+        body.dark-mode .credit-line .name {
+            background: rgba(255, 255, 255, 0.08);
+        }
+
+        .credit-line .name i {
+            font-style: normal;
+            background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-weight: 700;
+        }
+
+        .footnote {
+            margin-top: 2.2rem;
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            background: var(--bg-footnote);
+            padding: 1rem 1.8rem;
+            border-radius: var(--radius-full);
+            border: 1px solid var(--border-accent);
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            flex-wrap: wrap;
+            position: relative;
+            z-index: 3;
+        }
+
+        .footnote i {
+            font-style: normal;
+            background: var(--bg-accent-soft);
+            padding: 0.15rem 0.9rem;
+            border-radius: var(--radius-full);
+            font-size: 0.8rem;
+            font-weight: 500;
+            color: var(--accent-blue);
+        }
+
+        .dot-pulse {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            background: var(--accent-blue);
+            border-radius: 50%;
+            margin-right: 8px;
+            animation: pulse-dot 2s infinite;
+        }
+
+        @keyframes pulse-dot {
+            0% { opacity: 0.3; transform: scale(0.9); }
+            50% { opacity: 1; transform: scale(1.2); }
+            100% { opacity: 0.3; transform: scale(0.9); }
+        }
+
+        @media (max-width: 680px) {
+            .readme-card {
+                padding: 2rem 1.5rem;
+                border-radius: var(--radius-md);
+            }
+            h1 {
+                font-size: 2rem;
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            h1 small {
+                margin-left: 0;
+                font-size: 0.8rem;
+            }
+            .credit-line {
+                padding: 1rem 1.2rem;
+                border-radius: 40px;
+                width: 100%;
+                justify-content: center;
+            }
+            .readme-line {
+                padding-left: 1rem;
+                font-size: 0.98rem;
+            }
+            .badge-stack {
+                gap: 0.4rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="readme-card">
+        <div class="side-accent"></div>
+
+        <h1>
+            📦 Inventory &amp; Fleet
+            <small>v1.0</small>
+        </h1>
+
+        <div class="subhead">
+            ⚙️ built from scratch · no frameworks · pure core
+        </div>
+
+        <div class="badge-stack">
+            <span class="tech-badge"><span>#</span> HTML5</span>
+            <span class="tech-badge"><span>#</span> CSS3</span>
+            <span class="tech-badge"><span>#</span> JavaScript (vanilla)</span>
+            <span class="tech-badge"><span>#</span> Java (backend)</span>
+            <span class="tech-badge"><span>#</span> SQL (SQL SERVER)</span>
+            <span class="tech-badge" style="background: var(--bg-accent-soft); border-color: var(--accent-blue);">
+                <span>🧩</span> 0 dependencies
+            </span>
+        </div>
+
+        <div class="divider"></div>
+
+        <div class="content-grid">
+            <div class="readme-line">
+                <span class="dot-pulse"></span>
+                <strong>Inventory &amp; Fleet Management System</strong> — written from bare minimum.
+                <span style="display: inline-block; margin-left: 0.5rem; font-weight: 300; color: var(--text-muted);">(ground‑up)</span>
+            </div>
+
+            <div class="readme-line">
+                🧰 <strong>Tech stack</strong> — 
+                <span class="highlight">HTML</span> · 
+                <span class="highlight">CSS</span> · 
+                <span class="highlight">JS</span> · 
+                <span class="highlight">Java</span> · 
+                <span class="highlight">SQL</span> 
+                <span style="color: var(--text-muted); font-weight: 300; margin-left: 0.2rem;">— nothing more, no frameworks, no non‑default libs.</span>
+            </div>
+
+            <div class="readme-line">
+                🚀 <strong>Version 1.0</strong> — future versions will add frameworks &amp; modern tooling, 
+                <span style="background: var(--bg-accent-soft); padding: 0.1rem 0.6rem; border-radius: 30px; color: var(--accent-blue);">but this is the raw foundation</span>.
+            </div>
+
+            <div class="readme-line">
+                💼 <strong>Resume project</strong> — built to demonstrate full‑stack ability from the ground up. 
+                <span style="font-weight: 300; color: var(--text-muted);">(you are free to use it, but …)</span>
+            </div>
+        </div>
+
+        <div class="credit-line">
+            <span>👤 <strong>Credit</strong> — please mention my name somewhere visible:</span>
+            <span class="name"><i>Ali FatahDoost</i></span>
+            <span style="font-size: 0.8rem; opacity: 0.7; color: var(--text-muted);">✦</span>
+        </div>
+
+        <div class="footnote">
+            <span>🖥️</span> 
+            <span><strong>1920×1080</strong> optimized — no intentional responsiveness for mobiles or tablets.</span>
+            <i>dev focus</i>
+        </div>
+        <div class="footnote">
+            <span>🤖 <strong>AI usage in this project:</strong> even though this project is written mostly by me, in places like CSS of some files, this file included AI was used. AI was used in this project mostly for UI beauty.</span>
+            <i>transparency</i>
+        </div>
+
+        <div style="margin-top: 1.8rem; font-size: 0.8rem; color: var(--text-muted); opacity: 0.6; text-align: right; border-top: 1px solid var(--border-subtle); padding-top: 1rem; letter-spacing: 0.3px;">
+            <span style="background: var(--bg-accent-soft); padding: 0.15rem 1.2rem; border-radius: 60px;">README · home</span>
+        </div>
+    </div>
+
+    <script>
+        (function() {
+            // Automatically sync dark/light mode with parent dashboard
+            function applyTheme(isDark) {
+                if (isDark) {
+                    document.body.classList.add('dark-mode');
+                } else {
+                    document.body.classList.remove('dark-mode');
+                }
+            }
+
+            try {
+                const parentBody = parent.document.querySelector("body");
+                if (parentBody) {
+                    applyTheme(parentBody.classList.contains('dark-mode'));
+
+                    // Watch for theme changes on parent
+                    const observer = new MutationObserver(() => {
+                        applyTheme(parentBody.classList.contains('dark-mode'));
+                    });
+                    observer.observe(parentBody, { attributes: true, attributeFilter: ['class'] });
+                } else {
+                    // Fallback to localStorage (same key as parent dashboard)
+                    const saved = localStorage.getItem('dashboardTheme');
+                    applyTheme(saved === 'dark');
+                }
+            } catch (e) {
+                // Cross-origin fallback
+                const saved = localStorage.getItem('dashboardTheme');
+                applyTheme(saved === 'dark');
+            }
+
+            // Listen for storage changes (if parent updates localStorage)
+            window.addEventListener('storage', function(e) {
+                if (e.key === 'dashboardTheme') {
+                    applyTheme(e.newValue === 'dark');
+                }
+            });
+
+            // Smooth entrance animation
+            const card = document.querySelector('.readme-card');
+            card.style.opacity = '0';
+            card.style.transform = 'translateY(10px)';
+            setTimeout(() => {
+                card.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+                card.style.opacity = '1';
+                card.style.transform = 'translateY(0)';
+            }, 100);
+        })();
+    </script>
+</body>
+</html>

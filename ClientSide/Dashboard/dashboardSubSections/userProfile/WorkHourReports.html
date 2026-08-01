@@ -1,0 +1,684 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Work Hour Reports</title>
+    <style>
+        :root {
+            --bg-body: #eef2f7;
+            --bg-card: #ffffff;
+            --bg-input: #f8fafc;
+            --bg-table-header: #f1f5f9;
+            --bg-table-row-even: #fafbfc;
+            --bg-table-row-hover: #eef2ff;
+            --bg-pill-default: #e2e7ef;
+            --bg-pill-active: #4a6fa5;
+            --bg-pagination: #f1f5f9;
+            --bg-pagination-active: #4a6fa5;
+            --bg-button-primary: #4a6fa5;
+            --bg-button-hover: #3b5998;
+            --bg-search: #ffffff;
+            --bg-badge: #e8edf4;
+            --bg-avatar: #4a6fa5;
+            --text-primary: #1e293b;
+            --text-secondary: #475569;
+            --text-muted: #94a3b8;
+            --text-pill-default: #475569;
+            --text-pill-active: #ffffff;
+            --text-pagination: #475569;
+            --text-pagination-active: #ffffff;
+            --text-button: #ffffff;
+            --text-label: #334155;
+            --text-input: #1e293b;
+            --border-card: #dde4ef;
+            --border-input: #d5dce8;
+            --border-table: #e2e8f0;
+            --border-pill: #d5dce8;
+            --border-pagination: #d5dce8;
+            --shadow-card: 0 4px 24px rgba(0, 0, 0, 0.05), 0 1px 6px rgba(0, 0, 0, 0.03);
+            --shadow-button: 0 2px 10px rgba(74, 111, 165, 0.3);
+            --shadow-input-focus: 0 0 0 4px rgba(74, 111, 165, 0.1);
+            --accent: #4a6fa5;
+            --accent-light: #5a8fc7;
+            --accent-soft: #e8edf4;
+            --accent-green: #22c55e;
+            --accent-amber: #f59e0b;
+            --accent-rose: #f43f5e;
+            --accent-purple: #8b5cf6;
+            --accent-teal: #14b8a6;
+            --radius-sm: 6px;
+            --radius-md: 10px;
+            --radius-lg: 14px;
+            --radius-xl: 18px;
+            --radius-full: 9999px;
+            --transition-fast: 0.18s cubic-bezier(0.4, 0, 0.2, 1);
+            --transition-smooth: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            --font-stack: 'Segoe UI', 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Helvetica Neue', sans-serif;
+            --letter-spacing-tight: -0.01em;
+            --letter-spacing-normal: 0.01em;
+            --bg-scrollbar: #c8d2e0;
+            --bg-scrollbar-track: #f1f5f9;
+        }
+
+        body.dark-mode {
+            --bg-body: #171a21;
+            --bg-card: #1e2128;
+            --bg-input: #252830;
+            --bg-table-header: #252830;
+            --bg-table-row-even: #1f2229;
+            --bg-table-row-hover: #282d38;
+            --bg-pill-default: #2a2f3a;
+            --bg-pill-active: #5a8fc7;
+            --bg-pagination: #252830;
+            --bg-pagination-active: #5a8fc7;
+            --bg-button-primary: #5a8fc7;
+            --bg-button-hover: #4a7db5;
+            --bg-search: #252830;
+            --bg-badge: #252d3a;
+            --bg-avatar: #5a8fc7;
+            --text-primary: #e2e6ec;
+            --text-secondary: #b0b8c4;
+            --text-muted: #6b7280;
+            --text-pill-default: #c5cad4;
+            --text-pill-active: #ffffff;
+            --text-pagination: #c5cad4;
+            --text-pagination-active: #ffffff;
+            --text-button: #ffffff;
+            --text-label: #c5cad4;
+            --text-input: #e2e6ec;
+            --border-card: #2e333d;
+            --border-input: #3a404d;
+            --border-table: #2a2f3a;
+            --border-pill: #3a404d;
+            --border-pagination: #3a404d;
+            --shadow-card: 0 4px 24px rgba(0, 0, 0, 0.25), 0 1px 6px rgba(0, 0, 0, 0.2);
+            --shadow-button: 0 2px 10px rgba(90, 143, 199, 0.35);
+            --shadow-input-focus: 0 0 0 4px rgba(90, 143, 199, 0.15);
+            --bg-scrollbar: #3a404d;
+            --bg-scrollbar-track: #1e2128;
+        }
+
+        * { box-sizing: border-box; font-family: var(--font-stack); letter-spacing: var(--letter-spacing-normal); }
+
+        body {
+            margin: 0; padding: 0;
+            background-color: var(--bg-body);
+            transition: background-color var(--transition-smooth);
+            -webkit-font-smoothing: antialiased;
+            min-height: 100vh;
+        }
+
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: var(--bg-scrollbar-track); border-radius: 10px; }
+        ::-webkit-scrollbar-thumb { background: var(--bg-scrollbar); border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--accent); }
+
+        .report-container { padding: 24px 28px 32px; max-width: 1600px; margin: 0 auto; width: 100%; }
+        @media (max-width: 600px) { .report-container { padding: 12px 10px 20px; } }
+
+        .chart-card {
+            background-color: var(--bg-card);
+            border: 2px solid var(--border-card);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-card);
+            overflow: hidden;
+            transition: all var(--transition-smooth);
+            display: flex; flex-direction: column;
+        }
+        .chart-card .chart-header {
+            padding: 16px 20px;
+            border-bottom: 2px solid var(--border-table);
+            display: flex; align-items: center; justify-content: space-between; flex-wrap: nowrap; gap: 12px;
+        }
+        .chart-card .chart-title {
+            font-weight: 700; font-size: 1rem; color: var(--text-primary); letter-spacing: var(--letter-spacing-tight);
+            margin: 0; display: flex; align-items: center; gap: 8px; white-space: nowrap;
+        }
+        .chart-card .chart-title .dot {
+            width: 9px; height: 9px; border-radius: 50%; display: inline-block; background-color: var(--accent-amber);
+        }
+
+        .filter-pills-container {
+            overflow-x: auto;
+            flex: 1;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding-bottom: 4px;
+            scrollbar-width: thin;
+        }
+        .filter-pills-container::-webkit-scrollbar { height: 4px; }
+        .filter-pills {
+            display: flex;
+            gap: 6px;
+            flex-wrap: nowrap;
+            white-space: nowrap;
+        }
+        .filter-pill {
+            padding: 6px 14px; border-radius: var(--radius-full); font-size: 0.78rem; font-weight: 600;
+            cursor: pointer; border: 2px solid var(--border-pill); background-color: var(--bg-pill-default);
+            color: var(--text-pill-default); transition: all var(--transition-fast);
+            user-select: none; letter-spacing: var(--letter-spacing-tight);
+        }
+        .filter-pill:hover { border-color: var(--accent); color: var(--accent); }
+        .filter-pill.active {
+            background-color: var(--bg-pill-active); color: var(--text-pill-active); border-color: var(--bg-pill-active);
+            box-shadow: 0 2px 8px rgba(74, 111, 165, 0.3);
+        }
+
+        .earnings-btn-header {
+            padding: 6px 14px; font-size: 0.78rem; font-weight: 700;
+            background-color: var(--accent); color: #fff; border: none; border-radius: var(--radius-full);
+            cursor: pointer; white-space: nowrap; letter-spacing: 0.02em;
+            box-shadow: var(--shadow-button); transition: all var(--transition-fast);
+            flex-shrink: 0;
+        }
+        .earnings-btn-header:hover { background-color: var(--bg-button-hover); transform: translateY(-1px); }
+
+        .search-row {
+            display: flex; gap: 8px; padding: 10px 20px; flex-wrap: wrap; align-items: center;
+            border-bottom: 1px solid var(--border-table); background-color: var(--bg-table-header);
+        }
+        .search-group { display: flex; align-items: center; gap: 5px; flex: 1; min-width: 130px; }
+        .search-row input {
+            padding: 7px 10px; border: 2px solid var(--border-input); border-radius: var(--radius-sm);
+            background-color: var(--bg-search); color: var(--text-input); font-size: 0.8rem; font-weight: 500;
+            outline: none; transition: all var(--transition-fast); width: 100%; max-width: 180px;
+        }
+        .search-row input:focus { border-color: var(--accent); box-shadow: var(--shadow-input-focus); }
+        .search-row .search-btn {
+            padding: 7px 11px; border-radius: var(--radius-sm); border: 2px solid var(--accent);
+            background-color: var(--accent); color: #fff; cursor: pointer; font-size: 0.75rem; font-weight: 700;
+            transition: all var(--transition-fast); white-space: nowrap;
+        }
+        .search-row .search-btn:hover { background-color: var(--bg-button-hover); border-color: var(--bg-button-hover); }
+        .search-row .search-clear { background-color: transparent; border: 2px solid var(--border-input); color: var(--text-muted); }
+        .search-row .search-clear:hover { border-color: var(--accent-rose); color: var(--accent-rose); background-color: transparent; }
+
+        .table-wrapper { overflow-x: auto; flex: 1; }
+        .chart-table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+        .chart-table thead th {
+            background-color: var(--bg-table-header); padding: 12px 16px; text-align: left;
+            font-weight: 700; font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.04em;
+            color: var(--text-secondary); border-bottom: 2px solid var(--border-table);
+            position: sticky; top: 0; z-index: 2; white-space: nowrap;
+        }
+        .chart-table tbody td {
+            padding: 11px 16px; border-bottom: 1px solid var(--border-table);
+            color: var(--text-primary); font-weight: 500; transition: background-color var(--transition-fast);
+            white-space: nowrap;
+        }
+        .chart-table tbody td.description-cell { max-width: 220px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .chart-table tbody tr:nth-child(even) { background-color: var(--bg-table-row-even); }
+        .chart-table tbody tr:hover { background-color: var(--bg-table-row-hover); }
+
+        .pagination-container {
+            display: flex; align-items: center; justify-content: space-between; padding: 12px 20px;
+            border-top: 2px solid var(--border-table); flex-wrap: wrap; gap: 10px; background-color: var(--bg-pagination);
+        }
+        .pagination-info { font-size: 0.8rem; color: var(--text-muted); font-weight: 500; }
+        .pagination-controls { display: flex; align-items: center; gap: 4px; }
+        .pagination-btn {
+            width: 34px; height: 34px; border-radius: var(--radius-sm); border: 2px solid var(--border-pagination);
+            background-color: var(--bg-card); color: var(--text-pagination); cursor: pointer; font-weight: 700;
+            font-size: 0.85rem; transition: all var(--transition-fast); display: flex; align-items: center;
+            justify-content: center; user-select: none;
+        }
+        .pagination-btn:hover:not(:disabled) { border-color: var(--accent); color: var(--accent); background-color: var(--accent-soft); }
+        .pagination-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+        .pagination-btn.active {
+            background-color: var(--bg-pagination-active); color: var(--text-pagination-active);
+            border-color: var(--bg-pagination-active); box-shadow: 0 2px 6px rgba(74, 111, 165, 0.3);
+        }
+        .pagination-ellipsis {
+            width: 34px; height: 34px; display: flex; align-items: center; justify-content: center;
+            color: var(--text-muted); font-weight: 700; user-select: none;
+        }
+
+        .empty-state { text-align: center; padding: 40px 20px; color: var(--text-muted); }
+        .empty-state .empty-icon { font-size: 3rem; margin-bottom: 10px; }
+        .empty-state p { margin: 0; font-weight: 600; font-size: 0.9rem; }
+
+        .hidden-el { display: none !important; }
+
+        /* Paycheck Modal */
+        .paycheck-modal-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background-color: rgba(0,0,0,0.5); backdrop-filter: blur(6px);
+            display: flex; align-items: center; justify-content: center; z-index: 10000;
+            opacity: 0; visibility: hidden; transition: opacity 0.25s ease, visibility 0.25s ease;
+        }
+        .paycheck-modal-overlay.active { opacity: 1; visibility: visible; }
+        .paycheck-modal {
+            background-color: var(--bg-card); border: 2px solid var(--border-card); border-radius: var(--radius-lg);
+            box-shadow: 0 20px 50px rgba(0,0,0,0.2); max-width: 500px; width: 90%;
+            padding: 28px 28px 22px; transform: scale(0.95); transition: transform 0.25s ease;
+            color: var(--text-primary); position: relative;
+            background: linear-gradient(135deg, #fafcfd 0%, #f6f8fc 100%);
+        }
+        body.dark-mode .paycheck-modal { background: linear-gradient(135deg, #242a33 0%, #1e2128 100%); }
+        .paycheck-modal-overlay.active .paycheck-modal { transform: scale(1); }
+        .paycheck-modal h2 { margin: 0 0 20px 0; font-size: 1.3rem; text-align: center; }
+        .paycheck-table { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
+        .paycheck-table th, .paycheck-table td {
+            padding: 10px 12px; border-bottom: 1px solid var(--border-table); text-align: left; font-size: 0.85rem;
+        }
+        .paycheck-table th { background-color: var(--bg-table-header); font-weight: 700; color: var(--text-secondary); }
+        .paycheck-total { display: flex; justify-content: space-between; align-items: center; font-weight: 700; font-size: 1rem; margin-bottom: 16px; }
+        .paycheck-base { font-size: 0.85rem; color: var(--text-muted); margin-bottom: 4px; }
+        .paycheck-actions { text-align: right; }
+        .paycheck-ok-btn {
+            padding: 9px 28px; background-color: var(--accent); color: #fff; border: none; border-radius: var(--radius-md);
+            font-weight: 700; cursor: pointer; transition: background-color var(--transition-fast);
+        }
+        .paycheck-ok-btn:hover { background-color: var(--bg-button-hover); }
+
+        .toast {
+            position: fixed; bottom: 30px; right: 30px; background-color: #1e293b; color: #fff;
+            padding: 12px 20px; border-radius: var(--radius-md); font-weight: 600; font-size: 0.85rem;
+            z-index: 9999; opacity: 0; transform: translateY(20px); transition: all 0.35s ease;
+            pointer-events: none; box-shadow: 0 8px 24px rgba(0,0,0,0.3); letter-spacing: var(--letter-spacing-tight);
+        }
+        .toast.show { opacity: 1; transform: translateY(0); }
+        body.dark-mode .toast { background-color: #f8fafc; color: #1e293b; box-shadow: 0 8px 24px rgba(0,0,0,0.5); }
+    </style>
+</head>
+<body>
+    <div class="report-container">
+        <div class="chart-card" id="workHourChartCard">
+            <div class="chart-header">
+                <p class="chart-title"><span class="dot"></span> Work Hour Reports</p>
+                <div class="filter-pills-container">
+                    <div class="filter-pills" id="monthFilterPills">
+                        <!-- dynamically filled -->
+                    </div>
+                </div>
+                <button class="earnings-btn-header" id="showEarningsBtn">💰 Show My Earnings</button>
+            </div>
+            <div class="search-row">
+                <div class="search-group">
+                    <input type="text" id="taskNameSearch" placeholder="Search task name...">
+                    <button class="search-btn" id="taskNameSearchBtn">🔍</button>
+                </div>
+                <div class="search-group">
+                    <input type="text" id="usernameSearch" placeholder="Search username...">
+                    <button class="search-btn" id="usernameSearchBtn">🔍</button>
+                </div>
+                <button class="search-btn search-clear" id="tasksClearSearch">✕ Clear</button>
+            </div>
+            <div class="table-wrapper">
+                <table class="chart-table" id="workHourTable">
+                    <thead>
+                        <tr>
+                            <th>🆔 ID</th>
+                            <th>👤 Username</th>
+                            <th>📋 Task Name</th>
+                            <th>📝 Description</th>
+                            <th>📅 Start Date</th>
+                            <th>📅 End Date</th>
+                            <th>⏱️ Est. Hours</th>
+                            <th>⌛ Actual Hours</th>
+                            <th>💰 Hourly Rate</th>
+                            <th>💵 Money Made</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+                <div class="empty-state hidden-el" id="workHourEmptyState">
+                    <div class="empty-icon">📭</div>
+                    <p>No work hour reports found</p>
+                </div>
+            </div>
+            <div class="pagination-container" id="workHourPagination">
+                <span class="pagination-info" id="workHourPaginationInfo">Showing 0 of 0 records</span>
+                <div class="pagination-controls" id="workHourPaginationControls"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Paycheck Modal -->
+    <div class="paycheck-modal-overlay" id="paycheckModal">
+        <div class="paycheck-modal">
+            <h2>🧾 Your Earnings</h2>
+            <div style="max-height: 300px; overflow-y: auto; margin-bottom: 12px;">
+                <table class="paycheck-table" id="paycheckMiniTable">
+                    <thead><tr><th>Task Name</th><th>Earnings</th></tr></thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+            <div id="paycheckBaseInfo" class="paycheck-base"></div>
+            <div class="paycheck-total">
+                <span>Total Earnings</span>
+                <span id="paycheckTotalAmount">$0.00</span>
+            </div>
+            <div class="paycheck-actions">
+                <button class="paycheck-ok-btn" id="closePaycheckBtn">OK</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="toast" id="toast"></div>
+
+    <script>
+        (function() {
+            // ─── Dark mode sync with parent iframe ───
+            let darkLightMode = 'light';
+            try {
+                if (window.parent && window.parent.document) {
+                    const parentBody = window.parent.document.querySelector("body");
+                    if (parentBody && parentBody.classList.contains("dark-mode")) {
+                        darkLightMode = 'dark';
+                    }
+                }
+            } catch (e) { darkLightMode = 'light'; }
+            if (darkLightMode === 'dark') document.body.classList.add('dark-mode');
+            try {
+                const parentBody = window.parent.document.querySelector("body");
+                if (parentBody) {
+                    const observer = new MutationObserver(() => {
+                        const isDark = parentBody.classList.contains('dark-mode');
+                        document.body.classList.toggle('dark-mode', isDark);
+                    });
+                    observer.observe(parentBody, { attributes: true, attributeFilter: ['class'] });
+                }
+            } catch (e) {}
+            window.addEventListener('storage', function(e) {
+                if (e.key === 'dashboardTheme') {
+                    document.body.classList.toggle('dark-mode', e.newValue === 'dark');
+                }
+            });
+
+            // ─── Toast helper ───
+            function showToast(message, duration = 3000) {
+                const toast = document.getElementById('toast');
+                toast.textContent = message;
+                toast.classList.add('show');
+                clearTimeout(toast._timeout);
+                toast._timeout = setTimeout(() => toast.classList.remove('show'), duration);
+            }
+
+            // ─── Configuration ───
+            const ROWS_PER_PAGE = 20;
+            let allWorkHourData = [];
+            let currentMonthFilter = 'all'; // 'all' or number 1-12 (months ago)
+            let searchTaskName = '';
+            let searchUsername = '';
+            let currentPage = 1;
+
+            // ─── Month offset filtering (from start of month) ───
+            function filterByMonthOffset(data, monthsAgo) {
+                if (monthsAgo === 'all') return data;
+                const now = new Date();
+                const targetDate = new Date(now.getFullYear(), now.getMonth() - monthsAgo, 1);
+                const targetYear = targetDate.getFullYear();
+                const targetMonth = targetDate.getMonth();
+                return data.filter(item => {
+                    try {
+                        const start = new Date(item.START_DATE_TIME);
+                        return start.getFullYear() === targetYear && start.getMonth() === targetMonth;
+                    } catch (e) { return false; }
+                });
+            }
+
+            function applySearch(data) {
+                if (!searchTaskName && !searchUsername) return data;
+                return data.filter(item => {
+                    const taskName = (item.TASK_NAME || '').toString().toLowerCase();
+                    const username = (item.USERNAME || '').toString().toLowerCase();
+                    let match = true;
+                    if (searchTaskName) match = match && taskName.includes(searchTaskName.toLowerCase());
+                    if (searchUsername) match = match && username.includes(searchUsername.toLowerCase());
+                    return match;
+                });
+            }
+
+            function getPageData(data, page) {
+                const start = (page - 1) * ROWS_PER_PAGE;
+                const end = start + ROWS_PER_PAGE;
+                return {
+                    pageData: data.slice(start, end),
+                    totalPages: Math.ceil(data.length / ROWS_PER_PAGE),
+                    totalItems: data.length,
+                    startIndex: data.length > 0 ? start + 1 : 0,
+                    endIndex: Math.min(end, data.length),
+                };
+            }
+
+            // ─── Render table ───
+            function renderTable() {
+                let filtered = filterByMonthOffset(allWorkHourData, currentMonthFilter);
+                filtered = applySearch(filtered);
+                const { pageData, totalPages, totalItems, startIndex, endIndex } = getPageData(filtered, currentPage);
+
+                const tbody = document.querySelector('#workHourTable tbody');
+                const emptyState = document.getElementById('workHourEmptyState');
+                tbody.innerHTML = '';
+
+                if (pageData.length === 0) {
+                    emptyState.classList.remove('hidden-el');
+                } else {
+                    emptyState.classList.add('hidden-el');
+                }
+
+                pageData.forEach(log => {
+                    const row = tbody.insertRow();
+                    row.insertCell(0).textContent = log.WORK_HOUR_REPORT_LOG_ID ?? '—';
+                    row.insertCell(1).textContent = log.USERNAME || '—';
+                    row.insertCell(2).textContent = log.TASK_NAME || '—';
+                    const descCell = row.insertCell(3);
+                    descCell.textContent = log.TASK_DESCRIPTION || '—';
+                    descCell.classList.add('description-cell');
+                    descCell.title = log.TASK_DESCRIPTION || '';
+                    row.insertCell(4).textContent = log.START_DATE_TIME || '—';
+                    row.insertCell(5).textContent = log.END_DATE_TIME || '—';
+                    row.insertCell(6).textContent = log.EST_HOURS_IT_WILL_TAKE != null ? parseFloat(log.EST_HOURS_IT_WILL_TAKE).toFixed(2) : '—';
+                    row.insertCell(7).textContent = log.ACTUAL_TIME_TASK_TOOK != null ? parseFloat(log.ACTUAL_TIME_TASK_TOOK).toFixed(2) : '—';
+                    row.insertCell(8).textContent = log.HOURLY_RATE_FOR_TASK != null ? '$' + parseFloat(log.HOURLY_RATE_FOR_TASK).toFixed(2) : '—';
+                    row.insertCell(9).textContent = log.MONEY_MADE != null ? '$' + parseFloat(log.MONEY_MADE).toFixed(2) : '—';
+                });
+
+                renderPagination(currentPage, totalPages, totalItems, startIndex, endIndex);
+            }
+
+            function renderPagination(page, totalPages, totalItems, startIndex, endIndex) {
+                const container = document.getElementById('workHourPaginationControls');
+                const infoEl = document.getElementById('workHourPaginationInfo');
+                container.innerHTML = '';
+                infoEl.textContent = `Showing ${startIndex}–${endIndex} of ${totalItems} record${totalItems !== 1 ? 's' : ''}`;
+
+                if (totalPages <= 1) {
+                    const btn = document.createElement('button');
+                    btn.className = 'pagination-btn active';
+                    btn.textContent = '1';
+                    btn.disabled = true;
+                    container.appendChild(btn);
+                    return;
+                }
+
+                const leftArrow = document.createElement('button');
+                leftArrow.className = 'pagination-btn pagination-arrow';
+                leftArrow.textContent = '‹';
+                leftArrow.disabled = page === 1;
+                leftArrow.addEventListener('click', () => { if (page > 1) { currentPage--; renderTable(); } });
+                container.appendChild(leftArrow);
+
+                const maxVisible = 7;
+                let pages = [];
+                if (totalPages <= maxVisible) {
+                    for (let i = 1; i <= totalPages; i++) pages.push(i);
+                } else {
+                    pages.push(1);
+                    let startPage = Math.max(2, page - 2);
+                    let endPage = Math.min(totalPages - 1, page + 2);
+                    if (page <= 3) { startPage = 2; endPage = 5; }
+                    if (page >= totalPages - 2) { startPage = totalPages - 4; endPage = totalPages - 1; }
+                    if (startPage > 2) pages.push('...');
+                    for (let i = startPage; i <= endPage; i++) pages.push(i);
+                    if (endPage < totalPages - 1) pages.push('...');
+                    pages.push(totalPages);
+                }
+
+                pages.forEach(p => {
+                    if (p === '...') {
+                        const ellipsis = document.createElement('span');
+                        ellipsis.className = 'pagination-ellipsis';
+                        ellipsis.textContent = '…';
+                        container.appendChild(ellipsis);
+                    } else {
+                        const btn = document.createElement('button');
+                        btn.className = 'pagination-btn';
+                        if (p === page) btn.classList.add('active');
+                        btn.textContent = p;
+                        btn.addEventListener('click', () => { currentPage = p; renderTable(); });
+                        container.appendChild(btn);
+                    }
+                });
+
+                const rightArrow = document.createElement('button');
+                rightArrow.className = 'pagination-btn pagination-arrow';
+                rightArrow.textContent = '›';
+                rightArrow.disabled = page === totalPages;
+                rightArrow.addEventListener('click', () => { if (page < totalPages) { currentPage++; renderTable(); } });
+                container.appendChild(rightArrow);
+            }
+
+            // ─── Fetch data ───
+            async function fetchWorkHourData() {
+                try {
+                    const response = await fetch('http://192.168.100.11:55952/workHourReportAPI', { method: 'POST' });
+                    if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+                    const data = await response.json();
+                    allWorkHourData = Array.isArray(data) ? data : [];
+                } catch (error) {
+                    console.error('Error fetching work hour reports:', error);
+                    showToast('⚠️ Failed to load reports. Please try again.');
+                    allWorkHourData = [];
+                }
+                currentPage = 1;
+                renderTable();
+            }
+
+            // ─── Build month filter pills ───
+            function buildFilterPills() {
+                const container = document.getElementById('monthFilterPills');
+                container.innerHTML = '';
+                const allPill = document.createElement('span');
+                allPill.className = 'filter-pill active';
+                allPill.setAttribute('data-range', 'all');
+                allPill.textContent = 'All Time';
+                container.appendChild(allPill);
+
+                for (let i = 1; i <= 12; i++) {
+                    const pill = document.createElement('span');
+                    pill.className = 'filter-pill';
+                    pill.setAttribute('data-range', i);
+                    pill.textContent = `${i} Month${i > 1 ? 's' : ''} Ago`;
+                    container.appendChild(pill);
+                }
+
+                container.addEventListener('click', (e) => {
+                    const pill = e.target.closest('.filter-pill');
+                    if (!pill) return;
+                    container.querySelectorAll('.filter-pill').forEach(p => p.classList.remove('active'));
+                    pill.classList.add('active');
+                    const range = pill.getAttribute('data-range');
+                    currentMonthFilter = range === 'all' ? 'all' : parseInt(range);
+                    currentPage = 1;
+                    renderTable();
+                });
+            }
+
+            // ─── Search handlers ───
+            document.getElementById('taskNameSearchBtn').addEventListener('click', () => {
+                searchTaskName = document.getElementById('taskNameSearch').value.trim();
+                currentPage = 1;
+                renderTable();
+            });
+            document.getElementById('usernameSearchBtn').addEventListener('click', () => {
+                searchUsername = document.getElementById('usernameSearch').value.trim();
+                currentPage = 1;
+                renderTable();
+            });
+            document.getElementById('tasksClearSearch').addEventListener('click', () => {
+                document.getElementById('taskNameSearch').value = '';
+                document.getElementById('usernameSearch').value = '';
+                searchTaskName = '';
+                searchUsername = '';
+                currentPage = 1;
+                renderTable();
+            });
+            document.getElementById('taskNameSearch').addEventListener('keydown', (e) => {
+                if (e.key === 'Enter') {
+                    searchTaskName = e.target.value.trim();
+                    currentPage = 1;
+                    renderTable();
+                }
+            });
+            document.getElementById('usernameSearch').addEventListener('keydown', (e) => {
+                if (e.key === 'Enter') {
+                    searchUsername = e.target.value.trim();
+                    currentPage = 1;
+                    renderTable();
+                }
+            });
+
+            // ─── Paycheck Modal logic (FIXED) ───
+            const paycheckModalOverlay = document.getElementById('paycheckModal');
+            const paycheckMiniTableBody = document.querySelector('#paycheckMiniTable tbody');
+            const paycheckTotalAmount = document.getElementById('paycheckTotalAmount');
+            const paycheckBaseInfo = document.getElementById('paycheckBaseInfo');
+            const closePaycheckBtn = document.getElementById('closePaycheckBtn');
+            const showEarningsBtn = document.getElementById('showEarningsBtn');
+
+            function showPaycheckModal() {
+                // Get currently filtered data (no pagination)
+                let filtered = filterByMonthOffset(allWorkHourData, currentMonthFilter);
+                filtered = applySearch(filtered);
+                paycheckMiniTableBody.innerHTML = '';
+
+                let totalEarnings = 0;
+                filtered.forEach(log => {
+                    const money = parseFloat(log.MONEY_MADE) || 0;
+                    totalEarnings += money;
+                    const row = paycheckMiniTableBody.insertRow();
+                    row.insertCell(0).textContent = log.TASK_NAME || '—';
+                    row.insertCell(1).textContent = '$' + money.toFixed(2);
+                });
+
+                // Base salary: always add if present, taken from first record of entire dataset (or filtered if not empty)
+                let baseSalary = 0;
+                // Use the first record of the filtered data if available, otherwise fallback to the whole dataset
+                const source = filtered.length > 0 ? filtered : allWorkHourData;
+                if (source.length > 0) {
+                    baseSalary = parseFloat(source[0].BASE_SALARY) || 0;
+                }
+
+                let baseInfoHtml = '';
+                if (baseSalary > 0) {
+                    totalEarnings += baseSalary;
+                    baseInfoHtml = `<span>Base Salary: $${baseSalary.toFixed(2)}</span>`;
+                }
+                paycheckBaseInfo.innerHTML = baseInfoHtml;
+                paycheckTotalAmount.textContent = '$' + totalEarnings.toFixed(2);
+
+                paycheckModalOverlay.classList.add('active');
+            }
+
+            function hidePaycheckModal() {
+                paycheckModalOverlay.classList.remove('active');
+            }
+
+            showEarningsBtn.addEventListener('click', showPaycheckModal);
+            closePaycheckBtn.addEventListener('click', hidePaycheckModal);
+            paycheckModalOverlay.addEventListener('click', (e) => {
+                if (e.target === paycheckModalOverlay) hidePaycheckModal();
+            });
+
+            // ─── Initialise ───
+            buildFilterPills();
+            fetchWorkHourData();
+        })();
+    </script>
+</body>
+</html>

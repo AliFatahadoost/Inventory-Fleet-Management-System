@@ -1,0 +1,587 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Activity Log</title>
+    <style>
+        :root {
+            --bg-body: #eef2f7;
+            --bg-card: #ffffff;
+            --bg-input: #f8fafc;
+            --bg-table-header: #f1f5f9;
+            --bg-table-row-even: #fafbfc;
+            --bg-table-row-hover: #eef2ff;
+            --bg-pill-default: #e2e7ef;
+            --bg-pill-active: #4a6fa5;
+            --bg-pagination: #f1f5f9;
+            --bg-pagination-active: #4a6fa5;
+            --text-primary: #1e293b;
+            --text-secondary: #475569;
+            --text-muted: #94a3b8;
+            --text-pill-default: #475569;
+            --text-pill-active: #ffffff;
+            --text-pagination: #475569;
+            --text-pagination-active: #ffffff;
+            --border-card: #dde4ef;
+            --border-input: #d5dce8;
+            --border-table: #e2e8f0;
+            --border-pill: #d5dce8;
+            --border-pagination: #d5dce8;
+            --shadow-card: 0 4px 24px rgba(0, 0, 0, 0.05), 0 1px 6px rgba(0, 0, 0, 0.03);
+            --shadow-button: 0 2px 10px rgba(74, 111, 165, 0.3);
+            --shadow-input-focus: 0 0 0 4px rgba(74, 111, 165, 0.1);
+            --accent: #4a6fa5;
+            --accent-amber: #f59e0b;
+            --accent-rose: #f43f5e;
+            --radius-sm: 6px;
+            --radius-md: 10px;
+            --radius-lg: 14px;
+            --radius-full: 9999px;
+            --transition-fast: 0.18s cubic-bezier(0.4, 0, 0.2, 1);
+            --transition-smooth: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            --font-stack: 'Segoe UI', 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Helvetica Neue', sans-serif;
+            --letter-spacing-tight: -0.01em;
+            --letter-spacing-normal: 0.01em;
+            --bg-scrollbar: #c8d2e0;
+            --bg-scrollbar-track: #f1f5f9;
+        }
+
+        body.dark-mode {
+            --bg-body: #171a21;
+            --bg-card: #1e2128;
+            --bg-input: #252830;
+            --bg-table-header: #252830;
+            --bg-table-row-even: #1f2229;
+            --bg-table-row-hover: #282d38;
+            --bg-pill-default: #2a2f3a;
+            --bg-pill-active: #5a8fc7;
+            --bg-pagination: #252830;
+            --bg-pagination-active: #5a8fc7;
+            --text-primary: #e2e6ec;
+            --text-secondary: #b0b8c4;
+            --text-muted: #6b7280;
+            --text-pill-default: #c5cad4;
+            --text-pill-active: #ffffff;
+            --text-pagination: #c5cad4;
+            --text-pagination-active: #ffffff;
+            --border-card: #2e333d;
+            --border-input: #3a404d;
+            --border-table: #2a2f3a;
+            --border-pill: #3a404d;
+            --border-pagination: #3a404d;
+            --shadow-card: 0 4px 24px rgba(0, 0, 0, 0.25), 0 1px 6px rgba(0, 0, 0, 0.2);
+            --shadow-button: 0 2px 10px rgba(90, 143, 199, 0.35);
+            --shadow-input-focus: 0 0 0 4px rgba(90, 143, 199, 0.15);
+            --bg-scrollbar: #3a404d;
+            --bg-scrollbar-track: #1e2128;
+        }
+
+        * { box-sizing: border-box; font-family: var(--font-stack); letter-spacing: var(--letter-spacing-normal); }
+
+        body {
+            margin: 0; padding: 0;
+            background-color: var(--bg-body);
+            transition: background-color var(--transition-smooth);
+            -webkit-font-smoothing: antialiased;
+            min-height: 100vh;
+        }
+
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: var(--bg-scrollbar-track); border-radius: 10px; }
+        ::-webkit-scrollbar-thumb { background: var(--bg-scrollbar); border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--accent); }
+
+        .report-container { padding: 24px 28px 32px; max-width: 1600px; margin: 0 auto; width: 100%; }
+        @media (max-width: 600px) { .report-container { padding: 12px 10px 20px; } }
+
+        .chart-card {
+            background-color: var(--bg-card);
+            border: 2px solid var(--border-card);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-card);
+            overflow: hidden;
+            transition: all var(--transition-smooth);
+            display: flex; flex-direction: column;
+        }
+        .chart-card .chart-header {
+            padding: 16px 20px;
+            border-bottom: 2px solid var(--border-table);
+            display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px;
+        }
+        .chart-card .chart-title {
+            font-weight: 700; font-size: 1rem; color: var(--text-primary); letter-spacing: var(--letter-spacing-tight);
+            margin: 0; display: flex; align-items: center; gap: 8px;
+        }
+        .chart-card .chart-title .dot {
+            width: 9px; height: 9px; border-radius: 50%; display: inline-block; background-color: var(--accent-amber);
+        }
+
+        .filter-pills { display: flex; gap: 6px; flex-wrap: wrap; }
+        .filter-pill {
+            padding: 6px 14px; border-radius: var(--radius-full); font-size: 0.78rem; font-weight: 600;
+            cursor: pointer; border: 2px solid var(--border-pill); background-color: var(--bg-pill-default);
+            color: var(--text-pill-default); transition: all var(--transition-fast); white-space: nowrap;
+            user-select: none; letter-spacing: var(--letter-spacing-tight);
+        }
+        .filter-pill:hover { border-color: var(--accent); color: var(--accent); }
+        .filter-pill.active {
+            background-color: var(--bg-pill-active); color: var(--text-pill-active); border-color: var(--bg-pill-active);
+            box-shadow: 0 2px 8px rgba(74, 111, 165, 0.3);
+        }
+
+        /* Search row */
+        .search-row {
+            display: flex; gap: 10px; padding: 10px 20px; flex-wrap: wrap; align-items: center;
+            border-bottom: 1px solid var(--border-table); background-color: var(--bg-table-header);
+        }
+        .search-group {
+            display: flex; align-items: center; gap: 4px; flex: 1; min-width: 130px;
+        }
+        .search-group label {
+            font-size: 0.75rem; font-weight: 600; color: var(--text-muted); white-space: nowrap;
+            margin-right: 4px;
+        }
+        .search-row input[type="text"],
+        .search-row input[type="date"] {
+            padding: 7px 10px; border: 2px solid var(--border-input); border-radius: var(--radius-sm);
+            background-color: var(--bg-search, #ffffff); color: var(--text-input, #1e293b);
+            font-size: 0.8rem; font-weight: 500; outline: none; transition: all var(--transition-fast);
+            width: 100%; max-width: 160px;
+        }
+        body.dark-mode .search-row input[type="text"],
+        body.dark-mode .search-row input[type="date"] {
+            background-color: var(--bg-input); color: var(--text-input);
+        }
+        .search-row input:focus { border-color: var(--accent); box-shadow: var(--shadow-input-focus); }
+        .search-row .search-btn {
+            padding: 7px 11px; border-radius: var(--radius-sm); border: 2px solid var(--accent);
+            background-color: var(--accent); color: #fff; cursor: pointer; font-size: 0.75rem; font-weight: 700;
+            transition: all var(--transition-fast); white-space: nowrap;
+        }
+        .search-row .search-btn:hover { background-color: #3b5998; border-color: #3b5998; }
+        .search-row .search-clear {
+            background-color: transparent; border: 2px solid var(--border-input); color: var(--text-muted);
+            margin-left: auto;
+        }
+        .search-row .search-clear:hover { border-color: var(--accent-rose); color: var(--accent-rose); background-color: transparent; }
+
+        .table-wrapper { overflow-x: auto; flex: 1; }
+        .chart-table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+        .chart-table thead th {
+            background-color: var(--bg-table-header); padding: 12px 16px; text-align: left;
+            font-weight: 700; font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.04em;
+            color: var(--text-secondary); border-bottom: 2px solid var(--border-table);
+            position: sticky; top: 0; z-index: 2; white-space: nowrap;
+        }
+        .chart-table tbody td {
+            padding: 11px 16px; border-bottom: 1px solid var(--border-table);
+            color: var(--text-primary); font-weight: 500; transition: background-color var(--transition-fast);
+            white-space: nowrap;
+        }
+        .chart-table tbody td.remarks-cell { max-width: 300px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .chart-table tbody tr:nth-child(even) { background-color: var(--bg-table-row-even); }
+        .chart-table tbody tr:hover { background-color: var(--bg-table-row-hover); }
+
+        .pagination-container {
+            display: flex; align-items: center; justify-content: space-between; padding: 12px 20px;
+            border-top: 2px solid var(--border-table); flex-wrap: wrap; gap: 10px; background-color: var(--bg-pagination);
+        }
+        .pagination-info { font-size: 0.8rem; color: var(--text-muted); font-weight: 500; }
+        .pagination-controls { display: flex; align-items: center; gap: 4px; }
+        .pagination-btn {
+            width: 34px; height: 34px; border-radius: var(--radius-sm); border: 2px solid var(--border-pagination);
+            background-color: var(--bg-card); color: var(--text-pagination); cursor: pointer; font-weight: 700;
+            font-size: 0.85rem; transition: all var(--transition-fast); display: flex; align-items: center;
+            justify-content: center; user-select: none;
+        }
+        .pagination-btn:hover:not(:disabled) { border-color: var(--accent); color: var(--accent); background-color: rgba(74, 111, 165, 0.08); }
+        .pagination-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+        .pagination-btn.active {
+            background-color: var(--bg-pagination-active); color: var(--text-pagination-active);
+            border-color: var(--bg-pagination-active); box-shadow: 0 2px 6px rgba(74, 111, 165, 0.3);
+        }
+        .pagination-ellipsis {
+            width: 34px; height: 34px; display: flex; align-items: center; justify-content: center;
+            color: var(--text-muted); font-weight: 700; user-select: none;
+        }
+
+        .empty-state { text-align: center; padding: 40px 20px; color: var(--text-muted); }
+        .empty-state .empty-icon { font-size: 3rem; margin-bottom: 10px; }
+        .empty-state p { margin: 0; font-weight: 600; font-size: 0.9rem; }
+
+        .hidden-el { display: none !important; }
+
+        .toast {
+            position: fixed; bottom: 30px; right: 30px; background-color: #1e293b; color: #fff;
+            padding: 12px 20px; border-radius: var(--radius-md); font-weight: 600; font-size: 0.85rem;
+            z-index: 9999; opacity: 0; transform: translateY(20px); transition: all 0.35s ease;
+            pointer-events: none; box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+        }
+        .toast.show { opacity: 1; transform: translateY(0); }
+        body.dark-mode .toast { background-color: #f8fafc; color: #1e293b; box-shadow: 0 8px 24px rgba(0,0,0,0.5); }
+    </style>
+</head>
+<body>
+    <div class="report-container">
+        <div class="chart-card" id="activityChartCard">
+            <div class="chart-header">
+                <p class="chart-title">
+                    <span class="dot"></span> Activity Log
+                </p>
+                <div class="filter-pills" id="activityFilterPills">
+                    <span class="filter-pill active" data-range="all">All Time</span>
+                    <span class="filter-pill" data-range="day">Last Day</span>
+                    <span class="filter-pill" data-range="week">Last Week</span>
+                    <span class="filter-pill" data-range="month">Last Month</span>
+                    <span class="filter-pill" data-range="year">Last Year</span>
+                </div>
+            </div>
+
+            <!-- Search row with text and date filters -->
+            <div class="search-row">
+                <div class="search-group">
+                    <label>👤 User</label>
+                    <input type="text" id="usernameSearch" placeholder="Search username...">
+                    <button class="search-btn" id="usernameSearchBtn">🔍</button>
+                </div>
+                <div class="search-group">
+                    <label>📝 Remarks</label>
+                    <input type="text" id="remarksSearch" placeholder="Search remarks...">
+                    <button class="search-btn" id="remarksSearchBtn">🔍</button>
+                </div>
+                <div class="search-group">
+                    <label>📅 Start</label>
+                    <input type="date" id="startDateSearch">
+                    <button class="search-btn" id="startDateSearchBtn">🔍</button>
+                </div>
+                <div class="search-group">
+                    <label>📅 End</label>
+                    <input type="date" id="endDateSearch">
+                    <button class="search-btn" id="endDateSearchBtn">🔍</button>
+                </div>
+                <button class="search-btn search-clear" id="activityClearSearch">✕ Clear All</button>
+            </div>
+
+            <div class="table-wrapper">
+                <table class="chart-table" id="activityTable">
+                    <thead>
+                        <tr>
+                            <th>🆔 Log ID</th>
+                            <th>👤 User ID</th>
+                            <th>📛 Username</th>
+                            <th>📝 Remarks</th>
+                            <th>📅 Date & Time</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+                <div class="empty-state hidden-el" id="activityEmptyState">
+                    <div class="empty-icon">📭</div>
+                    <p>No activity records found</p>
+                </div>
+            </div>
+            <div class="pagination-container" id="activityPagination">
+                <span class="pagination-info" id="activityPaginationInfo">Showing 0 of 0 records</span>
+                <div class="pagination-controls" id="activityPaginationControls"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="toast" id="toast"></div>
+
+    <script>
+        (function() {
+            // ─── Dark mode sync with parent iframe ───
+            let darkLightMode = 'light';
+            try {
+                if (window.parent && window.parent.document) {
+                    const parentBody = window.parent.document.querySelector("body");
+                    if (parentBody && parentBody.classList.contains("dark-mode")) {
+                        darkLightMode = 'dark';
+                    }
+                }
+            } catch (e) { darkLightMode = 'light'; }
+            if (darkLightMode === 'dark') document.body.classList.add('dark-mode');
+            try {
+                const parentBody = window.parent.document.querySelector("body");
+                if (parentBody) {
+                    const observer = new MutationObserver(() => {
+                        const isDark = parentBody.classList.contains('dark-mode');
+                        document.body.classList.toggle('dark-mode', isDark);
+                    });
+                    observer.observe(parentBody, { attributes: true, attributeFilter: ['class'] });
+                }
+            } catch (e) {}
+            window.addEventListener('storage', function(e) {
+                if (e.key === 'dashboardTheme') {
+                    document.body.classList.toggle('dark-mode', e.newValue === 'dark');
+                }
+            });
+
+            // ─── Toast helper ───
+            function showToast(message, duration = 3000) {
+                const toast = document.getElementById('toast');
+                toast.textContent = message;
+                toast.classList.add('show');
+                clearTimeout(toast._timeout);
+                toast._timeout = setTimeout(() => toast.classList.remove('show'), duration);
+            }
+
+            // ─── Configuration ───
+            const ROWS_PER_PAGE = 20;
+            let allActivityData = [];
+            let currentFilter = 'all'; // 'all', 'day', 'week', 'month', 'year'
+            let currentPage = 1;
+
+            // Search criteria
+            let searchUsername = '';
+            let searchRemarks = '';
+            let startDate = '';   // YYYY-MM-DD
+            let endDate = '';     // YYYY-MM-DD
+
+            // ─── Date range filtering (pill) ───
+            function filterByPillRange(data, range) {
+                if (range === 'all') return data;
+                const now = new Date();
+                let cutoff;
+                switch (range) {
+                    case 'day': cutoff = new Date(now.getTime() - 24*60*60*1000); break;
+                    case 'week': cutoff = new Date(now.getTime() - 7*24*60*60*1000); break;
+                    case 'month': cutoff = new Date(now.getTime() - 30*24*60*60*1000); break;
+                    case 'year': cutoff = new Date(now.getTime() - 365*24*60*60*1000); break;
+                    default: return data;
+                }
+                return data.filter(item => {
+                    try {
+                        const d = new Date(item.DATE_TIME);
+                        return !isNaN(d.getTime()) && d >= cutoff;
+                    } catch (e) { return false; }
+                });
+            }
+
+            // ─── Apply all filters ───
+            function applyAllFilters(data) {
+                // Pill filter
+                let filtered = filterByPillRange(data, currentFilter);
+
+                // Username search
+                if (searchUsername.trim()) {
+                    const uname = searchUsername.trim().toLowerCase();
+                    filtered = filtered.filter(item => (item.USERNAME || '').toLowerCase().includes(uname));
+                }
+
+                // Remarks search
+                if (searchRemarks.trim()) {
+                    const remark = searchRemarks.trim().toLowerCase();
+                    filtered = filtered.filter(item => (item.ACTIVITY_REMARKS || '').toLowerCase().includes(remark));
+                }
+
+                // Date range (custom start/end)
+                if (startDate) {
+                    const start = new Date(startDate);
+                    filtered = filtered.filter(item => {
+                        const d = new Date(item.DATE_TIME);
+                        return !isNaN(d) && d >= start;
+                    });
+                }
+                if (endDate) {
+                    const end = new Date(endDate);
+                    end.setHours(23, 59, 59, 999); // include the whole end day
+                    filtered = filtered.filter(item => {
+                        const d = new Date(item.DATE_TIME);
+                        return !isNaN(d) && d <= end;
+                    });
+                }
+
+                return filtered;
+            }
+
+            function getPageData(data, page) {
+                const start = (page - 1) * ROWS_PER_PAGE;
+                const end = start + ROWS_PER_PAGE;
+                return {
+                    pageData: data.slice(start, end),
+                    totalPages: Math.ceil(data.length / ROWS_PER_PAGE),
+                    totalItems: data.length,
+                    startIndex: data.length > 0 ? start + 1 : 0,
+                    endIndex: Math.min(end, data.length),
+                };
+            }
+
+            // ─── Render table ───
+            function renderActivityTable() {
+                const filtered = applyAllFilters(allActivityData);
+                const { pageData, totalPages, totalItems, startIndex, endIndex } = getPageData(filtered, currentPage);
+
+                const tbody = document.querySelector('#activityTable tbody');
+                const emptyState = document.getElementById('activityEmptyState');
+                tbody.innerHTML = '';
+
+                if (pageData.length === 0) {
+                    emptyState.classList.remove('hidden-el');
+                } else {
+                    emptyState.classList.add('hidden-el');
+                }
+
+                pageData.forEach(log => {
+                    const row = tbody.insertRow();
+                    row.insertCell(0).textContent = log.ACTIVITY_LOG_ID ?? '—';
+                    row.insertCell(1).textContent = log.SYS_USER_ID ?? '—';
+                    row.insertCell(2).textContent = log.USERNAME || '—';
+                    const remarksCell = row.insertCell(3);
+                    remarksCell.textContent = log.ACTIVITY_REMARKS || '—';
+                    remarksCell.classList.add('remarks-cell');
+                    remarksCell.title = log.ACTIVITY_REMARKS || '';
+                    row.insertCell(4).textContent = log.DATE_TIME || '—';
+                });
+
+                renderPagination(currentPage, totalPages, totalItems, startIndex, endIndex);
+            }
+
+            function renderPagination(page, totalPages, totalItems, startIndex, endIndex) {
+                const container = document.getElementById('activityPaginationControls');
+                const infoEl = document.getElementById('activityPaginationInfo');
+                container.innerHTML = '';
+                infoEl.textContent = `Showing ${startIndex}–${endIndex} of ${totalItems} record${totalItems !== 1 ? 's' : ''}`;
+
+                if (totalPages <= 1) {
+                    const btn = document.createElement('button');
+                    btn.className = 'pagination-btn active';
+                    btn.textContent = '1';
+                    btn.disabled = true;
+                    container.appendChild(btn);
+                    return;
+                }
+
+                const leftArrow = document.createElement('button');
+                leftArrow.className = 'pagination-btn pagination-arrow';
+                leftArrow.textContent = '‹';
+                leftArrow.disabled = page === 1;
+                leftArrow.addEventListener('click', () => { if (page > 1) { currentPage--; renderActivityTable(); } });
+                container.appendChild(leftArrow);
+
+                const maxVisible = 7;
+                let pages = [];
+                if (totalPages <= maxVisible) {
+                    for (let i = 1; i <= totalPages; i++) pages.push(i);
+                } else {
+                    pages.push(1);
+                    let startPage = Math.max(2, page - 2);
+                    let endPage = Math.min(totalPages - 1, page + 2);
+                    if (page <= 3) { startPage = 2; endPage = 5; }
+                    if (page >= totalPages - 2) { startPage = totalPages - 4; endPage = totalPages - 1; }
+                    if (startPage > 2) pages.push('...');
+                    for (let i = startPage; i <= endPage; i++) pages.push(i);
+                    if (endPage < totalPages - 1) pages.push('...');
+                    pages.push(totalPages);
+                }
+
+                pages.forEach(p => {
+                    if (p === '...') {
+                        const ellipsis = document.createElement('span');
+                        ellipsis.className = 'pagination-ellipsis';
+                        ellipsis.textContent = '…';
+                        container.appendChild(ellipsis);
+                    } else {
+                        const btn = document.createElement('button');
+                        btn.className = 'pagination-btn';
+                        if (p === page) btn.classList.add('active');
+                        btn.textContent = p;
+                        btn.addEventListener('click', () => { currentPage = p; renderActivityTable(); });
+                        container.appendChild(btn);
+                    }
+                });
+
+                const rightArrow = document.createElement('button');
+                rightArrow.className = 'pagination-btn pagination-arrow';
+                rightArrow.textContent = '›';
+                rightArrow.disabled = page === totalPages;
+                rightArrow.addEventListener('click', () => { if (page < totalPages) { currentPage++; renderActivityTable(); } });
+                container.appendChild(rightArrow);
+            }
+
+            // ─── Fetch data ───
+            async function fetchActivityData() {
+                try {
+                    const response = await fetch('http://192.168.100.11:55952/auditLogAPI', { method: 'POST' });
+                    if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+                    const data = await response.json();
+                    allActivityData = Array.isArray(data) ? data : [];
+                } catch (error) {
+                    console.error('Error fetching activity log:', error);
+                    showToast('⚠️ Failed to load activity log. Please try again.');
+                    allActivityData = [];
+                }
+                currentPage = 1;
+                renderActivityTable();
+            }
+
+            // ─── Filter pills ───
+            document.getElementById('activityFilterPills').querySelectorAll('.filter-pill').forEach(pill => {
+                pill.addEventListener('click', function() {
+                    const container = document.getElementById('activityFilterPills');
+                    container.querySelectorAll('.filter-pill').forEach(p => p.classList.remove('active'));
+                    this.classList.add('active');
+                    currentFilter = this.getAttribute('data-range');
+                    currentPage = 1;
+                    renderActivityTable();
+                });
+            });
+
+            // ─── Search event handlers ───
+            function applySearch() {
+                currentPage = 1;
+                renderActivityTable();
+            }
+
+            document.getElementById('usernameSearchBtn').addEventListener('click', () => {
+                searchUsername = document.getElementById('usernameSearch').value;
+                applySearch();
+            });
+            document.getElementById('remarksSearchBtn').addEventListener('click', () => {
+                searchRemarks = document.getElementById('remarksSearch').value;
+                applySearch();
+            });
+            document.getElementById('startDateSearchBtn').addEventListener('click', () => {
+                startDate = document.getElementById('startDateSearch').value;
+                applySearch();
+            });
+            document.getElementById('endDateSearchBtn').addEventListener('click', () => {
+                endDate = document.getElementById('endDateSearch').value;
+                applySearch();
+            });
+
+            // Allow Enter key in text fields
+            document.getElementById('usernameSearch').addEventListener('keydown', (e) => {
+                if (e.key === 'Enter') {
+                    searchUsername = e.target.value;
+                    applySearch();
+                }
+            });
+            document.getElementById('remarksSearch').addEventListener('keydown', (e) => {
+                if (e.key === 'Enter') {
+                    searchRemarks = e.target.value;
+                    applySearch();
+                }
+            });
+
+            // Clear all search fields and reset filters
+            document.getElementById('activityClearSearch').addEventListener('click', () => {
+                document.getElementById('usernameSearch').value = '';
+                document.getElementById('remarksSearch').value = '';
+                document.getElementById('startDateSearch').value = '';
+                document.getElementById('endDateSearch').value = '';
+                searchUsername = '';
+                searchRemarks = '';
+                startDate = '';
+                endDate = '';
+                applySearch();
+            });
+
+            // ─── Initial load ───
+            fetchActivityData();
+        })();
+    </script>
+</body>
+</html>
