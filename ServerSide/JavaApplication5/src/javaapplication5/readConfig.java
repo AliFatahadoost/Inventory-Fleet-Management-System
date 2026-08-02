@@ -682,6 +682,10 @@ public class readConfig {
         server.createContext("/addRevokeRolesAPI", new apiManagement.addRevokeRoles());
         server.createContext("/updateUserCredByAdmin", new apiManagement.updateUserCredByAdmin());
         
+        server.createContext("/rolesAndPermissionsListAPI", new apiManagement.reportBasedOnUserTokenMaker("SELECT LR.ROLES_ID AS ID ,LR.ROLE_CODE AS roleCode ,LR.ROLES_TITLE AS permissionTitle ,SO.SYS_OBJECT_NAME AS featurePermission ,SCA.CAN_READ AS canRead ,SCA.CAN_WRITE AS canWrite FROM LT_ROLES LR LEFT JOIN SYS_CALL_ACCESS SCA ON LR.ROLE_CODE = SCA.ROLE_CODE LEFT JOIN SYS_OBJECTS SO ON SCA.SYS_OBJECT_CODE = SO.SYS_OBJECT_CODE WHERE ? IS NOT NULL ORDER BY LR.ROLE_CODE ASC"));
+        server.createContext("/featuresListAPI", new apiManagement.reportBasedOnUserTokenMaker("SELECT SYS_OBJECT_CODE AS featuresCode, SYS_OBJECT_NAME AS featuresName FROM SYS_OBJECTS WHERE ? IS NOT NULL"));
+        server.createContext("/createUpdateDeleteRolesAPI", new apiManagement.createUpdateDeleteRoles());
+        
         
         server.setExecutor(null);
         server.start();

@@ -220,6 +220,41 @@ public class apiManagement{
     }
     
     
+    public static class createUpdateDeleteRoles implements HttpHandler
+    {
+        @Override
+        public void handle(HttpExchange exchange) throws IOException
+        {
+            String token = webServerUtils.extractTokenFromCookie(exchange); 
+            if("POST".equals(exchange.getRequestMethod())){
+                InputStream is = exchange.getRequestBody();
+                String userDataSent;
+                BufferedReader reader = new BufferedReader(new InputStreamReader(is, "UTF-8"));
+                StringBuilder sb = new StringBuilder();
+                String line;
+                while((line = reader.readLine()) != null)
+                {
+                    sb.append(line);
+                }
+                reader.close();
+                String userData = sb.toString();
+                System.out.println(userData);
+                String[][] userSentJSON = webServerUtils.jsonParser(userData);
+                boolean isAuthenticated = token != null && dataBaseUtils.isAuthenticated(token);
+                if (!isAuthenticated) {
+                    return;
+                }
+                dataBaseUtils.runSelectQueryGetJSON("EXEC CREATE_UPDATE_DELETE_ROLES ?, ?, ?, ?, ?, ?", userSentJSON[0][0], userSentJSON[0][1], userSentJSON[0][2],
+                                                                                                        userSentJSON[0][3], userSentJSON[0][4], userSentJSON[0][5]);
+                exchange.sendResponseHeaders(200, -1);
+                exchange.close();
+                //dataBaseUtils.runSelectQueryGetJSON("EXEC ACTIVITY_LOG_MANAGER 0, ?, ?", token, "user changed Task Status via API");
+            }
+
+        }
+    }
+    
+    
     public static class updateUserCredByAdmin implements HttpHandler
     {
         @Override
