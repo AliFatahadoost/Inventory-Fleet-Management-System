@@ -80,7 +80,6 @@ public class dataBaseUtils {
                     System.out.println("Error: " + e.getMessage());
                     e.printStackTrace();
                 }
-                System.out.println(jsonResult);
                 return jsonResult;
         }
         

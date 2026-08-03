@@ -18,7 +18,7 @@ import java.util.logging.Logger;
 public class readConfig {
 
     // ──────────── Configurable properties (public static) ────────────
-    public static String BASE_FILE_ADDRESS = "C:/Users/Ali Fatahdoost/Desktop/CRUDFullStack/ClientSide";
+    public static String BASE_FILE_ADDRESS = Paths.get("").toAbsolutePath().resolve("./../../ClientSide").normalize().toString();
     public static int MAX_SESSION_TIME = 86400;
     public static String server = "localhost";          // Database host
     public static int port = 1433;                      // Database port
@@ -26,7 +26,7 @@ public class readConfig {
     public static String username = "sa";
     public static String password = "12";
     public static int MAX_CONNECTION_POOL = 5;
-    public static int portNumber = 55952;               // HTTP server port
+    public static int portNumber = 8080;               // HTTP server port
     public static int queueWaitLine = 10;               // HTTP backlog
     // NEW: IP address the HTTP server will bind to / advertise
     public static String serverIP = "127.0.0.1";
@@ -653,14 +653,14 @@ public class readConfig {
         server.createContext("/LoginPage", new pageHandlerOpener(BASE_FILE_ADDRESS + "/Login/Login.html", false, 2));
         server.createContext("/Dashboard", new pageHandlerOpener(BASE_FILE_ADDRESS + "/Dashboard/Dashboard.html", false, 3));
         server.createContext("/Dashboard/Home", new pageHandlerOpener(BASE_FILE_ADDRESS + "/Dashboard/dashboardSubSections/Home.html", true, 4));
-        server.createContext("/Dashboard/userProfile", new pageHandlerOpener(BASE_FILE_ADDRESS + "/Dashboard/dashboardSubSections/userProfile/userProfile.HTML", true, 5));
-        server.createContext("/Dashboard/userProfile/userTasks", new pageHandlerOpener(BASE_FILE_ADDRESS + "/Dashboard/dashboardSubSections/userProfile/userTasks.HTML", true, 6));
-        server.createContext("/Dashboard/userProfile/WorkHourReports", new pageHandlerOpener(BASE_FILE_ADDRESS + "/Dashboard/dashboardSubSections/userProfile/WorkHourReports.HTML", true, 7));
-        server.createContext("/Dashboard/userProfile/ActivityLog", new pageHandlerOpener(BASE_FILE_ADDRESS + "/Dashboard/dashboardSubSections/userProfile/ActivityLog.HTML", true, 8));
-        server.createContext("/Dashboard/inventoryManagement", new pageHandlerOpener(BASE_FILE_ADDRESS + "/Dashboard/dashboardSubSections/inventoryManagement.HTML", true, 9));
-        server.createContext("/Dashboard/warehouseManagement", new pageHandlerOpener(BASE_FILE_ADDRESS + "/Dashboard/dashboardSubSections/warehouseManagement.HTML", true, 10));
-        server.createContext("/Dashboard/fleetManagement", new pageHandlerOpener(BASE_FILE_ADDRESS + "/Dashboard/dashboardSubSections/fleetManagement.HTML", true, 11));
-        server.createContext("/Dashboard/reportSection", new pageHandlerOpener(BASE_FILE_ADDRESS + "/Dashboard/dashboardSubSections/reportSection.HTML", true, 12));
+        server.createContext("/Dashboard/userProfile", new pageHandlerOpener(BASE_FILE_ADDRESS + "/Dashboard/dashboardSubSections/userProfile/userProfile.html", true, 5));
+        server.createContext("/Dashboard/userProfile/userTasks", new pageHandlerOpener(BASE_FILE_ADDRESS + "/Dashboard/dashboardSubSections/userProfile/userTasks.html", true, 6));
+        server.createContext("/Dashboard/userProfile/WorkHourReports", new pageHandlerOpener(BASE_FILE_ADDRESS + "/Dashboard/dashboardSubSections/userProfile/WorkHourReports.html", true, 7));
+        server.createContext("/Dashboard/userProfile/ActivityLog", new pageHandlerOpener(BASE_FILE_ADDRESS + "/Dashboard/dashboardSubSections/userProfile/ActivityLog.html", true, 8));
+        server.createContext("/Dashboard/inventoryManagement", new pageHandlerOpener(BASE_FILE_ADDRESS + "/Dashboard/dashboardSubSections/inventoryManagement.html", true, 9));
+        server.createContext("/Dashboard/warehouseManagement", new pageHandlerOpener(BASE_FILE_ADDRESS + "/Dashboard/dashboardSubSections/warehouseManagement.html", true, 10));
+        server.createContext("/Dashboard/fleetManagement", new pageHandlerOpener(BASE_FILE_ADDRESS + "/Dashboard/dashboardSubSections/fleetManagement.html", true, 11));
+        server.createContext("/Dashboard/reportSection", new pageHandlerOpener(BASE_FILE_ADDRESS + "/Dashboard/dashboardSubSections/reportSection.html", true, 12));
         server.createContext("/Dashboard/usersManagement", new pageHandlerOpener(BASE_FILE_ADDRESS + "/Dashboard/dashboardSubSections/userManagement/usersManagement.html", true, 13));
         server.createContext("/Dashboard/EditUsersFormUsrMngmnt", new pageHandlerOpener(BASE_FILE_ADDRESS + "/Dashboard/dashboardSubSections/userManagement/EditUsersForm.html", true, 14));
         server.createContext("/Dashboard/EditRolesFormUsrMngmnt", new pageHandlerOpener(BASE_FILE_ADDRESS + "/Dashboard/dashboardSubSections/userManagement/EditRolesForm.html", true, 15));

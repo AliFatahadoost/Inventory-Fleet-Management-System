@@ -204,7 +204,6 @@ public class apiManagement{
                 }
                 reader.close();
                 String userData = sb.toString();
-                System.out.println(userData);
                 String[][] userSentJSON = webServerUtils.jsonParser(userData);
                 boolean isAuthenticated = token != null && dataBaseUtils.isAuthenticated(token);
                 if (!isAuthenticated) {
@@ -238,7 +237,6 @@ public class apiManagement{
                 }
                 reader.close();
                 String userData = sb.toString();
-                System.out.println(userData);
                 String[][] userSentJSON = webServerUtils.jsonParser(userData);
                 boolean isAuthenticated = token != null && dataBaseUtils.isAuthenticated(token);
                 if (!isAuthenticated) {
@@ -273,7 +271,6 @@ public class apiManagement{
                 }
                 reader.close();
                 String userData = sb.toString();
-                System.out.println(userData);
                 String[][] userSentJSON = webServerUtils.jsonParser(userData);
                 boolean isAuthenticated = token != null && dataBaseUtils.isAuthenticated(token);
                 if (!isAuthenticated) {

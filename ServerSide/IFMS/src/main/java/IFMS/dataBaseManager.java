@@ -5,19 +5,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class dataBaseManager {
-
-        /*static private String server = "localhost"; 
-        static private int port = 1433;           
-        static private String databaseName = "PROJECT_ZERO"; 
-        static private String username = "sa";       
-        static private String password = "12";  
-        
-
-        static private String url = "jdbc:sqlserver://" + server + ":" + port + 
-                     ";databaseName=" + databaseName + 
-                     ";encrypt=true;trustServerCertificate=true";
-        
-        static final private int MAX_CONNECTION_POOL = 5;*/
         
         static private PooledConnection[] dbConnections = new PooledConnection[readConfig.MAX_CONNECTION_POOL];
         static private AtomicBoolean[] isConnectionAvaliable = new AtomicBoolean[readConfig.MAX_CONNECTION_POOL];
