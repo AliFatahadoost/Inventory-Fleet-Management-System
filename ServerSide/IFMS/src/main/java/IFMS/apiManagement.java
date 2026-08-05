@@ -252,6 +252,269 @@ public class apiManagement{
         }
     }
     
+    public static class manageProductsMovementTrips implements HttpHandler {
+        @Override
+        public void handle(HttpExchange exchange) throws IOException {
+            String token = webServerUtils.extractTokenFromCookie(exchange);
+            if ("POST".equals(exchange.getRequestMethod())) {
+                InputStream is = exchange.getRequestBody();
+                BufferedReader reader = new BufferedReader(new InputStreamReader(is, "UTF-8"));
+                StringBuilder sb = new StringBuilder();
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    sb.append(line);
+                }
+                reader.close();
+                String userData = sb.toString();
+                String[][] userSentJSON = webServerUtils.jsonParser(userData);
+
+                boolean isAuthenticated = token != null && dataBaseUtils.isAuthenticated(token);
+                if (!isAuthenticated) {
+                    return;
+                }
+
+                // The JSON keys are expected in this order:
+                // action, products_movements_id, drivers_id, vehicle_id,
+                // comes_from_location_id, goes_to_location_id, est_arival,
+                // did_arive, products_movements_list_id, products_id, products_count
+                dataBaseUtils.runSelectQueryGetJSON(
+                    "EXEC MANAGE_PRODUCTS_MOVEMENT_TRIPS ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?",
+                    userSentJSON[0][0],  // @ACTION
+                    userSentJSON[0][1],  // @PRODUCTS_MOVEMENTS_ID
+                    userSentJSON[0][2],  // @DRIVERS_ID
+                    userSentJSON[0][3],  // @VEHICLE_ID
+                    userSentJSON[0][4],  // @COMES_FROM_LOCATION_ID
+                    userSentJSON[0][5],  // @GOES_TO_LOCATION_ID
+                    userSentJSON[0][6],  // @EST_ARIVAL
+                    userSentJSON[0][7],  // @DID_ARIVE
+                    userSentJSON[0][8],  // @PRODUCTS_MOVEMENTS_LIST_ID
+                    userSentJSON[0][9],  // @PRODUCTS_ID
+                    userSentJSON[0][10]  // @PRODUCTS_COUNT
+                );
+
+                exchange.sendResponseHeaders(200, -1);
+                exchange.close();
+
+                // Optional activity log (commented out as in the reference)
+                // dataBaseUtils.runSelectQueryGetJSON("EXEC ACTIVITY_LOG_MANAGER 0, ?, ?", token, "user managed products movement trip via API");
+            }
+        }
+    }
+    
+    public static class manageInventoryInfstructure implements HttpHandler {
+        @Override
+        public void handle(HttpExchange exchange) throws IOException {
+            String token = webServerUtils.extractTokenFromCookie(exchange);
+            if ("POST".equals(exchange.getRequestMethod())) {
+                InputStream is = exchange.getRequestBody();
+                BufferedReader reader = new BufferedReader(new InputStreamReader(is, "UTF-8"));
+                StringBuilder sb = new StringBuilder();
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    sb.append(line);
+                }
+                reader.close();
+                String userData = sb.toString();
+                String[][] userSentJSON = webServerUtils.jsonParser(userData);
+
+                boolean isAuthenticated = token != null && dataBaseUtils.isAuthenticated(token);
+                if (!isAuthenticated) {
+                    return;
+                }
+
+                // Parameters are expected in this order:
+                // @ACTION, @INVENTORY_LOCATION_TITLE, @NEW_INVENTORY_LOCATION_TITLE,
+                // @PRODUCTS_NAME, @NEW_PRODUCTS_NAME, @PRODUCTS_CATEGORY_ID,
+                // @PRODUCTS_CATEGORY_NAME, @NEW_PRODUCTS_CATEGORY_NAME
+                dataBaseUtils.runSelectQueryGetJSON(
+                    "EXEC MANAGE_INVENTORY_INFSTRUCTURE ?, ?, ?, ?, ?, ?, ?, ?",
+                    userSentJSON[0][0],  // @ACTION
+                    userSentJSON[0][1],  // @INVENTORY_LOCATION_TITLE
+                    userSentJSON[0][2],  // @NEW_INVENTORY_LOCATION_TITLE
+                    userSentJSON[0][3],  // @PRODUCTS_NAME
+                    userSentJSON[0][4],  // @NEW_PRODUCTS_NAME
+                    userSentJSON[0][5],  // @PRODUCTS_CATEGORY_ID
+                    userSentJSON[0][6],  // @PRODUCTS_CATEGORY_NAME
+                    userSentJSON[0][7]   // @NEW_PRODUCTS_CATEGORY_NAME
+                );
+
+                exchange.sendResponseHeaders(200, -1);
+                exchange.close();
+
+                // Optional activity log (commented out as in reference)
+                // dataBaseUtils.runSelectQueryGetJSON("EXEC ACTIVITY_LOG_MANAGER 0, ?, ?", token, "user managed inventory infrastructure via API");
+            }
+        }
+    }
+    
+    public static class HandleInventoryRequest implements HttpHandler {
+        @Override
+        public void handle(HttpExchange exchange) throws IOException {
+            String token = webServerUtils.extractTokenFromCookie(exchange);
+            if ("POST".equals(exchange.getRequestMethod())) {
+                InputStream is = exchange.getRequestBody();
+                BufferedReader reader = new BufferedReader(new InputStreamReader(is, "UTF-8"));
+                StringBuilder sb = new StringBuilder();
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    sb.append(line);
+                }
+                reader.close();
+                String userData = sb.toString();
+                String[][] userSentJSON = webServerUtils.jsonParser(userData);
+
+                boolean isAuthenticated = token != null && dataBaseUtils.isAuthenticated(token);
+                if (!isAuthenticated) {
+                    return;
+                }
+
+                // Parameters order:
+                // @ACTION, @INVENTORY_STOCK_REQUEST_ID, @INVENTORY_ID,
+                // @PRODUCTS_ID, @PRODUCTS_COUNT
+                dataBaseUtils.runSelectQueryGetJSON(
+                    "EXEC HANDLE_INVENTORY_REQUEST ?, ?, ?, ?, ?",
+                    userSentJSON[0][0],  // @ACTION
+                    userSentJSON[0][1],  // @INVENTORY_STOCK_REQUEST_ID
+                    userSentJSON[0][2],  // @INVENTORY_ID
+                    userSentJSON[0][3],  // @PRODUCTS_ID
+                    userSentJSON[0][4]   // @PRODUCTS_COUNT
+                );
+
+                exchange.sendResponseHeaders(200, -1);
+                exchange.close();
+
+                // Optional activity log (commented out as in the reference)
+                // dataBaseUtils.runSelectQueryGetJSON("EXEC ACTIVITY_LOG_MANAGER 0, ?, ?", token, "user handled inventory request via API");
+            }
+        }
+    }
+    
+    public static class createUpdateDeleteVehicle implements HttpHandler {
+        @Override
+        public void handle(HttpExchange exchange) throws IOException {
+            String token = webServerUtils.extractTokenFromCookie(exchange);
+            if ("POST".equals(exchange.getRequestMethod())) {
+                InputStream is = exchange.getRequestBody();
+                BufferedReader reader = new BufferedReader(new InputStreamReader(is, "UTF-8"));
+                StringBuilder sb = new StringBuilder();
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    sb.append(line);
+                }
+                reader.close();
+                String userData = sb.toString();
+                String[][] userSentJSON = webServerUtils.jsonParser(userData);
+
+                boolean isAuthenticated = token != null && dataBaseUtils.isAuthenticated(token);
+                if (!isAuthenticated) {
+                    return;
+                }
+
+                // Parameters order: @ACTION, @VEHICLE_ID, @VEHICLE_NAME, @VEHICLE_LICENCE_PLATE
+                dataBaseUtils.runSelectQueryGetJSON(
+                    "EXEC CREATE_UPDATE_DELETE_VEHICLE ?, ?, ?, ?",
+                    userSentJSON[0][0],  // @ACTION
+                    userSentJSON[0][1],  // @VEHICLE_ID
+                    userSentJSON[0][2],  // @VEHICLE_NAME
+                    userSentJSON[0][3]   // @VEHICLE_LICENCE_PLATE
+                );
+
+                exchange.sendResponseHeaders(200, -1);
+                exchange.close();
+
+                // Optional activity log (commented out as in the reference)
+                // dataBaseUtils.runSelectQueryGetJSON("EXEC ACTIVITY_LOG_MANAGER 0, ?, ?", token, "user managed vehicle via API");
+            }
+        }
+    }
+    
+    public static class createUpdateDeleteInventoryLocation implements HttpHandler {
+        @Override
+        public void handle(HttpExchange exchange) throws IOException {
+            String token = webServerUtils.extractTokenFromCookie(exchange);
+            if ("POST".equals(exchange.getRequestMethod())) {
+                InputStream is = exchange.getRequestBody();
+                BufferedReader reader = new BufferedReader(new InputStreamReader(is, "UTF-8"));
+                StringBuilder sb = new StringBuilder();
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    sb.append(line);
+                }
+                reader.close();
+                String userData = sb.toString();
+                String[][] userSentJSON = webServerUtils.jsonParser(userData);
+
+                boolean isAuthenticated = token != null && dataBaseUtils.isAuthenticated(token);
+                if (!isAuthenticated) {
+                    return;
+                }
+
+                // Parameters order:
+                // @ACTION, @INVENTORY_LOCATION_ID, @INVENTORY_LOCATION_NAME,
+                // @INVENTORY_LOCATION_ADDRESS, @INVENTORY_LOCATION_LAT,
+                // @INVENTORY_LOCATION_LONG, @LT_INVENTORY_LOCATION_TYPE_ID
+                dataBaseUtils.runSelectQueryGetJSON(
+                    "EXEC CREATE_UPDATE_DELETE_INVENTORY_LOCATION ?, ?, ?, ?, ?, ?, ?",
+                    userSentJSON[0][0],  // @ACTION
+                    userSentJSON[0][1],  // @INVENTORY_LOCATION_ID
+                    userSentJSON[0][2],  // @INVENTORY_LOCATION_NAME
+                    userSentJSON[0][3],  // @INVENTORY_LOCATION_ADDRESS
+                    userSentJSON[0][4],  // @INVENTORY_LOCATION_LAT
+                    userSentJSON[0][5],  // @INVENTORY_LOCATION_LONG
+                    userSentJSON[0][6]   // @LT_INVENTORY_LOCATION_TYPE_ID
+                );
+
+                exchange.sendResponseHeaders(200, -1);
+                exchange.close();
+
+                // Optional activity log (commented out as in the reference)
+                // dataBaseUtils.runSelectQueryGetJSON("EXEC ACTIVITY_LOG_MANAGER 0, ?, ?", token, "user managed inventory location via API");
+            }
+        }
+    }
+    
+    public static class createUpdateDeleteDriver implements HttpHandler {
+        @Override
+        public void handle(HttpExchange exchange) throws IOException {
+            String token = webServerUtils.extractTokenFromCookie(exchange);
+            if ("POST".equals(exchange.getRequestMethod())) {
+                InputStream is = exchange.getRequestBody();
+                BufferedReader reader = new BufferedReader(new InputStreamReader(is, "UTF-8"));
+                StringBuilder sb = new StringBuilder();
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    sb.append(line);
+                }
+                reader.close();
+                String userData = sb.toString();
+                String[][] userSentJSON = webServerUtils.jsonParser(userData);
+
+                boolean isAuthenticated = token != null && dataBaseUtils.isAuthenticated(token);
+                if (!isAuthenticated) {
+                    return;
+                }
+
+                // Parameters order:
+                // @ACTION, @DRIVER_ID, @DRIVER_NAME, @DRIVER_LAST_NAME,
+                // @DRIVERS_NATIONAL_CODE, @DRIVERS_PHONE_NUMBER
+                dataBaseUtils.runSelectQueryGetJSON(
+                    "EXEC CREATE_UPDATE_DELETE_DRIVER ?, ?, ?, ?, ?, ?",
+                    userSentJSON[0][0],  // @ACTION
+                    userSentJSON[0][1],  // @DRIVER_ID
+                    userSentJSON[0][2],  // @DRIVER_NAME
+                    userSentJSON[0][3],  // @DRIVER_LAST_NAME
+                    userSentJSON[0][4],  // @DRIVERS_NATIONAL_CODE
+                    userSentJSON[0][5]   // @DRIVERS_PHONE_NUMBER
+                );
+
+                exchange.sendResponseHeaders(200, -1);
+                exchange.close();
+
+                // Optional activity log (commented out as in the reference)
+                // dataBaseUtils.runSelectQueryGetJSON("EXEC ACTIVITY_LOG_MANAGER 0, ?, ?", token, "user managed driver via API");
+            }
+        }
+    }
     
     public static class updateUserCredByAdmin implements HttpHandler
     {

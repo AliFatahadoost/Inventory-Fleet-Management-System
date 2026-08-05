@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+    <title>Products Categories</title>
+    <style>
+        :root {
+            --bg-body: #eef2f7;
+            --bg-card: #ffffff;
+            --bg-input: #f8fafc;
+            --bg-table-header: #f1f5f9;
+            --bg-table-row-even: #fafbfc;
+            --bg-table-row-hover: #eef2ff;
+            --text-primary: #1e293b;
+            --text-secondary: #475569;
+            --text-muted: #94a3b8;
+            --text-input: #1e293b;
+            --border-card: #dde4ef;
+            --border-input: #d5dce8;
+            --border-table: #e2e8f0;
+            --shadow-card: 0 4px 24px rgba(0,0,0,0.05);
+            --accent: #4a6fa5;
+            --radius-sm: 6px;
+            --radius-md: 10px;
+            --radius-lg: 14px;
+            --transition: 0.2s ease;
+        }
+        body.dark-mode {
+            --bg-body: #171a21;
+            --bg-card: #1e2128;
+            --bg-input: #252830;
+            --bg-table-header: #252830;
+            --bg-table-row-even: #1f2229;
+            --bg-table-row-hover: #282d38;
+            --text-primary: #e2e6ec;
+            --text-secondary: #b0b8c4;
+            --text-muted: #6b7280;
+            --text-input: #e2e6ec;
+            --border-card: #2e333d;
+            --border-input: #3a404d;
+            --border-table: #2a2f3a;
+            --shadow-card: 0 4px 24px rgba(0,0,0,0.3);
+        }
+        * { box-sizing: border-box; font-family: 'Segoe UI', system-ui, sans-serif; margin: 0; padding: 0; }
+        body { background: var(--bg-body); color: var(--text-primary); height: 100vh; display: flex; transition: background 0.3s; }
+        button { cursor: pointer; border: none; background: none; font-size: inherit; }
+        input { font-size: 0.9rem; }
+
+        .app-container { display: flex; width: 100%; height: 100%; overflow: hidden; }
+        .table-area { flex: 1; min-width: 0; transition: flex 0.3s; display: flex; flex-direction: column; padding: 16px; }
+        .form-panel { width: 0; overflow: hidden; background: var(--bg-card); border-left: 1px solid var(--border-card); transition: width 0.3s; display: flex; flex-direction: column; }
+        .form-panel.open { width: 50%; min-width: 300px; padding: 20px; }
+
+        .toolbar { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; margin-bottom: 12px; }
+        .search-wrapper { position: relative; flex: 1; max-width: 280px; }
+        .search-wrapper input {
+            width: 100%; padding: 8px 36px 8px 14px;
+            border: 1px solid var(--border-input); border-radius: var(--radius-sm);
+            background: var(--bg-input); color: var(--text-input);
+        }
+        .search-icon { position: absolute; right: 12px; top: 50%; transform: translateY(-50%); color: var(--text-muted); }
+        .action-btns { display: flex; gap: 8px; }
+        .action-btns button {
+            background: var(--bg-input); border: 1px solid var(--border-input);
+            border-radius: var(--radius-sm); padding: 8px 14px; font-weight: 600;
+            display: flex; align-items: center; gap: 6px; transition: all var(--transition);
+        }
+        .action-btns button:hover:not(:disabled) { background: var(--accent); color: #fff; border-color: var(--accent); }
+        .action-btns button:disabled { opacity: 0.4; cursor: not-allowed; }
+
+        .table-wrapper { flex: 1; overflow-y: auto; border: 1px solid var(--border-table); border-radius: var(--radius-md); background: var(--bg-card); }
+        table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+        th { background: var(--bg-table-header); padding: 10px; text-align: left; position: sticky; top: 0; }
+        td { padding: 8px 10px; border-bottom: 1px solid var(--border-table); }
+        tbody tr:nth-child(even) { background: var(--bg-table-row-even); }
+        tbody tr:hover { background: var(--bg-table-row-hover); }
+        .radio-cell { width: 40px; text-align: center; }
+
+        .pagination { display: flex; justify-content: center; align-items: center; gap: 6px; margin-top: 12px; flex-wrap: wrap; }
+        .pagination button { padding: 6px 12px; border: 1px solid var(--border-input); border-radius: var(--radius-sm); background: var(--bg-card); color: var(--text-primary); }
+        .pagination button.active { background: var(--accent); color: #fff; border-color: var(--accent); }
+        .pagination button:disabled { opacity: 0.4; }
+
+        .form-panel h3 { margin-bottom: 16px; }
+        .form-group { margin-bottom: 14px; }
+        .form-group label { display: block; font-weight: 600; margin-bottom: 4px; color: var(--text-secondary); }
+        .form-group input {
+            width: 100%; padding: 10px;
+            border: 1px solid var(--border-input); border-radius: var(--radius-sm);
+            background: var(--bg-input); color: var(--text-input);
+        }
+        .form-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px; }
+        .btn-primary { background: var(--accent); color: #fff; border: none; padding: 10px 20px; border-radius: var(--radius-sm); }
+        .btn-secondary { background: var(--bg-input); border: 1px solid var(--border-input); padding: 10px 20px; border-radius: var(--radius-sm); color: var(--text-primary); }
+        .close-btn { background: none; border: none; font-size: 1.5rem; line-height: 1; cursor: pointer; color: var(--text-muted); }
+
+        /* Modal */
+        .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; z-index: 1000; visibility: hidden; opacity: 0; transition: 0.2s; }
+        .modal-overlay.active { visibility: visible; opacity: 1; }
+        .modal-content { background: var(--bg-card); border-radius: var(--radius-lg); padding: 20px; min-width: 320px; max-width: 500px; box-shadow: 0 20px 40px rgba(0,0,0,0.3); }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; }
+        .confirm-buttons { display: flex; gap: 10px; justify-content: flex-end; margin-top: 16px; }
+
+        .toast { position: fixed; bottom: 30px; right: 30px; background: #1e293b; color: #fff; padding: 10px 20px; border-radius: var(--radius-sm); z-index: 2000; opacity: 0; transition: 0.3s; }
+        .toast.show { opacity: 1; }
+        body.dark-mode .toast { background: #f1f5f9; color: #1e293b; }
+    </style>
+</head>
+<body>
+<div class="app-container">
+    <div class="table-area" id="tableArea">
+        <div class="toolbar">
+            <div class="search-wrapper">
+                <input type="text" id="searchInput" placeholder="Search categories..." autocomplete="off">
+                <span class="search-icon">🔍</span>
+            </div>
+            <div class="action-btns">
+                <button id="addBtn" title="Add new category"><span>➕</span> Add</button>
+                <button id="editBtn" disabled title="Edit selected category"><span>✏️</span> Edit</button>
+                <button id="deleteBtn" disabled title="Delete selected category"><span>🗑️</span> Delete</button>
+            </div>
+        </div>
+        <div class="table-wrapper">
+            <table id="categoryTable">
+                <thead><tr><th></th><th>ID</th><th>Category Name</th></tr></thead>
+                <tbody id="tableBody"></tbody>
+            </table>
+        </div>
+        <div class="pagination" id="pagination"></div>
+    </div>
+
+    <div class="form-panel" id="formPanel">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+            <h3 id="formTitle">New Category</h3>
+            <button class="close-btn" id="closeFormBtn">✖</button>
+        </div>
+        <div class="form-group">
+            <label>Category Name</label>
+            <input type="text" id="categoryNameInput" placeholder="Enter category name">
+        </div>
+        <div class="form-actions">
+            <button class="btn-secondary" id="cancelFormBtn">Cancel</button>
+            <button class="btn-primary" id="saveFormBtn">Save</button>
+        </div>
+    </div>
+</div>
+
+<div class="modal-overlay" id="deleteModal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h4>Confirm Deletion</h4>
+            <button class="close-btn" id="closeDeleteModalBtn">✖</button>
+        </div>
+        <p>Are you sure you want to delete <strong id="deleteCategoryName"></strong>?</p>
+        <div class="confirm-buttons">
+            <button class="btn-secondary" id="cancelDeleteBtn">Cancel</button>
+            <button class="btn-primary" id="confirmDeleteBtn" style="background: #e74c3c;">Delete</button>
+        </div>
+    </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+    (() => {
+        // ── Dark mode sync ──
+        function getDarkModeState() {
+            try {
+                if (parent && parent.document) {
+                    const pBody = parent.document.querySelector('body');
+                    if (pBody) return pBody.classList.contains('dark-mode');
+                }
+            } catch(e) {}
+            return document.body.classList.contains('dark-mode');
+        }
+        function applyDarkMode() { document.body.classList.toggle('dark-mode', getDarkModeState()); }
+        applyDarkMode();
+        try {
+            if (parent && parent.document) {
+                const pBody = parent.document.querySelector('body');
+                if (pBody) new MutationObserver(applyDarkMode).observe(pBody, {attributes: true, attributeFilter: ['class']});
+            }
+        } catch(e) {}
+
+        const rowsPerPage = 50;
+        let allCategories = [];
+        let filteredCategories = [];
+        let currentPage = 1;
+        let selectedRowIndex = -1;
+        let editMode = false;
+        let originalCategoryName = '';
+
+        const tableBody = document.getElementById('tableBody');
+        const pagination = document.getElementById('pagination');
+        const searchInput = document.getElementById('searchInput');
+        const addBtn = document.getElementById('addBtn');
+        const editBtn = document.getElementById('editBtn');
+        const deleteBtn = document.getElementById('deleteBtn');
+        const formPanel = document.getElementById('formPanel');
+        const formTitle = document.getElementById('formTitle');
+        const categoryNameInput = document.getElementById('categoryNameInput');
+        const saveFormBtn = document.getElementById('saveFormBtn');
+        const cancelFormBtn = document.getElementById('cancelFormBtn');
+        const closeFormBtn = document.getElementById('closeFormBtn');
+        const deleteModal = document.getElementById('deleteModal');
+        const deleteCategoryName = document.getElementById('deleteCategoryName');
+        const confirmDeleteBtn = document.getElementById('confirmDeleteBtn');
+        const cancelDeleteBtn = document.getElementById('cancelDeleteBtn');
+        const closeDeleteModalBtn = document.getElementById('closeDeleteModalBtn');
+        const toast = document.getElementById('toast');
+
+        function showToast(msg) {
+            toast.textContent = msg;
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), 2500);
+        }
+
+        const API_BASE = window.location.origin;
+
+        // Fetch categories – this API returns JSON
+        async function fetchCategories() {
+            const res = await fetch(API_BASE + '/productsCategoryListAPI', { method: 'POST' });
+            if (!res.ok) throw new Error('Failed to load categories');
+            const data = await res.json();
+            allCategories = Array.isArray(data) ? data : [];
+            filterAndPaginate();
+        }
+
+        // ✅ FIXED: do NOT try to parse the empty response body
+        async function callSP(action, productsCategoryName, newProductsCategoryName = '') {
+            const payload = {
+                action: action,
+                inventoryLocationTitle: "",
+                newInventoryLocationTitle: "",
+                productsName: "",
+                newProductsName: "",
+                productsCategoryId: 0,                     // numeric – must be a number
+                productsCategoryName: productsCategoryName || "",
+                newProductsCategoryName: newProductsCategoryName || ""
+            };
+            const res = await fetch(API_BASE + '/manageInventoryInfstructureAPI', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+            if (!res.ok) throw new Error('SP call failed');
+            // Backend sends no body – do not call res.json()
+        }
+
+        function filterAndPaginate() {
+            const query = searchInput.value.toLowerCase().trim();
+            filteredCategories = allCategories.filter(cat => (cat.PRODUCTS_CATEGORY_NAME || '').toLowerCase().includes(query));
+            currentPage = 1;
+            renderTable();
+            renderPagination();
+        }
+
+        function renderTable() {
+            const start = (currentPage - 1) * rowsPerPage;
+            const pageItems = filteredCategories.slice(start, start + rowsPerPage);
+            let html = '';
+            pageItems.forEach((cat, idx) => {
+                const globalIndex = start + idx;
+                html += `<tr>
+                    <td class="radio-cell"><input type="radio" name="catSelect" value="${globalIndex}" ${globalIndex === selectedRowIndex ? 'checked' : ''}></td>
+                    <td>${escapeHtml(cat.PRODUCTS_CATEGORY_ID)}</td>
+                    <td>${escapeHtml(cat.PRODUCTS_CATEGORY_NAME)}</td>
+                </tr>`;
+            });
+            tableBody.innerHTML = html || '<tr><td colspan="3" style="text-align:center;padding:20px;">No categories found.</td></tr>';
+
+            document.querySelectorAll('input[name="catSelect"]').forEach(radio => {
+                radio.addEventListener('change', function() {
+                    selectedRowIndex = parseInt(this.value);
+                    updateActionButtons();
+                });
+            });
+
+            if (selectedRowIndex >= start && selectedRowIndex < start + rowsPerPage) {
+                const radio = document.querySelector(`input[name="catSelect"][value="${selectedRowIndex}"]`);
+                if (radio) radio.checked = true;
+            }
+        }
+
+        function renderPagination() {
+            const totalPages = Math.ceil(filteredCategories.length / rowsPerPage) || 1;
+            let html = '';
+            html += `<button ${currentPage === 1 ? 'disabled' : ''} data-page="prev">← Prev</button>`;
+            for (let i = 1; i <= totalPages; i++) {
+                html += `<button class="${i === currentPage ? 'active' : ''}" data-page="${i}">${i}</button>`;
+            }
+            html += `<button ${currentPage === totalPages ? 'disabled' : ''} data-page="next">Next →</button>`;
+            pagination.innerHTML = html;
+            pagination.querySelectorAll('button').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const page = btn.dataset.page;
+                    if (page === 'prev' && currentPage > 1) currentPage--;
+                    else if (page === 'next' && currentPage < totalPages) currentPage++;
+                    else if (!isNaN(page)) currentPage = parseInt(page);
+                    renderTable();
+                    renderPagination();
+                });
+            });
+        }
+
+        function updateActionButtons() {
+            const valid = selectedRowIndex >= 0 && selectedRowIndex < filteredCategories.length;
+            editBtn.disabled = !valid;
+            deleteBtn.disabled = !valid;
+        }
+
+        function openForm(title, edit = false, categoryName = '') {
+            formPanel.classList.add('open');
+            formTitle.textContent = title;
+            categoryNameInput.value = categoryName;
+            editMode = edit;
+            originalCategoryName = categoryName;
+        }
+
+        function closeForm() {
+            formPanel.classList.remove('open');
+            categoryNameInput.value = '';
+            editMode = false;
+        }
+
+        async function saveCategory() {
+            const name = categoryNameInput.value.trim();
+            if (!name) return showToast('Category name required.');
+
+            try {
+                if (editMode) {
+                    await callSP('MODIFY_PRODUCTS_CATEGORY', originalCategoryName, name);
+                } else {
+                    await callSP('ADD_PRODUCTS_CATEGORY', name);
+                }
+                showToast(editMode ? 'Category updated.' : 'Category added.');
+                closeForm();
+                await fetchCategories();
+                selectedRowIndex = -1;
+                updateActionButtons();
+            } catch(e) {
+                console.error(e);
+                showToast('Operation failed.');
+            }
+        }
+
+        function promptDelete() {
+            if (selectedRowIndex < 0) return;
+            const cat = filteredCategories[selectedRowIndex];
+            deleteCategoryName.textContent = cat.PRODUCTS_CATEGORY_NAME;
+            deleteModal.classList.add('active');
+        }
+
+        async function performDelete() {
+            if (selectedRowIndex < 0) return;
+            const cat = filteredCategories[selectedRowIndex];
+            try {
+                await callSP('DELETE_PRODUCTS_CATEGORY', cat.PRODUCTS_CATEGORY_NAME);
+                showToast('Category deleted.');
+                deleteModal.classList.remove('active');
+                await fetchCategories();
+                selectedRowIndex = -1;
+                updateActionButtons();
+            } catch(e) {
+                console.error(e);
+                showToast('Deletion failed.');
+            }
+        }
+
+        searchInput.addEventListener('input', filterAndPaginate);
+        addBtn.addEventListener('click', () => openForm('New Category', false));
+        editBtn.addEventListener('click', () => {
+            if (selectedRowIndex < 0) return;
+            const cat = filteredCategories[selectedRowIndex];
+            openForm('Edit Category', true, cat.PRODUCTS_CATEGORY_NAME);
+        });
+        deleteBtn.addEventListener('click', promptDelete);
+        closeFormBtn.addEventListener('click', closeForm);
+        cancelFormBtn.addEventListener('click', closeForm);
+        saveFormBtn.addEventListener('click', saveCategory);
+        confirmDeleteBtn.addEventListener('click', performDelete);
+        cancelDeleteBtn.addEventListener('click', () => deleteModal.classList.remove('active'));
+        closeDeleteModalBtn.addEventListener('click', () => deleteModal.classList.remove('active'));
+        window.addEventListener('click', (e) => { if (e.target === deleteModal) deleteModal.classList.remove('active'); });
+
+        fetchCategories();
+    })();
+
+    function escapeHtml(text) {
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
+    }
+</script>
+</body>
+</html>

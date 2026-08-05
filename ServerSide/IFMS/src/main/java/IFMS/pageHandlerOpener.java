@@ -24,6 +24,10 @@ public class pageHandlerOpener implements HttpHandler{
             this.fileAddress = fileAddress;   
             this.isIframe = isIframe;
             this.accessId = accessId;
+            File file = new File(this.fileAddress);
+            String filesName = file.getName().contains(".")?file.getName().substring(0, file.getName().lastIndexOf('.')) : file.getName();
+            dataBaseUtils.runSelectQueryGetJSON("EXEC UPDATING_LIST_OF_SYS_OBJECTS ?, ?", filesName, this.accessId+"");
+            
         }
         
     @Override
@@ -50,6 +54,10 @@ public class pageHandlerOpener implements HttpHandler{
         byte[] response;
 
         if (file.exists()) {
+            
+            
+            
+            
             // 1. Filter by access rights
             byte[] filteredBytes = filterHtmlByAccess(Files.readAllBytes(file.toPath()), token);
 
@@ -58,7 +66,10 @@ public class pageHandlerOpener implements HttpHandler{
             htmlString = htmlString.replace("http://192.168.100.11:55952",
                                             readConfig.serversBaseUrl);
             response = htmlString.getBytes(StandardCharsets.UTF_8);
-
+            
+            
+            
+            
             // 3. Set content type and length
             exchange.getResponseHeaders().set("Content-Type", "text/html");
             exchange.sendResponseHeaders(200, response.length);
