@@ -25,7 +25,8 @@
 
 The **Inventory & Fleet Management System (IFMS)** is a complete business management solution designed for companies that need to track inventory across multiple warehouses, manage vehicle fleets, assign tasks to drivers, and monitor user activity — all in one place.
 
-Built **without a single framework or external library** (except the SQL Server JDBC driver), this project demonstrates pure, hand‑crafted software engineering. No Spring, no React, no Angular, no Bootstrap — just raw **HTML**, **CSS**, **JavaScript**, **Java**, and **SQL**.
+
+Built primarily with core Java and minimal dependencies to better understand HTTP serving, authentication, authorization, connection pooling, and business application architecture. (except the SQL Server JDBC driver), this project demonstrates pure, hand‑crafted software engineering. No Spring, no React, no Angular, no Bootstrap — just raw **HTML**, **CSS**, **JavaScript**, **Java**, and **SQL**. allthough i will add Frame Works in the Later Versions To shows i can use industry Standard tools
 
 > ⚡ **Philosophy**: Write everything yourself. Understand every layer. Build something that works.
 
