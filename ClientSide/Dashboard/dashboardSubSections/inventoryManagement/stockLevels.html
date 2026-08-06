@@ -42,254 +42,57 @@
             --border-table: #2a2f3a;
             --shadow-card: 0 4px 24px rgba(0,0,0,0.3);
         }
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
-        }
-        body {
-            background: var(--bg-body);
-            color: var(--text-primary);
-            height: 100vh;
-            display: flex;
-            transition: background 0.3s;
-            overflow: hidden;
-        }
-        button {
-            cursor: pointer;
-            border: none;
-            background: none;
-            font-size: inherit;
-        }
-        input, select {
-            font-size: 0.9rem;
-        }
-
-        /* Full height container */
-        .app-container {
-            display: flex;
-            flex-direction: column;
-            width: 100%;
-            height: 100%;
-            overflow: hidden;
-        }
-
-        /* Top bar */
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', system-ui, sans-serif; }
+        body { background: var(--bg-body); color: var(--text-primary); height: 100vh; display: flex; transition: background 0.3s; overflow: hidden; }
+        button { cursor: pointer; border: none; background: none; font-size: inherit; }
+        input, select { font-size: 0.9rem; }
+        .app-container { display: flex; flex-direction: column; width: 100%; height: 100%; overflow: hidden; }
         .top-bar {
-            padding: 12px 20px;
-            background: var(--bg-card);
-            border-bottom: 2px solid var(--border-table);
-            display: flex;
-            align-items: center;
-            gap: 16px;
-            flex-wrap: wrap;
-            flex-shrink: 0;
+            padding: 12px 20px; background: var(--bg-card); border-bottom: 2px solid var(--border-table);
+            display: flex; align-items: center; gap: 16px; flex-wrap: wrap; flex-shrink: 0;
         }
-        .top-bar label {
-            font-weight: 600;
-            color: var(--text-secondary);
-            white-space: nowrap;
-        }
+        .top-bar label { font-weight: 600; color: var(--text-secondary); white-space: nowrap; }
         .top-bar select {
-            padding: 8px 12px;
-            border-radius: var(--radius-sm);
-            border: 1px solid var(--border-input);
-            background: var(--bg-input);
-            color: var(--text-input);
-            min-width: 220px;
+            padding: 8px 12px; border-radius: var(--radius-sm); border: 1px solid var(--border-input);
+            background: var(--bg-input); color: var(--text-input); min-width: 220px;
         }
-
-        /* Main two-column layout */
-        .main-content {
-            display: flex;
-            flex: 1;
-            min-height: 0;
-            width: 100%;
-        }
-        .left-panel, .right-panel {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            padding: 16px;
-            overflow: hidden;
-        }
-        .left-panel {
-            border-right: 1px solid var(--border-table);
-        }
-
-        .panel-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 12px;
-        }
-        .panel-title {
-            font-weight: 700;
-            font-size: 1rem;
-            color: var(--text-primary);
-        }
+        .main-content { display: flex; flex: 1; min-height: 0; width: 100%; }
+        .left-panel, .right-panel { flex: 1; display: flex; flex-direction: column; padding: 16px; overflow: hidden; }
+        .left-panel { border-right: 1px solid var(--border-table); }
+        .panel-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+        .panel-title { font-weight: 700; font-size: 1rem; }
         .btn-add-request {
-            background: var(--accent);
-            color: #fff;
-            padding: 7px 16px;
-            border-radius: var(--radius-sm);
-            font-weight: 600;
-            font-size: 0.85rem;
-            transition: all var(--transition);
+            background: var(--accent); color: #fff; padding: 7px 16px; border-radius: var(--radius-sm);
+            font-weight: 600; font-size: 0.85rem; transition: all var(--transition);
         }
-        .btn-add-request:hover {
-            filter: brightness(1.1);
-        }
-
-        .table-wrapper {
-            flex: 1;
-            overflow-y: auto;
-            border: 1px solid var(--border-table);
-            border-radius: var(--radius-md);
-            background: var(--bg-card);
-        }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            font-size: 0.82rem;
-        }
-        th {
-            background: var(--bg-table-header);
-            padding: 10px;
-            text-align: left;
-            position: sticky;
-            top: 0;
-            z-index: 1;
-        }
-        td {
-            padding: 8px 10px;
-            border-bottom: 1px solid var(--border-table);
-        }
-        tbody tr:nth-child(even) {
-            background: var(--bg-table-row-even);
-        }
-        tbody tr:hover {
-            background: var(--bg-table-row-hover);
-        }
-
-        .btn-accept {
-            background: #22c55e;
-            color: #fff;
-            padding: 4px 10px;
-            border-radius: var(--radius-sm);
-            font-weight: 600;
-            font-size: 0.75rem;
-        }
-        .btn-accept:hover {
-            background: #16a34a;
-        }
-        .status-accepted {
-            color: #22c55e;
-            font-weight: 600;
-        }
-        .status-pending {
-            color: #f59e0b;
-            font-weight: 600;
-        }
-
-        /* Modal */
-        .modal-overlay {
-            position: fixed;
-            inset: 0;
-            background: rgba(0,0,0,0.5);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 1000;
-            visibility: hidden;
-            opacity: 0;
-            transition: 0.2s;
-        }
-        .modal-overlay.active {
-            visibility: visible;
-            opacity: 1;
-        }
-        .modal-content {
-            background: var(--bg-card);
-            border-radius: var(--radius-lg);
-            padding: 24px;
-            min-width: 360px;
-            max-width: 480px;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
-        }
-        .modal-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-        }
-        .modal-body {
-            display: flex;
-            flex-direction: column;
-            gap: 16px;
-        }
-        .modal-body label {
-            font-weight: 600;
-            font-size: 0.85rem;
-            color: var(--text-secondary);
-        }
+        .btn-add-request:hover { filter: brightness(1.1); }
+        .table-wrapper { flex: 1; overflow-y: auto; border: 1px solid var(--border-table); border-radius: var(--radius-md); background: var(--bg-card); }
+        table { width: 100%; border-collapse: collapse; font-size: 0.82rem; }
+        th { background: var(--bg-table-header); padding: 10px; text-align: left; position: sticky; top: 0; z-index: 1; }
+        td { padding: 8px 10px; border-bottom: 1px solid var(--border-table); }
+        tbody tr:nth-child(even) { background: var(--bg-table-row-even); }
+        tbody tr:hover { background: var(--bg-table-row-hover); }
+        .btn-accept { background: #22c55e; color: #fff; padding: 4px 10px; border-radius: var(--radius-sm); font-weight: 600; font-size: 0.75rem; }
+        .btn-accept:hover { background: #16a34a; }
+        .status-accepted { color: #22c55e; font-weight: 600; }
+        .status-pending { color: #f59e0b; font-weight: 600; }
+        .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; z-index: 1000; visibility: hidden; opacity: 0; transition: 0.2s; }
+        .modal-overlay.active { visibility: visible; opacity: 1; }
+        .modal-content { background: var(--bg-card); border-radius: var(--radius-lg); padding: 24px; min-width: 360px; max-width: 480px; box-shadow: 0 20px 40px rgba(0,0,0,0.3); }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .modal-body { display: flex; flex-direction: column; gap: 16px; }
+        .modal-body label { font-weight: 600; font-size: 0.85rem; color: var(--text-secondary); }
         .modal-body select, .modal-body input {
-            padding: 10px;
-            border: 1px solid var(--border-input);
-            border-radius: var(--radius-sm);
-            background: var(--bg-input);
-            color: var(--text-input);
-            width: 100%;
+            padding: 10px; border: 1px solid var(--border-input); border-radius: var(--radius-sm);
+            background: var(--bg-input); color: var(--text-input); width: 100%;
         }
-        .modal-footer {
-            display: flex;
-            justify-content: flex-end;
-            gap: 10px;
-            margin-top: 24px;
-        }
-        .btn-primary {
-            background: var(--accent);
-            color: #fff;
-            border: none;
-            padding: 10px 20px;
-            border-radius: var(--radius-sm);
-            font-weight: 600;
-        }
-        .btn-secondary {
-            background: var(--bg-input);
-            border: 1px solid var(--border-input);
-            padding: 10px 20px;
-            border-radius: var(--radius-sm);
-            color: var(--text-primary);
-            font-weight: 600;
-        }
-        .close-btn {
-            background: none;
-            border: none;
-            font-size: 1.3rem;
-            cursor: pointer;
-            color: var(--text-muted);
-        }
-        .toast {
-            position: fixed;
-            bottom: 30px;
-            right: 30px;
-            background: #1e293b;
-            color: #fff;
-            padding: 12px 22px;
-            border-radius: var(--radius-md);
-            z-index: 2000;
-            opacity: 0;
-            transition: 0.3s;
-        }
-        .toast.show {
-            opacity: 1;
-        }
-        body.dark-mode .toast {
-            background: #f1f5f9;
-            color: #1e293b;
-        }
+        .modal-footer { display: flex; justify-content: flex-end; gap: 10px; margin-top: 24px; }
+        .btn-primary { background: var(--accent); color: #fff; border: none; padding: 10px 20px; border-radius: var(--radius-sm); font-weight: 600; }
+        .btn-secondary { background: var(--bg-input); border: 1px solid var(--border-input); padding: 10px 20px; border-radius: var(--radius-sm); color: var(--text-primary); font-weight: 600; }
+        .close-btn { background: none; border: none; font-size: 1.3rem; cursor: pointer; color: var(--text-muted); }
+        .toast { position: fixed; bottom: 30px; right: 30px; background: #1e293b; color: #fff; padding: 12px 22px; border-radius: var(--radius-md); z-index: 2000; opacity: 0; transition: 0.3s; }
+        .toast.show { opacity: 1; }
+        body.dark-mode .toast { background: #f1f5f9; color: #1e293b; }
     </style>
 </head>
 <body>
@@ -297,15 +100,12 @@
     <div class="top-bar">
         <label for="inventorySelect">📍 Your Inventory:</label>
         <select id="inventorySelect">
-            <option value="">-- No Filter --</option>
+            <option value="">-- Choose Inventory --</option>
         </select>
     </div>
     <div class="main-content">
-        <!-- Left panel: current stock -->
         <div class="left-panel">
-            <div class="panel-header">
-                <span class="panel-title">📦 Current Stock</span>
-            </div>
+            <div class="panel-header"><span class="panel-title">📦 Current Stock</span></div>
             <div class="table-wrapper">
                 <table>
                     <thead><tr><th>Product</th><th>Location</th><th>Quantity</th></tr></thead>
@@ -313,7 +113,6 @@
                 </table>
             </div>
         </div>
-        <!-- Right panel: requests -->
         <div class="right-panel">
             <div class="panel-header">
                 <span class="panel-title">📋 Stock Requests</span>
@@ -323,7 +122,7 @@
                 <table>
                     <thead>
                         <tr>
-                            <th>ID</th><th>From</th><th>To (Accepted)</th><th>Product</th><th>Quantity</th><th>Status</th><th></th>
+                            <th>ID</th><th>Requesting</th><th>Supplying</th><th>Product</th><th>Qty</th><th>Status</th><th></th>
                         </tr>
                     </thead>
                     <tbody id="requestsTableBody"></tbody>
@@ -357,7 +156,7 @@
 
 <script>
     (() => {
-        // ── Theme sync with parent ──
+        // ── Theme sync ──
         function syncTheme() {
             try {
                 const parentBody = parent.document.querySelector("body");
@@ -391,169 +190,195 @@
         const cancelAddRequestBtn = document.getElementById('cancelAddRequestBtn');
         const closeAddRequestModalBtn = document.getElementById('closeAddRequestModalBtn');
 
-        // Data stores
         let inventories = [];
         let allStocks = [];
         let allRequests = [];
         let allProducts = [];
+        let selectedInventoryName = null;
 
         // ── API helpers ──
-        async function fetchJSON(url) {
-            const res = await fetch(url, { method: 'POST' });
-            if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        async function fetchJSON(url, body = null) {
+            const options = { method: 'POST', headers: { 'Content-Type': 'application/json' } };
+            if (body) options.body = JSON.stringify(body);
+            const res = await fetch(url, options);
+            const ct = res.headers.get('content-type');
+            if (!ct || !ct.includes('application/json')) {
+                const text = await res.text();
+                console.error('Non-JSON response:', text.substring(0, 200));
+                throw new Error('Non-JSON response');
+            }
             return res.json();
         }
 
         async function callSP(payload) {
+            console.log('Sending payload to handleInventoryRequestAPI:', payload);
             const res = await fetch(API_BASE + '/handleInventoryRequestAPI', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(payload)
             });
-            if (!res.ok) throw new Error('SP call failed');
+            if (!res.ok) {
+                const errText = await res.text();
+                console.error('handleInventoryRequestAPI error:', errText);
+                throw new Error('Server error');
+            }
         }
 
-        // ── Load data ──
+        // ── Load inventories ──
         async function loadInventories() {
             try {
-                const data = await fetchJSON('/inventoryLocationsWithTypeAPI');
-                inventories = Array.isArray(data) ? data.map(inv => ({ id: inv.INVENTORY_LOCATION_ID, name: inv.INVENTORY_LOCATION_NAME })) : [];
-                inventorySelect.innerHTML = '<option value="">-- No Filter --</option>';
+                const data = await fetchJSON(API_BASE + '/inventoryLocationsReadableAPI');
+                inventories = Array.isArray(data) ? data.map(inv => ({
+                    id: inv.INVENTORY_LOCATION_ID,
+                    name: inv.INVENTORY_LOCATION_NAME
+                })) : [];
+                inventorySelect.innerHTML = '<option value="">-- Choose Inventory --</option>';
                 inventories.forEach(inv => {
                     const opt = document.createElement('option');
                     opt.value = inv.id;
                     opt.textContent = inv.name;
                     inventorySelect.appendChild(opt);
                 });
-            } catch(e) { showToast('Failed to load inventories'); }
+                if (inventories.length === 0) showToast('No inventory locations found.');
+            } catch(e) {
+                console.error(e);
+                showToast('Failed to load inventories.');
+            }
         }
 
         async function loadStocks() {
             try {
-                allStocks = await fetchJSON('/productStocksAPI');
+                allStocks = await fetchJSON(API_BASE + '/productStocksAPI');
                 renderStocks();
-            } catch(e) { showToast('Failed to load stocks'); }
+            } catch(e) { showToast('Could not load stock data.'); }
         }
 
         async function loadRequests() {
             try {
-                allRequests = await fetchJSON('/inventoryStockRequestsAPI');
+                allRequests = await fetchJSON(API_BASE + '/inventoryStockRequestsAPI');
+                console.log('Requests loaded:', allRequests);
                 renderRequests();
-            } catch(e) { showToast('Failed to load requests'); }
+            } catch(e) { showToast('Could not load requests.'); }
         }
 
         async function loadProducts() {
             try {
-                allProducts = await fetchJSON('/productsWithCategoryAPI');
-                modalProductSelect.innerHTML = allProducts.map(p => 
+                allProducts = await fetchJSON(API_BASE + '/productsWithCategoryAPI');
+                modalProductSelect.innerHTML = allProducts.map(p =>
                     `<option value="${p.PRODUCTS_ID}">${escapeHtml(p.PRODUCTS_NAME)}</option>`
                 ).join('');
-            } catch(e) { showToast('Failed to load products'); }
+            } catch(e) { showToast('Could not load products.'); }
         }
 
-        // ── Render functions ──
+        // ── Rendering ──
         function renderStocks() {
-            const selectedId = inventorySelect.value;
-            if (!selectedId) {
-                stockTableBody.innerHTML = '<tr><td colspan="3" style="text-align:center;padding:20px;">Select an inventory to view its stock</td></tr>';
+            if (!selectedInventoryName) {
+                stockTableBody.innerHTML = '<tr><td colspan="3" style="text-align:center;padding:20px;">Select an inventory to view stock</td></tr>';
                 return;
             }
-            const selectedInv = inventories.find(i => i.id == selectedId);
-            if (!selectedInv) {
-                stockTableBody.innerHTML = '<tr><td colspan="3">Invalid inventory</td></tr>';
-                return;
-            }
-            const filtered = allStocks.filter(s => s.INVENTORY_LOCATION_NAME === selectedInv.name);
+            const filtered = allStocks.filter(s => s.INVENTORY_LOCATION_NAME === selectedInventoryName);
             stockTableBody.innerHTML = filtered.length ? filtered.map(s =>
                 `<tr><td>${escapeHtml(s.PRODUCTS_NAME)}</td><td>${escapeHtml(s.INVENTORY_LOCATION_NAME)}</td><td>${s.PRODUCT_COUNT_IN_STOCK}</td></tr>`
-            ).join('') : '<tr><td colspan="3" style="text-align:center;">No stock items found</td></tr>';
+            ).join('') : '<tr><td colspan="3" style="text-align:center;">No stock items for this location</td></tr>';
         }
 
         function renderRequests() {
-            requestsTableBody.innerHTML = allRequests.length ? allRequests.map(req => {
-                const isAccepted = req.IS_ACCEPTED_BY_FLEET == 1;
-                const canAccept = !isAccepted && req.INVENTORY_LOCATION_ID != inventorySelect.value;
+            if (!selectedInventoryName) {
+                requestsTableBody.innerHTML = '<tr><td colspan="7" style="text-align:center;">Select an inventory to see requests</td></tr>';
+                return;
+            }
+            const pending = allRequests.filter(req => req.IS_ACCEPTED_BY_FLEET == 0);
+            if (pending.length === 0) {
+                requestsTableBody.innerHTML = '<tr><td colspan="7" style="text-align:center;">No pending requests</td></tr>';
+                return;
+            }
+            requestsTableBody.innerHTML = pending.map(req => {
+                const isOwn = req.REQUESTING_INVENTORY === selectedInventoryName;
+                const canAccept = !isOwn;
                 return `<tr>
                     <td>${req.INVENTORY_STOCK_REQUEST_ID}</td>
-                    <td>${escapeHtml(req.INVENTORY_LOCATION_NAME)}</td>
-                    <td>${escapeHtml(req.FROM_INVENTORY_LOCATION_NAME || '—')}</td>
+                    <td>${escapeHtml(req.REQUESTING_INVENTORY || '')}</td>
+                    <td>${escapeHtml(req.SUPPLYING_INVENTORY || '—')}</td>
                     <td>${escapeHtml(req.PRODUCTS_NAME)}</td>
                     <td>${req.PRODUCTS_COUNT}</td>
-                    <td class="${isAccepted ? 'status-accepted' : 'status-pending'}">${isAccepted ? 'Accepted' : 'Pending'}</td>
+                    <td class="status-pending">Pending</td>
                     <td>${canAccept ? `<button class="btn-accept" data-id="${req.INVENTORY_STOCK_REQUEST_ID}" data-product="${req.PRODUCTS_ID}">Accept</button>` : ''}</td>
                 </tr>`;
-            }).join('') : '<tr><td colspan="7" style="text-align:center;">No requests found</td></tr>';
+            }).join('');
 
-            // Attach accept handlers
             document.querySelectorAll('.btn-accept').forEach(btn => {
                 btn.addEventListener('click', async () => {
-                    const requestId = btn.dataset.id;
-                    const productId = btn.dataset.product;
-                    if (confirm(`Accept request #${requestId}?`)) {
-                        try {
-                            await callSP({
-                                action: 'ACCEPT_REQUEST',
-                                inventoryStockRequestId: parseInt(requestId),
-                                inventoryId: parseInt(inventorySelect.value),
-                                productsId: parseInt(productId),
-                                productsCount: 0
-                            });
-                            showToast('Request accepted');
-                            await loadRequests();
-                        } catch(e) { showToast('Failed to accept request'); }
+                    const requestId = parseInt(btn.dataset.id);
+                    const productId = parseInt(btn.dataset.product);
+                    const myInventoryId = parseInt(inventorySelect.value);
+                    console.log('Accept clicked – inventoryId:', myInventoryId, 'requestId:', requestId, 'productId:', productId);
+
+                    if (isNaN(requestId) || isNaN(productId) || isNaN(myInventoryId)) {
+                        showToast('Invalid data – check console');
+                        return;
+                    }
+                    if (!confirm(`Accept request #${requestId}? You will become the supplier.`)) return;
+
+                    try {
+                        await callSP({
+                            action: 'ACCEPT_REQUEST',
+                            inventoryStockRequestId: requestId,
+                            inventoryId: myInventoryId,
+                            productsId: productId,
+                            productsCount: 0
+                        });
+                        showToast('Request accepted');
+                        await loadRequests();
+                    } catch(e) {
+                        console.error(e);
+                        showToast('Failed to accept request');
                     }
                 });
             });
         }
 
-        // ── Modal handlers ──
-        function openAddRequestModal() {
-            if (!inventorySelect.value) {
-                showToast('Please select your inventory first.');
-                return;
+        // ── Inventory selection change ──
+        inventorySelect.addEventListener('change', () => {
+            const selectedId = inventorySelect.value ? parseInt(inventorySelect.value) : null;
+            if (selectedId) {
+                const selectedInv = inventories.find(inv => inv.id === selectedId);
+                selectedInventoryName = selectedInv ? selectedInv.name : null;
+            } else {
+                selectedInventoryName = null;
             }
-            modalProductSelect.value = '';
+            renderStocks();
+            renderRequests();
+        });
+
+        // ── Modal (Add Request) ──
+        btnAddRequest.addEventListener('click', () => {
+            if (!selectedInventoryName) return showToast('Select an inventory first.');
             modalQuantity.value = 1;
             addRequestModal.classList.add('active');
-        }
-
-        function closeAddRequestModal() {
-            addRequestModal.classList.remove('active');
-        }
+        });
+        cancelAddRequestBtn.addEventListener('click', () => addRequestModal.classList.remove('active'));
+        closeAddRequestModalBtn.addEventListener('click', () => addRequestModal.classList.remove('active'));
+        window.addEventListener('click', (e) => { if (e.target === addRequestModal) addRequestModal.classList.remove('active'); });
 
         submitAddRequestBtn.addEventListener('click', async () => {
             const productId = parseInt(modalProductSelect.value);
-            const quantity = parseInt(modalQuantity.value);
-            if (isNaN(productId) || isNaN(quantity) || quantity < 1) {
-                showToast('Invalid input');
-                return;
-            }
+            const qty = parseInt(modalQuantity.value);
+            if (isNaN(productId) || isNaN(qty) || qty < 1) return showToast('Invalid input.');
             try {
                 await callSP({
                     action: 'SET_REQUEST',
                     inventoryStockRequestId: 0,
                     inventoryId: parseInt(inventorySelect.value),
                     productsId: productId,
-                    productsCount: quantity
+                    productsCount: qty
                 });
-                showToast('Request sent');
-                closeAddRequestModal();
+                showToast('Request sent.');
+                addRequestModal.classList.remove('active');
                 await loadRequests();
-            } catch(e) { showToast('Failed to create request'); }
+            } catch(e) { showToast('Failed to create request.'); }
         });
 
-        btnAddRequest.addEventListener('click', openAddRequestModal);
-        cancelAddRequestBtn.addEventListener('click', closeAddRequestModal);
-        closeAddRequestModalBtn.addEventListener('click', closeAddRequestModal);
-        window.addEventListener('click', (e) => { if (e.target === addRequestModal) closeAddRequestModal(); });
-
-        // Inventory selection change
-        inventorySelect.addEventListener('change', () => {
-            renderStocks();
-            renderRequests();
-        });
-
-        // ── Initial load ──
+        // ── Start ──
         (async () => {
             await loadInventories();
             await loadStocks();

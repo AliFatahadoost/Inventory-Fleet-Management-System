@@ -696,6 +696,7 @@ public class readConfig {
         server.createContext("/createUpdateDeleteVehicleAPI", new apiManagement.createUpdateDeleteVehicle());
         server.createContext("/createUpdateDeleteInventoryLocationAPI", new apiManagement.createUpdateDeleteInventoryLocation());
         server.createContext("/createUpdateDeleteDriverAPI", new apiManagement.createUpdateDeleteDriver());
+        
         server.createContext("/productsCountAPI", new apiManagement.reportBasedOnUserTokenMaker("SELECT COUNT(p.PRODUCTS_ID) AS COUNT FROM PRODUCTS p WHERE IS_DELETED = 0 AND ? IS NOT NULL"));
         server.createContext("/productsCategoryCountAPI", new apiManagement.reportBasedOnUserTokenMaker("SELECT COUNT(PRODUCTS_CATEGORY_ID) AS COUNT FROM PRODUCTS_CATEGORY WHERE IS_DELETED = 0 AND ? IS NOT NULL"));
         server.createContext("/inventoryLocationCountAPI", new apiManagement.reportBasedOnUserTokenMaker("SELECT COUNT(*) AS COUNT FROM INVENTORY_LOCATION il WHERE IS_DELETED = 0 AND ? IS NOT NULL"));
@@ -705,9 +706,36 @@ public class readConfig {
         server.createContext("/productsCategoryListAPI", new apiManagement.reportBasedOnUserTokenMaker("SELECT pc.PRODUCTS_CATEGORY_ID , pc.PRODUCTS_CATEGORY_NAME FROM PRODUCTS_CATEGORY pc WHERE IS_DELETED = 0 AND ? IS NOT NULL"));
         server.createContext("/productsWithCategoryAPI", new apiManagement.reportBasedOnUserTokenMaker("SELECT p.PRODUCTS_ID, p.PRODUCTS_NAME , pc.PRODUCTS_CATEGORY_NAME FROM PRODUCTS p INNER JOIN PRODUCTS_CATEGORY pc ON pc.PRODUCTS_CATEGORY_ID = p.PRODUCTS_CATEGORY_ID WHERE p.IS_DELETED = 0 AND ? IS NOT NULL"));
         server.createContext("/handleInventoryRequestAPI", new apiManagement.HandleInventoryRequest());
-        server.createContext("/inventoryLocationsWithTypeAPI", new apiManagement.reportBasedOnUserTokenMaker("SELECT il.INVENTORY_LOCATION_ID , il.INVENTORY_LOCATION_NAME , il.INVENTORY_LOCATION_ADDRESS , il.INVENTORY_LOCATION_LAT , il.INVENTORY_LOCATION_LONG , LILT.INVENTORY_LOCATION_TYPE_TITLE FROM INVENTORY_LOCATION il INNER JOIN LT_INVENTORY_LOCATION_TYPE lilt ON il.LT_INVENTORY_LOCATION_TYPE_ID = lilt.LT_INVENTORY_LOCATION_TYPE_ID AND lilt.IS_DELETED = 0 WHERE il.IS_DELETED = 0 AND ? IS NOT NULL"));
-        server.createContext("/inventoryStockRequestsAPI", new apiManagement.reportBasedOnUserTokenMaker("SELECT isr.INVENTORY_STOCK_REQUEST_ID , IL.INVENTORY_LOCATION_NAME , IL2.INVENTORY_LOCATION_NAME, P.PRODUCTS_NAME, ISR.PRODUCTS_COUNT , ISR.IS_ACCEPTED_BY_FLEET FROM INVENTORY_STOCK_REQUEST isr INNER JOIN PRODUCTS p ON p.PRODUCTS_ID = ISR.PRODUCTS_ID INNER JOIN INVENTORY_LOCATION il ON il.INVENTORY_LOCATION_ID = ISR.INVENTORY_ID INNER JOIN INVENTORY_LOCATION il2 ON il2.INVENTORY_LOCATION_ID = ISR.FROM_INVENTORY_ID WHERE il.IS_DELETED = 0 AND ? IS NOT NULL"));
-        server.createContext("/productStocksAPI", new apiManagement.reportBasedOnUserTokenMaker("SELECT ps.PRODUCTS_STOCKS_ID , p.PRODUCTS_NAME , il.INVENTORY_LOCATION_NAME , ps.PRODUCT_COUNT_IN_STOCK FROM PRODUCTS_STOCKS ps INNER JOIN PRODUCTS p ON p.PRODUCTS_ID = ps.PRODUCTS_ID INNER JOIN INVENTORY_LOCATION il ON il.INVENTORY_LOCATION_ID = ps.INVENTORY_LOCATION_ID WHERE ? IS NOT NULL"));
+        
+        server.createContext("/inventoryLocationsWithTypeAPI", new apiManagement.reportBasedOnUserTokenMaker("SELECT il.INVENTORY_LOCATION_ID , il.INVENTORY_LOCATION_NAME , il.INVENTORY_LOCATION_ADDRESS , il.INVENTORY_LOCATION_LAT , il.INVENTORY_LOCATION_LONG , LILT.INVENTORY_LOCATION_TYPE_TITLE FROM INVENTORY_LOCATION il INNER JOIN LT_INVENTORY_LOCATION_TYPE lilt ON il.LT_INVENTORY_LOCATION_TYPE_ID = lilt.LT_INVENTORY_LOCATION_TYPE_ID AND lilt.IS_DELETED = 0 WHERE ISNULL(il.IS_DELETED, 0) = 0 AND ? IS NOT NULL"));
+        server.createContext("/inventoryStockRequestsAPI", new apiManagement.reportBasedOnUserTokenMaker("SELECT isr.INVENTORY_STOCK_REQUEST_ID, " +
+        "il.INVENTORY_LOCATION_NAME AS REQUESTING_INVENTORY, " +
+        "il2.INVENTORY_LOCATION_NAME AS SUPPLYING_INVENTORY, " +
+        "p.PRODUCTS_ID, " + 
+        "p.PRODUCTS_NAME, " +
+        "isr.PRODUCTS_COUNT, " +
+        "isr.IS_ACCEPTED_BY_FLEET " +
+        "FROM INVENTORY_STOCK_REQUEST isr " +
+        "LEFT JOIN PRODUCTS p ON p.PRODUCTS_ID = isr.PRODUCTS_ID " +
+        "LEFT JOIN INVENTORY_LOCATION il ON il.INVENTORY_LOCATION_ID = isr.INVENTORY_ID " +
+        "LEFT JOIN INVENTORY_LOCATION il2 ON il2.INVENTORY_LOCATION_ID = isr.FROM_INVENTORY_ID " +
+        "WHERE ISNULL(il.IS_DELETED,0) = 0 AND ? IS NOT NULL"
+        ));
+        // List of inventory location types (only non-deleted)
+        server.createContext("/inventoryLocationTypesAPI",new apiManagement.reportBasedOnUserTokenMaker(
+        "SELECT LT_INVENTORY_LOCATION_TYPE_ID, INVENTORY_LOCATION_TYPE_TITLE " +
+        "FROM LT_INVENTORY_LOCATION_TYPE " +
+        "WHERE ISNULL(IS_DELETED,0) = 0 AND ? IS NOT NULL"));
+
+        // List of inventory locations with readable type name (only non-deleted)
+        server.createContext("/inventoryLocationsReadableAPI",new apiManagement.reportBasedOnUserTokenMaker(
+        "SELECT il.INVENTORY_LOCATION_ID, il.INVENTORY_LOCATION_NAME, " +
+        "il.INVENTORY_LOCATION_ADDRESS, il.INVENTORY_LOCATION_LAT, " +
+        "il.INVENTORY_LOCATION_LONG, lilt.INVENTORY_LOCATION_TYPE_TITLE " +
+        "FROM INVENTORY_LOCATION il " +
+        "INNER JOIN LT_INVENTORY_LOCATION_TYPE lilt " +
+        "ON il.LT_INVENTORY_LOCATION_TYPE_ID = lilt.LT_INVENTORY_LOCATION_TYPE_ID " +
+        "WHERE ISNULL(IL.IS_DELETED,0) = 0 AND ? IS NOT NULL"));
         
         server.setExecutor(null);
         server.start();
