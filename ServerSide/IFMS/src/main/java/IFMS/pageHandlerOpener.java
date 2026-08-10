@@ -19,11 +19,11 @@ public class pageHandlerOpener implements HttpHandler{
         private String fileAddress = "";
         private boolean isIframe = false;
         private int accessId = 0;
-        public pageHandlerOpener(String fileAddress, boolean isIframe, int accessId)
+        public pageHandlerOpener(String baseAddress, files fileInfo)
         {      
-            this.fileAddress = fileAddress;   
-            this.isIframe = isIframe;
-            this.accessId = accessId;
+            this.fileAddress = baseAddress + fileInfo.relativeAddress();   
+            this.isIframe = fileInfo.loadedByIframe();
+            this.accessId = fileInfo.accessCode();
             File file = new File(this.fileAddress);
             String filesName = file.getName().contains(".")?file.getName().substring(0, file.getName().lastIndexOf('.')) : file.getName();
             dataBaseUtils.runSelectQueryGetJSON("EXEC UPDATING_LIST_OF_SYS_OBJECTS ?, ?", filesName, this.accessId+"");

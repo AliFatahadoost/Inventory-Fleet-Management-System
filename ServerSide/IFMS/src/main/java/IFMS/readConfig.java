@@ -65,15 +65,6 @@ public class readConfig {
         // Ensure derived fields are in sync
         updateServersBaseUrl();
         
-        //this part should be deleted after the next part is uncommented
-        /*try {
-                launchHttpServer();
-            } catch (IOException ex) {
-                Logger.getLogger(readConfig.class.getName()).log(Level.SEVERE, null, ex);
-            }
-            return;*/
-        
-            /* This part should be uncommented on production #uncomment*/
         // Ask for GUI or console mode
         Scanner scanner = new Scanner(System.in);
         String input;
@@ -648,94 +639,95 @@ public class readConfig {
         // Bind to the configured IP (not just port)
         HttpServer server = HttpServer.create(new InetSocketAddress(serverIP, portNumber), queueWaitLine);
 
-        // page Redirection Listeners (unchanged)
-        server.createContext("/", new pageHandlerOpener(BASE_FILE_ADDRESS + "/Login/Login.html", false, 1));
-        server.createContext("/LoginPage", new pageHandlerOpener(BASE_FILE_ADDRESS + "/Login/Login.html", false, 2));
-        server.createContext("/Dashboard", new pageHandlerOpener(BASE_FILE_ADDRESS + "/Dashboard/Dashboard.html", false, 3));
-        server.createContext("/Dashboard/Home", new pageHandlerOpener(BASE_FILE_ADDRESS + "/Dashboard/dashboardSubSections/Home.html", true, 4));
-        server.createContext("/Dashboard/userProfile", new pageHandlerOpener(BASE_FILE_ADDRESS + "/Dashboard/dashboardSubSections/userProfile/userProfile.html", true, 5));
-        server.createContext("/Dashboard/userProfile/userTasks", new pageHandlerOpener(BASE_FILE_ADDRESS + "/Dashboard/dashboardSubSections/userProfile/userTasks.html", true, 6));
-        server.createContext("/Dashboard/userProfile/WorkHourReports", new pageHandlerOpener(BASE_FILE_ADDRESS + "/Dashboard/dashboardSubSections/userProfile/WorkHourReports.html", true, 7));
-        server.createContext("/Dashboard/userProfile/ActivityLog", new pageHandlerOpener(BASE_FILE_ADDRESS + "/Dashboard/dashboardSubSections/userProfile/ActivityLog.html", true, 8));
-        server.createContext("/Dashboard/inventoryManagement", new pageHandlerOpener(BASE_FILE_ADDRESS + "/Dashboard/dashboardSubSections/inventoryManagement/inventoryManagement.html", true, 9));
-        server.createContext("/Dashboard/inventoryManagement/inventoryUsersTasks", new pageHandlerOpener(BASE_FILE_ADDRESS + "/Dashboard/dashboardSubSections/inventoryManagement/inventoryUsersTasks.html", true, 19));
-        server.createContext("/Dashboard/inventoryManagement/products", new pageHandlerOpener(BASE_FILE_ADDRESS + "/Dashboard/dashboardSubSections/inventoryManagement/products.html", true, 16));
-        server.createContext("/Dashboard/inventoryManagement/productsCategories", new pageHandlerOpener(BASE_FILE_ADDRESS + "/Dashboard/dashboardSubSections/inventoryManagement/productsCategories.html", true, 17));
-        server.createContext("/Dashboard/inventoryManagement/productsMovementAndLog", new pageHandlerOpener(BASE_FILE_ADDRESS + "/Dashboard/dashboardSubSections/inventoryManagement/productsMovementAndLog.html", true, 20));
-        server.createContext("/Dashboard/inventoryManagement/stockLevels", new pageHandlerOpener(BASE_FILE_ADDRESS + "/Dashboard/dashboardSubSections/inventoryManagement/stockLevels.html", true, 18));
+        // page Redirection Listeners
+        server.createContext("/",                                                       new pageHandlerOpener(BASE_FILE_ADDRESS, files.Login));
+        server.createContext("/LoginPage",                                              new pageHandlerOpener(BASE_FILE_ADDRESS, files.LoginPage));
+        server.createContext("/Dashboard",                                              new pageHandlerOpener(BASE_FILE_ADDRESS, files.Dashboard));
+        server.createContext("/Dashboard/Home",                                         new pageHandlerOpener(BASE_FILE_ADDRESS, files.Home));
+        server.createContext("/Dashboard/userProfile",                                  new pageHandlerOpener(BASE_FILE_ADDRESS, files.UserProfile));
+        server.createContext("/Dashboard/userProfile/userTasks",                        new pageHandlerOpener(BASE_FILE_ADDRESS, files.UserTasks));
+        server.createContext("/Dashboard/userProfile/WorkHourReports",                  new pageHandlerOpener(BASE_FILE_ADDRESS, files.WorkHourReports));
+        server.createContext("/Dashboard/userProfile/ActivityLog",                      new pageHandlerOpener(BASE_FILE_ADDRESS, files.ActivityLog));
+        server.createContext("/Dashboard/inventoryManagement",                          new pageHandlerOpener(BASE_FILE_ADDRESS, files.InventoryManagement));
+        server.createContext("/Dashboard/inventoryManagement/inventoryUsersTasks",      new pageHandlerOpener(BASE_FILE_ADDRESS, files.InventoryUsersTasks));
+        server.createContext("/Dashboard/inventoryManagement/products",                 new pageHandlerOpener(BASE_FILE_ADDRESS, files.Products));
+        server.createContext("/Dashboard/inventoryManagement/productsCategories",       new pageHandlerOpener(BASE_FILE_ADDRESS, files.ProductsCategories));
+        server.createContext("/Dashboard/inventoryManagement/productsMovementAndLog",   new pageHandlerOpener(BASE_FILE_ADDRESS, files.ProductsMovementAndLog));
+        server.createContext("/Dashboard/inventoryManagement/stockLevels",              new pageHandlerOpener(BASE_FILE_ADDRESS, files.StockLevels));
+        server.createContext("/Dashboard/warehouseManagement",                          new pageHandlerOpener(BASE_FILE_ADDRESS, files.WarehouseManagement));
+        server.createContext("/Dashboard/fleetManagement",                              new pageHandlerOpener(BASE_FILE_ADDRESS, files.FleetManagement));
+        server.createContext("/Dashboard/reportSection",                                new pageHandlerOpener(BASE_FILE_ADDRESS, files.ReportSection));
+        server.createContext("/Dashboard/usersManagement",                              new pageHandlerOpener(BASE_FILE_ADDRESS, files.UsersManagement));
+        server.createContext("/Dashboard/EditUsersFormUsrMngmnt",                       new pageHandlerOpener(BASE_FILE_ADDRESS, files.EditUsersForm));
+        server.createContext("/Dashboard/EditRolesFormUsrMngmnt",                       new pageHandlerOpener(BASE_FILE_ADDRESS, files.EditRolesForm));
         
-        server.createContext("/Dashboard/warehouseManagement", new pageHandlerOpener(BASE_FILE_ADDRESS + "/Dashboard/dashboardSubSections/warehouseManagement.html", true, 10));
-        server.createContext("/Dashboard/fleetManagement", new pageHandlerOpener(BASE_FILE_ADDRESS + "/Dashboard/dashboardSubSections/fleetManagement.html", true, 11));
-        server.createContext("/Dashboard/reportSection", new pageHandlerOpener(BASE_FILE_ADDRESS + "/Dashboard/dashboardSubSections/reportSection.html", true, 12));
-        server.createContext("/Dashboard/usersManagement", new pageHandlerOpener(BASE_FILE_ADDRESS + "/Dashboard/dashboardSubSections/userManagement/usersManagement.html", true, 13));
-        server.createContext("/Dashboard/EditUsersFormUsrMngmnt", new pageHandlerOpener(BASE_FILE_ADDRESS + "/Dashboard/dashboardSubSections/userManagement/EditUsersForm.html", true, 14));
-        server.createContext("/Dashboard/EditRolesFormUsrMngmnt", new pageHandlerOpener(BASE_FILE_ADDRESS + "/Dashboard/dashboardSubSections/userManagement/EditRolesForm.html", true, 15));
-
         // API calls Listeners ACCEABLE FOR ALL USERS
-        server.createContext("/Login", new apiManagement.loginSignUpHandlingAPI());
-        server.createContext("/selectUserLoginLogAPI", new apiManagement.reportBasedOnUserTokenMaker("SELECT USER_LOGIN_LOG_ID, USERNAME, LOGIN_DATE FROM LOGIN_LOG_SELECT(?) ORDER BY USER_LOGIN_LOG_ID DESC"));
-        server.createContext("/selectUserRolesLogAPI", new apiManagement.reportBasedOnUserTokenMaker("SELECT USERS_ROLES_ID, ROLES_TITLE, ASSIGNMENT_DATE FROM ROLES_LOG_SELECT(?) ORDER BY USERS_ROLES_ID DESC"));
-        server.createContext("/changeUserName", new apiManagement.changeUsername());
-        server.createContext("/changePassword", new apiManagement.changePassword());
-        server.createContext("/tasksReportAPI", new apiManagement.reportBasedOnUserTokenMaker("EXEC TASKS_REPORT ?"));
-        server.createContext("/changeTaskStatus", new apiManagement.changeTaskStatus());
-        server.createContext("/workHourReportAPI", new apiManagement.reportBasedOnUserTokenMaker("EXEC WORK_HOUR_REPORT ?"));
-        server.createContext("/auditLogAPI", new apiManagement.reportBasedOnUserTokenMaker("EXEC ACTIVITY_LOG_MANAGER @LOGGIN_SESSION=?, @READ_ONLY=1, @ACTIVITY_REMARK=N''"));
-        server.createContext("/userListAPI", new apiManagement.reportBasedOnUserTokenMaker("SELECT SU.SYS_USER_ID, SU.USERNAME, SU.BASE_SALARY FROM SYS_USERS SU"));
-        server.createContext("/usersRoleListAPI", new apiManagement.reportBasedOnUserTokenMaker("SELECT SU.SYS_USER_ID, SU.USERNAME, LR.ROLES_TITLE FROM SYS_USERS SU LEFT JOIN USERS_ROLES UR ON SU.SYS_USER_ID = UR.SYS_USER_ID AND COALESCE(UR.IS_ACTIVE, 1) = 1 LEFT JOIN LT_ROLES LR ON LR.ROLE_CODE = UR.ROLE_CODE WHERE ? IS NOT NULL"));
-        server.createContext("/roleListAPI", new apiManagement.reportBasedOnUserTokenMaker("SELECT ROLE_CODE, ROLES_TITLE FROM LT_ROLES WHERE ? IS NOT NULL"));
-        server.createContext("/createNewUserAPI", new apiManagement.createNewUser());
-        server.createContext("/addRevokeRolesAPI", new apiManagement.addRevokeRoles());
-        server.createContext("/updateUserCredByAdmin", new apiManagement.updateUserCredByAdmin());
+        server.createContext("/changeUserName",                         new apiManagement.changeUsername()); //this has token injection
+        server.createContext("/changePassword",                         new apiManagement.changePassword()); //this has token injection
+        server.createContext("/changeTaskStatus",                       new apiManagement.changeTaskStatus()); //this has token injection
+        server.createContext("/Login",                                  new apiManagement.loginSignUpHandlingAPI());
+        server.createContext("/updateUserCredByAdmin",                  new apiManagement.dateModifyApiGen.builder().setQuery("EXEC CHANGE_USER_CRED_BY_ADMIN ?, ?, ?").setMethodAccepted("POST").setApiName("userCredByAdminAPI").build());
+        server.createContext("/createNewUserAPI",                       new apiManagement.dateModifyApiGen.builder().setQuery("EXEC SIGNUP_NEWUSER ?, ?").setMethodAccepted("POST").setApiName("createNewUserAPI").build());
+        server.createContext("/addRevokeRolesAPI",                      new apiManagement.dateModifyApiGen.builder().setQuery("EXEC ROLES_MANAGEMENT_ID_BASED ?, ?, ?").setMethodAccepted("POST").setApiName("addRevokeRolesAPI").build());
+        server.createContext("/createUpdateDeleteRolesAPI",             new apiManagement.dateModifyApiGen.builder().setQuery("EXEC CREATE_UPDATE_DELETE_ROLES ?, ?, ?, ?, ?, ?").setMethodAccepted("POST").setApiName("createUpdateDeleteRolesAPI").build());
+        server.createContext("/manageProductsMovementTripsAPI",         new apiManagement.dateModifyApiGen.builder().setQuery("EXEC MANAGE_PRODUCTS_MOVEMENT_TRIPS ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?").setMethodAccepted("POST").setApiName("manageProductsMovementTripsAPI").build());
+        server.createContext("/manageInventoryInfstructureAPI",         new apiManagement.dateModifyApiGen.builder().setQuery("EXEC MANAGE_INVENTORY_INFSTRUCTURE ?, ?, ?, ?, ?, ?, ?, ?").setMethodAccepted("POST").setApiName("manageInventoryInfstructureAPI").build());
+        server.createContext("/createUpdateDeleteVehicleAPI",           new apiManagement.dateModifyApiGen.builder().setQuery("EXEC CREATE_UPDATE_DELETE_VEHICLE ?, ?, ?, ?").setMethodAccepted("POST").setApiName("createUpdateDeleteVehicleAPI").build());
+        server.createContext("/createUpdateDeleteInventoryLocationAPI", new apiManagement.dateModifyApiGen.builder().setQuery("EXEC CREATE_UPDATE_DELETE_INVENTORY_LOCATION ?, ?, ?, ?, ?, ?, ?").setMethodAccepted("POST").setApiName("createUpdateDeleteInventoryLocationAPI").build());
+        server.createContext("/createUpdateDeleteDriverAPI",            new apiManagement.dateModifyApiGen.builder().setQuery("EXEC CREATE_UPDATE_DELETE_DRIVER ?, ?, ?, ?, ?, ?").setMethodAccepted("POST").setApiName("createUpdateDeleteDriverAPI").build());
+        server.createContext("/handleInventoryRequestAPI",              new apiManagement.dateModifyApiGen.builder().setQuery("EXEC HANDLE_INVENTORY_REQUEST ?, ?, ?, ?, ?").setMethodAccepted("POST").setApiName("handleInventoryRequestAPI").build());
+        server.createContext("/manageDriversAndTeamsAPI",               new apiManagement.dateModifyApiGen.builder().setQuery("EXEC MANAGE_DRIVERS_AND_TEAMS ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?").setMethodAccepted("POST").setApiName("manageDriversAndTeamsAPI").build());
+        //this ones Special and has a return or modify mode
+        server.createContext("/manageInventoryStockRequest",            new apiManagement.manageInventoryStockRequest());
         
-        server.createContext("/rolesAndPermissionsListAPI", new apiManagement.reportBasedOnUserTokenMaker("SELECT LR.ROLES_ID AS ID ,LR.ROLE_CODE AS roleCode ,LR.ROLES_TITLE AS permissionTitle ,SO.SYS_OBJECT_NAME AS featurePermission ,SCA.CAN_READ AS canRead ,SCA.CAN_WRITE AS canWrite FROM LT_ROLES LR LEFT JOIN SYS_CALL_ACCESS SCA ON LR.ROLE_CODE = SCA.ROLE_CODE LEFT JOIN SYS_OBJECTS SO ON SCA.SYS_OBJECT_CODE = SO.SYS_OBJECT_CODE WHERE ? IS NOT NULL ORDER BY LR.ROLE_CODE ASC"));
-        server.createContext("/featuresListAPI", new apiManagement.reportBasedOnUserTokenMaker("SELECT SYS_OBJECT_CODE AS featuresCode, SYS_OBJECT_NAME AS featuresName FROM SYS_OBJECTS WHERE ? IS NOT NULL"));
-        server.createContext("/createUpdateDeleteRolesAPI", new apiManagement.createUpdateDeleteRoles());
-        server.createContext("/manageProductsMovementTripsAPI", new apiManagement.manageProductsMovementTrips());
-        server.createContext("/manageInventoryInfstructureAPI", new apiManagement.manageInventoryInfstructure());
-        server.createContext("/createUpdateDeleteVehicleAPI", new apiManagement.createUpdateDeleteVehicle());
-        server.createContext("/createUpdateDeleteInventoryLocationAPI", new apiManagement.createUpdateDeleteInventoryLocation());
-        server.createContext("/createUpdateDeleteDriverAPI", new apiManagement.createUpdateDeleteDriver());
-        
-        server.createContext("/productsCountAPI", new apiManagement.reportBasedOnUserTokenMaker("SELECT COUNT(p.PRODUCTS_ID) AS COUNT FROM PRODUCTS p WHERE IS_DELETED = 0 AND ? IS NOT NULL"));
-        server.createContext("/productsCategoryCountAPI", new apiManagement.reportBasedOnUserTokenMaker("SELECT COUNT(PRODUCTS_CATEGORY_ID) AS COUNT FROM PRODUCTS_CATEGORY WHERE IS_DELETED = 0 AND ? IS NOT NULL"));
-        server.createContext("/inventoryLocationCountAPI", new apiManagement.reportBasedOnUserTokenMaker("SELECT COUNT(*) AS COUNT FROM INVENTORY_LOCATION il WHERE IS_DELETED = 0 AND ? IS NOT NULL"));
-        server.createContext("/activeMovementsCountAPI", new apiManagement.reportBasedOnUserTokenMaker("SELECT COUNT(*) AS COUNT FROM PRODUCTS_MOVEMENTS pm WHERE IS_DELETED = 0 AND pm.IS_ACTIVE = 1 AND ? IS NOT NULL"));
-        server.createContext("/allMovementsCountAPI", new apiManagement.reportBasedOnUserTokenMaker("SELECT COUNT(*) AS COUNT FROM PRODUCTS_MOVEMENTS WHERE ? IS NOT NULL"));
-        server.createContext("/lowStockProductsAPI", new apiManagement.reportBasedOnUserTokenMaker("SELECT ps.PRODUCTS_STOCKS_ID, p.PRODUCTS_NAME , il.INVENTORY_LOCATION_NAME , ps.PRODUCT_COUNT_IN_STOCK FROM PRODUCTS_STOCKS ps INNER JOIN PRODUCTS p ON ps.PRODUCTS_ID = p.PRODUCTS_ID INNER JOIN INVENTORY_LOCATION il ON ps.INVENTORY_LOCATION_ID = il.INVENTORY_LOCATION_ID WHERE ps.PRODUCT_COUNT_IN_STOCK < 5 AND ? IS NOT NULL"));
-        server.createContext("/productsCategoryListAPI", new apiManagement.reportBasedOnUserTokenMaker("SELECT pc.PRODUCTS_CATEGORY_ID , pc.PRODUCTS_CATEGORY_NAME FROM PRODUCTS_CATEGORY pc WHERE IS_DELETED = 0 AND ? IS NOT NULL"));
-        server.createContext("/productsWithCategoryAPI", new apiManagement.reportBasedOnUserTokenMaker("SELECT p.PRODUCTS_ID, p.PRODUCTS_NAME , pc.PRODUCTS_CATEGORY_NAME FROM PRODUCTS p INNER JOIN PRODUCTS_CATEGORY pc ON pc.PRODUCTS_CATEGORY_ID = p.PRODUCTS_CATEGORY_ID WHERE p.IS_DELETED = 0 AND ? IS NOT NULL"));
-        server.createContext("/handleInventoryRequestAPI", new apiManagement.HandleInventoryRequest());
-        
-        server.createContext("/inventoryLocationsWithTypeAPI", new apiManagement.reportBasedOnUserTokenMaker("SELECT il.INVENTORY_LOCATION_ID , il.INVENTORY_LOCATION_NAME , il.INVENTORY_LOCATION_ADDRESS , il.INVENTORY_LOCATION_LAT , il.INVENTORY_LOCATION_LONG , LILT.INVENTORY_LOCATION_TYPE_TITLE FROM INVENTORY_LOCATION il INNER JOIN LT_INVENTORY_LOCATION_TYPE lilt ON il.LT_INVENTORY_LOCATION_TYPE_ID = lilt.LT_INVENTORY_LOCATION_TYPE_ID AND lilt.IS_DELETED = 0 WHERE ISNULL(il.IS_DELETED, 0) = 0 AND ? IS NOT NULL"));
-        server.createContext("/inventoryStockRequestsAPI", new apiManagement.reportBasedOnUserTokenMaker("SELECT isr.INVENTORY_STOCK_REQUEST_ID, " +
-        "il.INVENTORY_LOCATION_NAME AS REQUESTING_INVENTORY, " +
-        "il2.INVENTORY_LOCATION_NAME AS SUPPLYING_INVENTORY, " +
-        "p.PRODUCTS_ID, " + 
-        "p.PRODUCTS_NAME, " +
-        "isr.PRODUCTS_COUNT, " +
-        "isr.IS_ACCEPTED_BY_FLEET " +
-        "FROM INVENTORY_STOCK_REQUEST isr " +
-        "LEFT JOIN PRODUCTS p ON p.PRODUCTS_ID = isr.PRODUCTS_ID " +
-        "LEFT JOIN INVENTORY_LOCATION il ON il.INVENTORY_LOCATION_ID = isr.INVENTORY_ID " +
-        "LEFT JOIN INVENTORY_LOCATION il2 ON il2.INVENTORY_LOCATION_ID = isr.FROM_INVENTORY_ID " +
-        "WHERE ISNULL(il.IS_DELETED,0) = 0 AND ? IS NOT NULL"
-        ));
+        // Selects the login log entries for a user
+        server.createContext("/selectUserLoginLogAPI",              new apiManagement.reportBasedOnUserTokenMaker( selectQueries.selectUserLoginLog.sql() ));
+        //it shows a list of a users Tasks
+        server.createContext("/tasksReportAPI",                     new apiManagement.reportBasedOnUserTokenMaker( selectQueries.tasksReport.sql() ));
+        //this shows a list of users Work hours and how much did they work
+        server.createContext("/workHourReportAPI",                  new apiManagement.reportBasedOnUserTokenMaker( selectQueries.workHourReport.sql() ));
+        //this shows an Log of what the User have done what saves what buttons everything that matters
+        server.createContext("/auditLogAPI",                        new apiManagement.reportBasedOnUserTokenMaker( selectQueries.auditLog.sql() ));
+        // Selects the list of all users (ID, username, base salary)
+        server.createContext("/userListAPI",                        new apiManagement.reportBasedOnUserTokenMaker( selectQueries.userList.sql() ));
+        // Selects all users with their assigned roles
+        server.createContext("/usersRoleListAPI",                   new apiManagement.reportBasedOnUserTokenMaker( selectQueries.usersRoleList.sql() ));
+        // Selects all available roles
+        server.createContext("/roleListAPI",                        new apiManagement.reportBasedOnUserTokenMaker( selectQueries.roleList.sql() ));
+        // Selects all roles with their feature permissions (read/write)
+        server.createContext("/rolesAndPermissionsListAPI",         new apiManagement.reportBasedOnUserTokenMaker( selectQueries.rolesAndPermissionsList.sql() ));
+        // Selects all feature/permission objects
+        server.createContext("/featuresListAPI",                    new apiManagement.reportBasedOnUserTokenMaker( selectQueries.featuresList.sql() ));
+        // Counts all non‑deleted products
+        server.createContext("/productsCountAPI",                   new apiManagement.reportBasedOnUserTokenMaker( selectQueries.productsCount.sql() ));
+        // Counts all non‑deleted product categories
+        server.createContext("/productsCategoryCountAPI",           new apiManagement.reportBasedOnUserTokenMaker( selectQueries.productsCategoryCount.sql() ));
+        // Counts all non‑deleted inventory locations
+        server.createContext("/inventoryLocationCountAPI",          new apiManagement.reportBasedOnUserTokenMaker( selectQueries.inventoryLocationCount.sql() ));
+        // Counts all active, non‑deleted product movements
+        server.createContext("/activeMovementsCountAPI",            new apiManagement.reportBasedOnUserTokenMaker( selectQueries.activeMovementsCount.sql() ));
+        // Counts all product movements (including inactive/deleted)
+        server.createContext("/allMovementsCountAPI",               new apiManagement.reportBasedOnUserTokenMaker( selectQueries.allMovementsCount.sql() ));
+        // Lists products with stock level below 5
+        server.createContext("/lowStockProductsAPI",                new apiManagement.reportBasedOnUserTokenMaker( selectQueries.lowStockProducts.sql() ));
+        // Lists all non‑deleted product categories
+        server.createContext("/productsCategoryListAPI",            new apiManagement.reportBasedOnUserTokenMaker( selectQueries.productsCategoryList.sql() ));
+        // Lists all products with their category names
+        server.createContext("/productsWithCategoryAPI",            new apiManagement.reportBasedOnUserTokenMaker( selectQueries.productsWithCategory.sql() ));
+        //Selects a List of all of the Drivers
+        server.createContext("/driversListAPI",                     new apiManagement.reportBasedOnUserTokenMaker( selectQueries.driversList.sql() ));
+        //Selects all of the fleet teams which Drivers can be a part of
+        server.createContext("/fleetTeamListAPI",                   new apiManagement.reportBasedOnUserTokenMaker( selectQueries.fleetTeamList.sql() ));        
+        //selects all of the Locations with their Type included
+        server.createContext("/inventoryLocationsWithTypeAPI",      new apiManagement.reportBasedOnUserTokenMaker( selectQueries.inventoryLocationsWithType.sql() ));
+        //selects all of the Stock Request sent by the Inventories to get Products they lack or want more
+        server.createContext("/inventoryStockRequestsAPI",          new apiManagement.reportBasedOnUserTokenMaker( selectQueries.inventoryStockRequests.sql() ));
+        //selects all of the Drivers which are not Deleted and their Team name
+        server.createContext("/driversWithTeamAPI",                 new apiManagement.reportBasedOnUserTokenMaker( selectQueries.driversWithTeam.sql() ));
         // List of inventory location types (only non-deleted)
-        server.createContext("/inventoryLocationTypesAPI",new apiManagement.reportBasedOnUserTokenMaker(
-        "SELECT LT_INVENTORY_LOCATION_TYPE_ID, INVENTORY_LOCATION_TYPE_TITLE " +
-        "FROM LT_INVENTORY_LOCATION_TYPE " +
-        "WHERE ISNULL(IS_DELETED,0) = 0 AND ? IS NOT NULL"));
-
-        // List of inventory locations with readable type name (only non-deleted)
-        server.createContext("/inventoryLocationsReadableAPI",new apiManagement.reportBasedOnUserTokenMaker(
-        "SELECT il.INVENTORY_LOCATION_ID, il.INVENTORY_LOCATION_NAME, " +
-        "il.INVENTORY_LOCATION_ADDRESS, il.INVENTORY_LOCATION_LAT, " +
-        "il.INVENTORY_LOCATION_LONG, lilt.INVENTORY_LOCATION_TYPE_TITLE " +
-        "FROM INVENTORY_LOCATION il " +
-        "INNER JOIN LT_INVENTORY_LOCATION_TYPE lilt " +
-        "ON il.LT_INVENTORY_LOCATION_TYPE_ID = lilt.LT_INVENTORY_LOCATION_TYPE_ID " +
-        "WHERE ISNULL(IL.IS_DELETED,0) = 0 AND ? IS NOT NULL"));
+        server.createContext("/inventoryLocationTypesAPI",          new apiManagement.reportBasedOnUserTokenMaker( selectQueries.inventoryLocationTypes.sql() ));
+        // List of inventory locations with readable type name not type ID (only non-deleted)
+        server.createContext("/inventoryLocationsReadableAPI",      new apiManagement.reportBasedOnUserTokenMaker( selectQueries.inventoryLocationsReadable.sql() ));
         
         server.setExecutor(null);
         server.start();

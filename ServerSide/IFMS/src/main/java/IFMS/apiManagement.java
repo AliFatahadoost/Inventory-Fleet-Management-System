@@ -112,6 +112,7 @@ public class apiManagement{
         boolean isAuthenticated = token != null && dataBaseUtils.isAuthenticated(token);
         if (!isAuthenticated) {
             webServerUtils.refreshPage(exchange);
+            return;
         }
         //System.out.println("hello");
         if("POST".equals(exchange.getRequestMethod())){
@@ -154,400 +155,186 @@ public class apiManagement{
         }
     }
     
-    public static class createNewUser implements HttpHandler
-    {
+    public static class manageInventoryStockRequest implements HttpHandler {
         @Override
-        public void handle(HttpExchange exchange) throws IOException
-        {
-            String token = webServerUtils.extractTokenFromCookie(exchange); 
-            if("POST".equals(exchange.getRequestMethod())){
+        public void handle(HttpExchange exchange) throws IOException {
+            String token = webServerUtils.extractTokenFromCookie(exchange);
+            if ("POST".equals(exchange.getRequestMethod())) {
                 InputStream is = exchange.getRequestBody();
                 BufferedReader reader = new BufferedReader(new InputStreamReader(is, "UTF-8"));
                 StringBuilder sb = new StringBuilder();
                 String line;
-                while((line = reader.readLine()) != null)
+                while ((line = reader.readLine()) != null) {
+                    sb.append(line);
+                }
+                reader.close();
+                String userData = sb.toString();
+                String[][] userSentJSON = webServerUtils.jsonParser(userData);
+
+                boolean isAuthenticated = token != null && dataBaseUtils.isAuthenticated(token);
+                if (!isAuthenticated) {
+                    return;
+                }
+
+                // Expect JSON array with these elements in order:
+                // [ACTION, INVENTORY_STOCK_REQUEST_ID, DRIVER_ID]
+                String action = userSentJSON[0][0];
+                String requestId = userSentJSON[0][1];  // INVENTORY_STOCK_REQUEST_ID
+                String driverId  = userSentJSON[0][2];  // DRIVER_ID (only used for ACCEPT_REQUEST)
+
+                String jsonResponse = dataBaseUtils.runSelectQueryGetJSON(
+                    "EXEC MANAGE_INVENTORY_STOCK_REQUEST ?, ?, ?",
+                    action,
+                    requestId,
+                    driverId
+                );
+
+                // If the action is a GET (select), send the resulting JSON back to the client.
+                // For ACCEPT mode, the procedure returns "SELECT 1" – we just confirm success.
+                if (LOWER(action).equals("get_request_details")) {
+                    exchange.getResponseHeaders().set("Content-Type", "application/json");
+                    exchange.sendResponseHeaders(200, jsonResponse.getBytes().length);
+                    OutputStream os = exchange.getResponseBody();
+                    os.write(jsonResponse.getBytes());
+                    os.close();
+                } else {
+                    exchange.sendResponseHeaders(200, -1);
+                }
+                exchange.close();
+
+                // Optional activity log
+                // dataBaseUtils.runSelectQueryGetJSON("EXEC ACTIVITY_LOG_MANAGER 0, ?, ?",
+                //     token, "user managed inventory stock request via API");
+            }
+        }
+
+        // Helper method to avoid importing java.util.Locale
+        private static String LOWER(String s) {
+            return s == null ? null : s.toLowerCase();
+        }
+    }
+    
+    
+    
+    public static class dateModifyApiGen implements HttpHandler {
+        
+        public static class builder{
+            
+            private String  apiName;
+            private String  methodAccepted;
+            private String  query;
+            private int     parametersCount; 
+
+            public builder setApiName(String apiName){ this.apiName = apiName; return this;}
+            public builder setMethodAccepted(String methodAccepted){ this.methodAccepted = methodAccepted.toUpperCase(); return this;}
+            public builder setQuery(String query){ this.query = query; return this;}
+            private void setPerametersCount(){ this.parametersCount = countParameters(this.query != null? this.query : "A"); }
+            
+            public dateModifyApiGen build()
+            {
+                this.setPerametersCount();
+                if(!(this.apiName != null && this.methodAccepted != null && this.query != null && this.parametersCount > 0))
                 {
-                    sb.append(line);
-                }
-                reader.close();
-                String userData = sb.toString();
-                String[][] sentUserJSON = webServerUtils.jsonParser(userData);
-                boolean isAuthenticated = token != null && dataBaseUtils.isAuthenticated(token);
-                if (!isAuthenticated) {
-                    return;
-                }
-                dataBaseUtils.runSelectQueryGetJSON("EXEC SIGNUP_NEWUSER ?, ?", sentUserJSON[0][0], sentUserJSON[0][1]);
-                exchange.sendResponseHeaders(200, -1);
-                exchange.close();
-                //dataBaseUtils.runSelectQueryGetJSON("EXEC ACTIVITY_LOG_MANAGER 0, ?, ?", token, "user changed Task Status via API");
-            }
-
-        }
-    }
-    
-    
-    public static class addRevokeRoles implements HttpHandler
-    {
-        @Override
-        public void handle(HttpExchange exchange) throws IOException
-        {
-            String token = webServerUtils.extractTokenFromCookie(exchange); 
-            if("POST".equals(exchange.getRequestMethod())){
-                InputStream is = exchange.getRequestBody();
-                String userDataSent;
-                BufferedReader reader = new BufferedReader(new InputStreamReader(is, "UTF-8"));
-                StringBuilder sb = new StringBuilder();
-                String line;
-                while((line = reader.readLine()) != null)
-                {
-                    sb.append(line);
-                }
-                reader.close();
-                String userData = sb.toString();
-                String[][] userSentJSON = webServerUtils.jsonParser(userData);
-                boolean isAuthenticated = token != null && dataBaseUtils.isAuthenticated(token);
-                if (!isAuthenticated) {
-                    return;
-                }
-                dataBaseUtils.runSelectQueryGetJSON("EXEC ROLES_MANAGEMENT_ID_BASED ?, ?, ?", userSentJSON[0][0], userSentJSON[0][1], userSentJSON[0][2]);
-                exchange.sendResponseHeaders(200, -1);
-                exchange.close();
-                //dataBaseUtils.runSelectQueryGetJSON("EXEC ACTIVITY_LOG_MANAGER 0, ?, ?", token, "user changed Task Status via API");
-            }
-
-        }
-    }
-    
-    
-    public static class createUpdateDeleteRoles implements HttpHandler
-    {
-        @Override
-        public void handle(HttpExchange exchange) throws IOException
-        {
-            String token = webServerUtils.extractTokenFromCookie(exchange); 
-            if("POST".equals(exchange.getRequestMethod())){
-                InputStream is = exchange.getRequestBody();
-                String userDataSent;
-                BufferedReader reader = new BufferedReader(new InputStreamReader(is, "UTF-8"));
-                StringBuilder sb = new StringBuilder();
-                String line;
-                while((line = reader.readLine()) != null)
-                {
-                    sb.append(line);
-                }
-                reader.close();
-                String userData = sb.toString();
-                String[][] userSentJSON = webServerUtils.jsonParser(userData);
-                boolean isAuthenticated = token != null && dataBaseUtils.isAuthenticated(token);
-                if (!isAuthenticated) {
-                    return;
-                }
-                dataBaseUtils.runSelectQueryGetJSON("EXEC CREATE_UPDATE_DELETE_ROLES ?, ?, ?, ?, ?, ?", userSentJSON[0][0], userSentJSON[0][1], userSentJSON[0][2],
-                                                                                                        userSentJSON[0][3], userSentJSON[0][4], userSentJSON[0][5]);
-                exchange.sendResponseHeaders(200, -1);
-                exchange.close();
-                //dataBaseUtils.runSelectQueryGetJSON("EXEC ACTIVITY_LOG_MANAGER 0, ?, ?", token, "user changed Task Status via API");
-            }
-
-        }
-    }
-    
-    public static class manageProductsMovementTrips implements HttpHandler {
-        @Override
-        public void handle(HttpExchange exchange) throws IOException {
-            String token = webServerUtils.extractTokenFromCookie(exchange);
-            if ("POST".equals(exchange.getRequestMethod())) {
-                InputStream is = exchange.getRequestBody();
-                BufferedReader reader = new BufferedReader(new InputStreamReader(is, "UTF-8"));
-                StringBuilder sb = new StringBuilder();
-                String line;
-                while ((line = reader.readLine()) != null) {
-                    sb.append(line);
-                }
-                reader.close();
-                String userData = sb.toString();
-                String[][] userSentJSON = webServerUtils.jsonParser(userData);
-
-                boolean isAuthenticated = token != null && dataBaseUtils.isAuthenticated(token);
-                if (!isAuthenticated) {
-                    return;
-                }
-
-                // The JSON keys are expected in this order:
-                // action, products_movements_id, drivers_id, vehicle_id,
-                // comes_from_location_id, goes_to_location_id, est_arival,
-                // did_arive, products_movements_list_id, products_id, products_count
-                dataBaseUtils.runSelectQueryGetJSON(
-                    "EXEC MANAGE_PRODUCTS_MOVEMENT_TRIPS ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?",
-                    userSentJSON[0][0],  // @ACTION
-                    userSentJSON[0][1],  // @PRODUCTS_MOVEMENTS_ID
-                    userSentJSON[0][2],  // @DRIVERS_ID
-                    userSentJSON[0][3],  // @VEHICLE_ID
-                    userSentJSON[0][4],  // @COMES_FROM_LOCATION_ID
-                    userSentJSON[0][5],  // @GOES_TO_LOCATION_ID
-                    userSentJSON[0][6],  // @EST_ARIVAL
-                    userSentJSON[0][7],  // @DID_ARIVE
-                    userSentJSON[0][8],  // @PRODUCTS_MOVEMENTS_LIST_ID
-                    userSentJSON[0][9],  // @PRODUCTS_ID
-                    userSentJSON[0][10]  // @PRODUCTS_COUNT
-                );
-
-                exchange.sendResponseHeaders(200, -1);
-                exchange.close();
-
-                // Optional activity log (commented out as in the reference)
-                // dataBaseUtils.runSelectQueryGetJSON("EXEC ACTIVITY_LOG_MANAGER 0, ?, ?", token, "user managed products movement trip via API");
-            }
-        }
-    }
-    
-    public static class manageInventoryInfstructure implements HttpHandler {
-        @Override
-        public void handle(HttpExchange exchange) throws IOException {
-            String token = webServerUtils.extractTokenFromCookie(exchange);
-            if ("POST".equals(exchange.getRequestMethod())) {
-                InputStream is = exchange.getRequestBody();
-                BufferedReader reader = new BufferedReader(new InputStreamReader(is, "UTF-8"));
-                StringBuilder sb = new StringBuilder();
-                String line;
-                while ((line = reader.readLine()) != null) {
-                    sb.append(line);
-                }
-                reader.close();
-                String userData = sb.toString();
-                String[][] userSentJSON = webServerUtils.jsonParser(userData);
-
-                boolean isAuthenticated = token != null && dataBaseUtils.isAuthenticated(token);
-                if (!isAuthenticated) {
-                    return;
-                }
-
-                // Parameters are expected in this order:
-                // @ACTION, @INVENTORY_LOCATION_TITLE, @NEW_INVENTORY_LOCATION_TITLE,
-                // @PRODUCTS_NAME, @NEW_PRODUCTS_NAME, @PRODUCTS_CATEGORY_ID,
-                // @PRODUCTS_CATEGORY_NAME, @NEW_PRODUCTS_CATEGORY_NAME
-                dataBaseUtils.runSelectQueryGetJSON(
-                    "EXEC MANAGE_INVENTORY_INFSTRUCTURE ?, ?, ?, ?, ?, ?, ?, ?",
-                    userSentJSON[0][0],  // @ACTION
-                    userSentJSON[0][1],  // @INVENTORY_LOCATION_TITLE
-                    userSentJSON[0][2],  // @NEW_INVENTORY_LOCATION_TITLE
-                    userSentJSON[0][3],  // @PRODUCTS_NAME
-                    userSentJSON[0][4],  // @NEW_PRODUCTS_NAME
-                    userSentJSON[0][5],  // @PRODUCTS_CATEGORY_ID
-                    userSentJSON[0][6],  // @PRODUCTS_CATEGORY_NAME
-                    userSentJSON[0][7]   // @NEW_PRODUCTS_CATEGORY_NAME
-                );
-
-                exchange.sendResponseHeaders(200, -1);
-                exchange.close();
-
-                // Optional activity log (commented out as in reference)
-                // dataBaseUtils.runSelectQueryGetJSON("EXEC ACTIVITY_LOG_MANAGER 0, ?, ?", token, "user managed inventory infrastructure via API");
-            }
-        }
-    }
-    
-    public static class HandleInventoryRequest implements HttpHandler {
-        @Override
-        public void handle(HttpExchange exchange) throws IOException {
-            String token = webServerUtils.extractTokenFromCookie(exchange);
-            if ("POST".equals(exchange.getRequestMethod())) {
-                InputStream is = exchange.getRequestBody();
-                BufferedReader reader = new BufferedReader(new InputStreamReader(is, "UTF-8"));
-                StringBuilder sb = new StringBuilder();
-                String line;
-                while ((line = reader.readLine()) != null) {
-                    sb.append(line);
-                }
-                reader.close();
-                String userData = sb.toString();
-                String[][] userSentJSON = webServerUtils.jsonParser(userData);
-
-                boolean isAuthenticated = token != null && dataBaseUtils.isAuthenticated(token);
-                if (!isAuthenticated) {
-                    return;
-                }
-
-                // Parameters order:
-                // @ACTION, @INVENTORY_STOCK_REQUEST_ID, @INVENTORY_ID,
-                // @PRODUCTS_ID, @PRODUCTS_COUNT
-                dataBaseUtils.runSelectQueryGetJSON(
-                    "EXEC HANDLE_INVENTORY_REQUEST ?, ?, ?, ?, ?",
-                    userSentJSON[0][0],  // @ACTION
-                    userSentJSON[0][1],  // @INVENTORY_STOCK_REQUEST_ID
-                    userSentJSON[0][2],  // @INVENTORY_ID
-                    userSentJSON[0][3],  // @PRODUCTS_ID
-                    userSentJSON[0][4]   // @PRODUCTS_COUNT
-                );
-
-                exchange.sendResponseHeaders(200, -1);
-                exchange.close();
-
-                // Optional activity log (commented out as in the reference)
-                // dataBaseUtils.runSelectQueryGetJSON("EXEC ACTIVITY_LOG_MANAGER 0, ?, ?", token, "user handled inventory request via API");
-            }
-        }
-    }
-    
-    public static class createUpdateDeleteVehicle implements HttpHandler {
-        @Override
-        public void handle(HttpExchange exchange) throws IOException {
-            String token = webServerUtils.extractTokenFromCookie(exchange);
-            if ("POST".equals(exchange.getRequestMethod())) {
-                InputStream is = exchange.getRequestBody();
-                BufferedReader reader = new BufferedReader(new InputStreamReader(is, "UTF-8"));
-                StringBuilder sb = new StringBuilder();
-                String line;
-                while ((line = reader.readLine()) != null) {
-                    sb.append(line);
-                }
-                reader.close();
-                String userData = sb.toString();
-                String[][] userSentJSON = webServerUtils.jsonParser(userData);
-
-                boolean isAuthenticated = token != null && dataBaseUtils.isAuthenticated(token);
-                if (!isAuthenticated) {
-                    return;
-                }
-
-                // Parameters order: @ACTION, @VEHICLE_ID, @VEHICLE_NAME, @VEHICLE_LICENCE_PLATE
-                dataBaseUtils.runSelectQueryGetJSON(
-                    "EXEC CREATE_UPDATE_DELETE_VEHICLE ?, ?, ?, ?",
-                    userSentJSON[0][0],  // @ACTION
-                    userSentJSON[0][1],  // @VEHICLE_ID
-                    userSentJSON[0][2],  // @VEHICLE_NAME
-                    userSentJSON[0][3]   // @VEHICLE_LICENCE_PLATE
-                );
-
-                exchange.sendResponseHeaders(200, -1);
-                exchange.close();
-
-                // Optional activity log (commented out as in the reference)
-                // dataBaseUtils.runSelectQueryGetJSON("EXEC ACTIVITY_LOG_MANAGER 0, ?, ?", token, "user managed vehicle via API");
-            }
-        }
-    }
-    
-    public static class createUpdateDeleteInventoryLocation implements HttpHandler {
-        @Override
-        public void handle(HttpExchange exchange) throws IOException {
-            String token = webServerUtils.extractTokenFromCookie(exchange);
-            if ("POST".equals(exchange.getRequestMethod())) {
-                InputStream is = exchange.getRequestBody();
-                BufferedReader reader = new BufferedReader(new InputStreamReader(is, "UTF-8"));
-                StringBuilder sb = new StringBuilder();
-                String line;
-                while ((line = reader.readLine()) != null) {
-                    sb.append(line);
-                }
-                reader.close();
-                String userData = sb.toString();
-                String[][] userSentJSON = webServerUtils.jsonParser(userData);
-
-                boolean isAuthenticated = token != null && dataBaseUtils.isAuthenticated(token);
-                if (!isAuthenticated) {
-                    return;
-                }
-
-                // Parameters order:
-                // @ACTION, @INVENTORY_LOCATION_ID, @INVENTORY_LOCATION_NAME,
-                // @INVENTORY_LOCATION_ADDRESS, @INVENTORY_LOCATION_LAT,
-                // @INVENTORY_LOCATION_LONG, @LT_INVENTORY_LOCATION_TYPE_ID
-                dataBaseUtils.runSelectQueryGetJSON(
-                    "EXEC CREATE_UPDATE_DELETE_INVENTORY_LOCATION ?, ?, ?, ?, ?, ?, ?",
-                    userSentJSON[0][0],  // @ACTION
-                    userSentJSON[0][1],  // @INVENTORY_LOCATION_ID
-                    userSentJSON[0][2],  // @INVENTORY_LOCATION_NAME
-                    userSentJSON[0][3],  // @INVENTORY_LOCATION_ADDRESS
-                    userSentJSON[0][4],  // @INVENTORY_LOCATION_LAT
-                    userSentJSON[0][5],  // @INVENTORY_LOCATION_LONG
-                    userSentJSON[0][6]   // @LT_INVENTORY_LOCATION_TYPE_ID
-                );
-
-                exchange.sendResponseHeaders(200, -1);
-                exchange.close();
-
-                // Optional activity log (commented out as in the reference)
-                // dataBaseUtils.runSelectQueryGetJSON("EXEC ACTIVITY_LOG_MANAGER 0, ?, ?", token, "user managed inventory location via API");
-            }
-        }
-    }
-    
-    public static class createUpdateDeleteDriver implements HttpHandler {
-        @Override
-        public void handle(HttpExchange exchange) throws IOException {
-            String token = webServerUtils.extractTokenFromCookie(exchange);
-            if ("POST".equals(exchange.getRequestMethod())) {
-                InputStream is = exchange.getRequestBody();
-                BufferedReader reader = new BufferedReader(new InputStreamReader(is, "UTF-8"));
-                StringBuilder sb = new StringBuilder();
-                String line;
-                while ((line = reader.readLine()) != null) {
-                    sb.append(line);
-                }
-                reader.close();
-                String userData = sb.toString();
-                String[][] userSentJSON = webServerUtils.jsonParser(userData);
-
-                boolean isAuthenticated = token != null && dataBaseUtils.isAuthenticated(token);
-                if (!isAuthenticated) {
-                    return;
-                }
-
-                // Parameters order:
-                // @ACTION, @DRIVER_ID, @DRIVER_NAME, @DRIVER_LAST_NAME,
-                // @DRIVERS_NATIONAL_CODE, @DRIVERS_PHONE_NUMBER
-                dataBaseUtils.runSelectQueryGetJSON(
-                    "EXEC CREATE_UPDATE_DELETE_DRIVER ?, ?, ?, ?, ?, ?",
-                    userSentJSON[0][0],  // @ACTION
-                    userSentJSON[0][1],  // @DRIVER_ID
-                    userSentJSON[0][2],  // @DRIVER_NAME
-                    userSentJSON[0][3],  // @DRIVER_LAST_NAME
-                    userSentJSON[0][4],  // @DRIVERS_NATIONAL_CODE
-                    userSentJSON[0][5]   // @DRIVERS_PHONE_NUMBER
-                );
-
-                exchange.sendResponseHeaders(200, -1);
-                exchange.close();
-
-                // Optional activity log (commented out as in the reference)
-                // dataBaseUtils.runSelectQueryGetJSON("EXEC ACTIVITY_LOG_MANAGER 0, ?, ?", token, "user managed driver via API");
-            }
-        }
-    }
-    
-    public static class updateUserCredByAdmin implements HttpHandler
-    {
-        @Override
-        public void handle(HttpExchange exchange) throws IOException
-        {
-            String token = webServerUtils.extractTokenFromCookie(exchange); 
-            if("POST".equals(exchange.getRequestMethod())){
-                InputStream is = exchange.getRequestBody();
-                String userDataSent;
-                BufferedReader reader = new BufferedReader(new InputStreamReader(is, "UTF-8"));
-                StringBuilder sb = new StringBuilder();
-                String line;
-                while((line = reader.readLine()) != null)
-                {
-                    sb.append(line);
-                }
-                reader.close();
-                String userData = sb.toString();
-                String[][] userSentJSON = webServerUtils.jsonParser(userData);
-                boolean isAuthenticated = token != null && dataBaseUtils.isAuthenticated(token);
-                if (!isAuthenticated) {
-                    return;
+                    throw new IllegalArgumentException("one of the Listed variables are not provided \n"
+                                                      +"apiName : " + this.apiName +"\n"
+                                                      +"methodAccepted : " + this.methodAccepted + "\n"
+                                                      +"query : " + this.query + "\n" 
+                                                      +"parametersCount : " + this.parametersCount + "\n"
+                                                      +"remember nothing should be null and the count shouldnt be less then Zero");
                 }
                 
-                dataBaseUtils.runSelectQueryGetJSON("EXEC CHANGE_USER_CRED_BY_ADMIN ?, ?, ?", userSentJSON[0][0], userSentJSON[0][1], userSentJSON[0][2]);
-                exchange.sendResponseHeaders(200, -1);
+                
+                return new dateModifyApiGen(this.apiName, this.methodAccepted, this.query, this.parametersCount);
+            }
+            
+            
+            private int countParameters(String query) {
+                int count = 0;
+
+                for (char c : query.toCharArray()) {
+                    if (c == '?') {
+                        count++;
+                    }
+                }
+
+                return count;
+            }
+            
+        }
+        
+        private final String apiName;
+        private final String methodAccepted;
+        private final String query;
+        private final int parametersCount;
+        
+        private dateModifyApiGen(String apiName, String methodAccepted, String query, int parametersCount)
+        {
+        
+            this.apiName = apiName;
+            this.methodAccepted = methodAccepted;
+            this.query = query;
+            this.parametersCount = parametersCount;
+        
+        }
+        
+        
+        @Override
+        public void handle(HttpExchange exchange) throws IOException {
+            String token = webServerUtils.extractTokenFromCookie(exchange);
+            boolean isAuthenticated = token != null && dataBaseUtils.isAuthenticated(token);
+            if (!isAuthenticated) {
+                return;
+            }
+            
+            if (!methodAccepted.equals(exchange.getRequestMethod())) {
+                exchange.sendResponseHeaders(405, -1);
                 exchange.close();
-                //dataBaseUtils.runSelectQueryGetJSON("EXEC ACTIVITY_LOG_MANAGER 0, ?, ?", token, "user changed Task Status via API");
+                return;
+            } 
+                
+            
+            InputStream is = exchange.getRequestBody();
+            BufferedReader reader = new BufferedReader(new InputStreamReader(is, "UTF-8"));
+            StringBuilder sb = new StringBuilder();
+            String line;
+            while ((line = reader.readLine()) != null) {
+                sb.append(line);
+            }
+            reader.close();
+            String userData = sb.toString();
+            String[][] userSentJSON = webServerUtils.jsonParser(userData);
+
+            
+
+
+            if(userSentJSON.length == 0 || userSentJSON[0].length != this.parametersCount){
+                exchange.sendResponseHeaders(400, -1);
+                exchange.close();
+                throw new IllegalArgumentException(
+                    "Expected " + this.parametersCount +
+                    " parameters, received " + (userSentJSON.length == 0 ? 0 : userSentJSON[0].length)
+                
+                );
             }
 
+            String statusResult = dataBaseUtils.runSelectQueryGetJSON(
+                                    this.query,
+                                    userSentJSON[0] 
+                                  );
+
+            String status = webServerUtils.jsonParser(statusResult)[0][0];
+            if("1".equals(status))
+                exchange.sendResponseHeaders(200, -1);
+            else if("0".equals(status))
+                exchange.sendResponseHeaders(500, -1);
+
+            exchange.close();
+
+            // dataBaseUtils.runSelectQueryGetJSON("EXEC ACTIVITY_LOG_MANAGER 0, ?, ?", token, "user managed driver via API");
         }
+        
     }
+    
     
         
     static class loginSignUpHandlingAPI implements HttpHandler{ //this method handles SignUps and Logins    

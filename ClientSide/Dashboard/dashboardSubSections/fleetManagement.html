@@ -2,10 +2,566 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>fleet Management</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+    <title>Fleet Management</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <style>
+        :root {
+            --bg-body: #eef2f7; --bg-card: #ffffff; --bg-input: #f8fafc;
+            --bg-table-header: #f1f5f9; --bg-table-row-even: #fafbfc; --bg-table-row-hover: #eef2ff;
+            --text-primary: #1e293b; --text-secondary: #475569; --text-muted: #94a3b8;
+            --text-input: #1e293b; --border-card: #dde4ef; --border-input: #d5dce8;
+            --border-table: #e2e8f0; --accent: #4a6fa5; --radius-sm: 6px; --radius-md: 10px; --radius-lg: 14px;
+            --transition: 0.2s;
+        }
+        body.dark-mode {
+            --bg-body: #171a21; --bg-card: #1e2128; --bg-input: #252830;
+            --bg-table-header: #252830; --bg-table-row-even: #1f2229; --bg-table-row-hover: #282d38;
+            --text-primary: #e2e6ec; --text-secondary: #b0b8c4; --text-muted: #6b7280;
+            --text-input: #e2e6ec; --border-card: #2e333d; --border-input: #3a404d; --border-table: #2a2f3a;
+        }
+        * { box-sizing: border-box; font-family: 'Segoe UI', system-ui, sans-serif; margin: 0; padding: 0; }
+        body { background: var(--bg-body); color: var(--text-primary); height: 100vh; display: flex; overflow: hidden; transition: background 0.3s; }
+        button { cursor: pointer; border: none; background: none; font-size: inherit; }
+        input, select, textarea { font-size: 0.9rem; }
+
+        .app-container { display: flex; flex-direction: column; width: 100%; height: 100%; }
+        .tab-nav { display: flex; background: var(--bg-card); border-bottom: 2px solid var(--border-table); flex-shrink: 0; }
+        .tab-btn {
+            padding: 12px 24px; font-weight: 600; color: var(--text-secondary);
+            background: transparent; border-bottom: 3px solid transparent; transition: all var(--transition);
+        }
+        .tab-btn.active { color: var(--accent); border-bottom-color: var(--accent); background: var(--bg-table-row-hover); }
+        .tab-btn:hover { background: var(--bg-table-row-hover); }
+        .tab-content { flex: 1; min-height: 0; overflow-y: auto; padding: 16px; }
+        .tab-panel { display: none; }
+        .tab-panel.active { display: block; height: 100%; }
+
+        .section-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+        .section-title { font-weight: 700; font-size: 1rem; }
+        .btn-add { background: var(--accent); color: #fff; padding: 6px 14px; border-radius: var(--radius-sm); font-weight: 600; font-size: 0.85rem; }
+        .form-row { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 10px; }
+        .form-group { flex: 1; min-width: 150px; }
+        .form-group label { display: block; font-weight: 600; font-size: 0.8rem; margin-bottom: 4px; color: var(--text-secondary); }
+        .form-group input, .form-group select, .form-group textarea {
+            width: 100%; padding: 8px; border: 1px solid var(--border-input); border-radius: var(--radius-sm);
+            background: var(--bg-input); color: var(--text-input);
+        }
+        .btn-save, .btn-cancel { padding: 8px 16px; border-radius: var(--radius-sm); font-weight: 600; }
+        .btn-save { background: var(--accent); color: #fff; border: none; }
+        .btn-cancel { background: var(--bg-input); border: 1px solid var(--border-input); color: var(--text-primary); }
+        .form-actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 8px; }
+        .data-table { width: 100%; border-collapse: collapse; font-size: 0.82rem; margin-top: 12px; }
+        .data-table th { background: var(--bg-table-header); padding: 8px; text-align: left; }
+        .data-table td { padding: 8px; border-bottom: 1px solid var(--border-table); }
+        .data-table tbody tr:nth-child(even) { background: var(--bg-table-row-even); }
+        .data-table tbody tr:hover { background: var(--bg-table-row-hover); }
+        .data-table tbody tr.selected { background: var(--bg-table-row-hover); outline: 2px solid var(--accent); }
+        .btn-icon { font-size: 1rem; margin: 0 4px; cursor: pointer; background: none; border: none; }
+
+        /* Trip layout */
+        .trip-layout { display: flex; gap: 16px; height: 100%; }
+        .trip-left { flex: 1; min-width: 0; display: flex; flex-direction: column; overflow: auto; }
+        .trip-right { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+        .map-container { flex: 3; min-height: 300px; border-radius: var(--radius-md); border: 1px solid var(--border-input); }
+        .trip-controls { flex-shrink: 0; padding: 10px 0; display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+        .trip-controls select, .trip-controls button { padding: 8px 12px; border-radius: var(--radius-sm); }
+        .btn-select-driver { background: var(--bg-input); border: 1px solid var(--border-input); color: var(--text-primary); }
+        .btn-accept { background: #22c55e; color: #fff; padding: 6px 14px; border-radius: var(--radius-sm); font-weight: 600; }
+        .btn-accept:disabled { opacity: 0.5; cursor: not-allowed; }
+
+        /* Modal */
+        .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; z-index: 1000; visibility: hidden; opacity: 0; transition: 0.2s; }
+        .modal-overlay.active { visibility: visible; opacity: 1; }
+        .modal-content { background: var(--bg-card); border-radius: var(--radius-lg); padding: 20px; min-width: 400px; max-width: 600px; max-height: 70vh; overflow-y: auto; box-shadow: 0 20px 40px rgba(0,0,0,0.3); }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; }
+        .modal-search { margin-bottom: 12px; }
+        .modal-search input { width: 100%; padding: 8px; border: 1px solid var(--border-input); border-radius: var(--radius-sm); background: var(--bg-input); color: var(--text-input); }
+        .modal-table { width: 100%; border-collapse: collapse; }
+        .modal-table th, .modal-table td { padding: 8px; border-bottom: 1px solid var(--border-table); }
+        .modal-table tr { cursor: pointer; }
+        .modal-table tr:hover { background: var(--bg-table-row-hover); }
+        .modal-footer { display: flex; justify-content: flex-end; gap: 10px; margin-top: 16px; }
+
+        .toast { position: fixed; bottom: 30px; right: 30px; background: #1e293b; color: #fff; padding: 10px 20px; border-radius: var(--radius-sm); z-index: 2000; opacity: 0; transition: 0.3s; }
+        .toast.show { opacity: 1; }
+        body.dark-mode .toast { background: #f1f5f9; color: #1e293b; }
+    </style>
 </head>
 <body>
-    <p>this is fleet Management</p>
+<div class="app-container">
+    <div class="tab-nav">
+        <button class="tab-btn active" data-tab="teams">🚛 Fleet Teams</button>
+        <button class="tab-btn" data-tab="drivers">👤 Drivers</button>
+        <button class="tab-btn" data-tab="trips">📍 Trip Requests</button>
+    </div>
+
+    <div class="tab-content">
+        <!-- Fleet Teams Panel (restored) -->
+        <div class="tab-panel active" id="panel-teams">
+            <div class="section-header">
+                <span class="section-title">Fleet Teams</span>
+                <button class="btn-add" id="btnAddTeam">+ New Team</button>
+            </div>
+            <div id="teamForm" style="display:none; margin-bottom:12px;">
+                <div class="form-row">
+                    <div class="form-group"><label>Team Name</label><input type="text" id="teamName" placeholder="Enter name"></div>
+                    <div class="form-group"><label>Description</label><input type="text" id="teamDesc" placeholder="Description"></div>
+                </div>
+                <div class="form-actions">
+                    <button class="btn-cancel" id="cancelTeamForm">Cancel</button>
+                    <button class="btn-save" id="saveTeamBtn">Save Team</button>
+                </div>
+            </div>
+            <table class="data-table" id="teamsTable">
+                <thead><tr><th>Name</th><th>Description</th><th></th></tr></thead>
+                <tbody></tbody>
+            </table>
+        </div>
+
+        <!-- Drivers Panel (restored) -->
+        <div class="tab-panel" id="panel-drivers">
+            <div class="section-header">
+                <span class="section-title">Drivers</span>
+                <button class="btn-add" id="btnAddDriver">+ New Driver</button>
+            </div>
+            <div id="driverForm" style="display:none; margin-bottom:12px;">
+                <div class="form-row">
+                    <div class="form-group"><label>First Name</label><input type="text" id="driverName" placeholder="First name"></div>
+                    <div class="form-group"><label>Last Name</label><input type="text" id="driverLastName" placeholder="Last name"></div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group"><label>National Code</label><input type="text" id="driverNationalCode" placeholder="National code"></div>
+                    <div class="form-group"><label>Phone</label><input type="text" id="driverPhone" placeholder="Phone"></div>
+                </div>
+                <div class="form-group"><label>Fleet Team</label><select id="driverTeamSelect"><option value="">-- Select Team --</option></select></div>
+                <div class="form-actions">
+                    <button class="btn-cancel" id="cancelDriverForm">Cancel</button>
+                    <button class="btn-save" id="saveDriverBtn">Save Driver</button>
+                </div>
+            </div>
+            <table class="data-table" id="driversTable">
+                <thead><tr><th>Full Name</th><th>National Code</th><th>Phone</th><th></th></tr></thead>
+                <tbody></tbody>
+            </table>
+        </div>
+
+        <!-- Trip Requests Panel (with larger map & OSRM) -->
+        <div class="tab-panel" id="panel-trips" style="height:100%;">
+            <div class="trip-layout">
+                <div class="trip-left">
+                    <table class="data-table" id="requestsTable" style="margin-top:0;">
+                        <thead><tr><th>ID</th><th>From</th><th>To</th><th>Product</th><th>Qty</th><th>Status</th></tr></thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+                <div class="trip-right">
+                    <div class="map-container" id="mapContainer"></div>
+                    <div class="trip-controls">
+                        <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
+                            <div class="form-group" style="min-width:140px; margin-bottom:0;">
+                                <label style="font-size:0.75rem;">Fleet Team</label>
+                                <select id="tripTeamSelect"><option value="">-- Select Team --</option></select>
+                            </div>
+                            <button class="btn-select-driver" id="btnOpenDriverModal" disabled>👤 Select Driver</button>
+                            <span id="selectedDriverDisplay" style="font-weight:600; color:var(--accent);"></span>
+                            <button class="btn-accept" id="btnAcceptRequest" disabled>Accept Request</button>
+                        </div>
+                        <div style="font-size:0.85rem; width:100%; margin-top:4px;">
+                            <span id="distanceText">Distance: --</span> |
+                            <span id="timeText">Est. Time: --</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Driver Selection Modal -->
+<div class="modal-overlay" id="driverModal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h4>Select Driver</h4>
+            <button class="close-btn" id="closeDriverModalBtn">✖</button>
+        </div>
+        <div class="modal-search">
+            <input type="text" id="driverModalSearch" placeholder="Search driver...">
+        </div>
+        <div style="max-height:300px; overflow-y:auto;">
+            <table class="modal-table" id="driverModalTable">
+                <thead><tr><th>ID</th><th>Full Name</th><th>National Code</th></tr></thead>
+                <tbody></tbody>
+            </table>
+            <div id="noDriverMsg" style="text-align:center; padding:20px; display:none;">No drivers found for this team</div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn-cancel" id="cancelDriverModalBtn">Cancel</button>
+        </div>
+    </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+(() => {
+    // Theme sync
+    function syncTheme() {
+        try {
+            const pb = parent.document.querySelector("body");
+            document.body.classList.toggle('dark-mode', pb && pb.classList.contains('dark-mode'));
+        } catch(e) {}
+    }
+    syncTheme();
+    try { new MutationObserver(syncTheme).observe(parent.document.querySelector("body"), {attributes: true, attributeFilter: ['class']}); } catch(e) {}
+
+    const API = window.location.origin;
+    const toast = document.getElementById('toast');
+    function showToast(msg) { toast.textContent = msg; toast.classList.add('show'); setTimeout(() => toast.classList.remove('show'), 2500); }
+
+    let teams = [], drivers = [], requests = [];
+    let map = null, markers = [], polyline = null;
+    let selectedRequestId = null, selectedDriverId = null;
+    let allDriversWithTeam = [];
+
+    // Tab switching
+    document.querySelectorAll('.tab-btn').forEach(btn => btn.addEventListener('click', () => {
+        const tab = btn.dataset.tab;
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+        document.getElementById(`panel-${tab}`).classList.add('active');
+        if (tab === 'trips') initMap();
+    }));
+
+    // API helpers
+    async function fetchJSON(url) {
+        const res = await fetch(url, { method: 'POST' });
+        if (!res.ok) throw new Error('Fetch failed');
+        return res.json();
+    }
+    async function callSP(url, payload) {
+        const res = await fetch(API + url, { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify(payload) });
+        if (!res.ok) throw new Error('SP call failed');
+        if (res.headers.get('content-length') > 0) return res.json();
+        return null;
+    }
+
+    // OSRM route
+    async function fetchOSRMRoute(lat1, lon1, lat2, lon2) {
+        const url = `https://router.project-osrm.org/route/v1/driving/${lon1},${lat1};${lon2},${lat2}?overview=full&geometries=geojson`;
+        const res = await fetch(url);
+        if (!res.ok) throw new Error('OSRM request failed');
+        const data = await res.json();
+        if (data.routes && data.routes.length > 0) {
+            return data.routes[0].geometry.coordinates.map(coord => [coord[1], coord[0]]);
+        }
+        throw new Error('No route found');
+    }
+
+    // Load data
+    async function loadTeams() {
+        teams = await fetchJSON('/fleetTeamListAPI');
+        renderTeamsTable();
+        populateTeamDropdowns();
+    }
+    async function loadDrivers() {
+        drivers = await fetchJSON('/driversListAPI');
+        try {
+            allDriversWithTeam = await fetchJSON('/driversWithTeamAPI');
+        } catch(e) {
+            allDriversWithTeam = drivers.map(d => ({ ...d, FLEET_TEAM_NAME: '' }));
+        }
+        renderDriversTable();
+        populateTripTeamDropdown();
+    }
+    async function loadRequests() {
+        requests = await fetchJSON('/inventoryStockRequestsAPI');
+        renderRequestsTable();
+    }
+
+    function populateTeamDropdowns() {
+        const sel = document.getElementById('driverTeamSelect');
+        sel.innerHTML = '<option value="">-- Select Team --</option>' + teams.map(t => `<option value="${t.FLEET_TEAM_NAME}">${t.FLEET_TEAM_NAME}</option>`).join('');
+    }
+    function populateTripTeamDropdown() {
+        const sel = document.getElementById('tripTeamSelect');
+        sel.innerHTML = '<option value="">-- Select Team --</option>' + teams.map(t => `<option value="${t.FLEET_TEAM_NAME}">${t.FLEET_TEAM_NAME}</option>`).join('');
+    }
+
+    function renderTeamsTable() {
+        document.querySelector('#teamsTable tbody').innerHTML = teams.map(t => `<tr>
+            <td>${esc(t.FLEET_TEAM_NAME)}</td><td>${esc(t.DESCRIPTION||'')}</td>
+            <td>
+                <button class="btn-icon" data-edit-team="${esc(t.FLEET_TEAM_NAME)}">✏️</button>
+                <button class="btn-icon" data-del-team="${esc(t.FLEET_TEAM_NAME)}">🗑️</button>
+            </td>
+        </tr>`).join('');
+    }
+    function renderDriversTable() {
+        document.querySelector('#driversTable tbody').innerHTML = drivers.map(d => `<tr>
+            <td>${esc(d.DRIVER_FULL_NAME)}</td><td>${esc(d.DRIVERS_NATIONAL_CODE)}</td><td>${esc(d.DRIVERS_PHONE_NUMBER||'')}</td>
+            <td>
+                <button class="btn-icon" data-edit-driver="${esc(d.DRIVERS_NATIONAL_CODE)}">✏️</button>
+                <button class="btn-icon" data-del-driver="${esc(d.DRIVERS_NATIONAL_CODE)}">🗑️</button>
+            </td>
+        </tr>`).join('');
+    }
+    function renderRequestsTable() {
+        document.querySelector('#requestsTable tbody').innerHTML = requests.map(r => {
+            const accepted = r.IS_ACCEPTED_BY_FLEET == 1;
+            return `<tr class="${r.INVENTORY_STOCK_REQUEST_ID == selectedRequestId ? 'selected' : ''}" data-id="${r.INVENTORY_STOCK_REQUEST_ID}">
+                <td>${r.INVENTORY_STOCK_REQUEST_ID}</td><td>${esc(r.REQUESTING_INVENTORY)}</td>
+                <td>${esc(r.SUPPLYING_INVENTORY||'—')}</td><td>${esc(r.PRODUCTS_NAME)}</td>
+                <td>${r.PRODUCTS_COUNT}</td><td>${accepted ? '✅ Accepted' : '⏳ Pending'}</td>
+            </tr>`;
+        }).join('');
+    }
+
+    // ---------- Teams CRUD ----------
+    let editTeamMode = false, originalTeamName = '';
+    document.getElementById('btnAddTeam').addEventListener('click', () => {
+        document.getElementById('teamForm').style.display = 'block';
+        document.getElementById('teamName').value = ''; document.getElementById('teamDesc').value = '';
+        editTeamMode = false;
+    });
+    document.getElementById('cancelTeamForm').addEventListener('click', () => document.getElementById('teamForm').style.display = 'none');
+    document.getElementById('saveTeamBtn').addEventListener('click', async () => {
+        const name = document.getElementById('teamName').value.trim(), desc = document.getElementById('teamDesc').value.trim();
+        if (!name || !desc) return showToast('Name and description required');
+        const action = editTeamMode ? 'MODIFY_FLEET_TEAM' : 'ADD_FLEET_TEAM';
+        const payload = {
+            action, driverName:"", driverLastName:"", driversNationalCode:"",
+            newDriverName:"", newDriverLastName:"", newDriversNationalCode:"",
+            driversPhoneNumber:"", newDriversPhoneNumber:"",
+            fleetTeamName: editTeamMode ? originalTeamName : name,
+            newFleetTeamName: editTeamMode ? name : "", description: desc, newDescription: editTeamMode ? desc : ""
+        };
+        try {
+            await callSP('/manageDriversAndTeamsAPI', payload);
+            showToast(editTeamMode ? 'Team updated' : 'Team created');
+            document.getElementById('teamForm').style.display = 'none'; await loadTeams();
+        } catch(e) { showToast('Operation failed'); }
+    });
+    document.querySelector('#teamsTable').addEventListener('click', (e) => {
+        const btn = e.target.closest('button'); if (!btn) return;
+        const name = btn.dataset.editTeam || btn.dataset.delTeam;
+        if (btn.dataset.editTeam) {
+            const t = teams.find(t => t.FLEET_TEAM_NAME === name);
+            if (t) {
+                document.getElementById('teamForm').style.display = 'block';
+                document.getElementById('teamName').value = t.FLEET_TEAM_NAME;
+                document.getElementById('teamDesc').value = t.DESCRIPTION || '';
+                editTeamMode = true; originalTeamName = name;
+            }
+        } else if (btn.dataset.delTeam && confirm(`Delete team "${name}"?`)) {
+            callSP('/manageDriversAndTeamsAPI', {
+                action:'DELETE_FLEET_TEAM', driverName:"", driverLastName:"", driversNationalCode:"",
+                newDriverName:"", newDriverLastName:"", newDriversNationalCode:"",
+                driversPhoneNumber:"", newDriversPhoneNumber:"",
+                fleetTeamName: name, newFleetTeamName:"", description:"", newDescription:""
+            }).then(() => { showToast('Team deleted'); loadTeams(); }).catch(() => showToast('Delete failed'));
+        }
+    });
+
+    // ---------- Drivers CRUD ----------
+    let editDriverMode = false, originalNationalCode = '';
+    document.getElementById('btnAddDriver').addEventListener('click', () => {
+        document.getElementById('driverForm').style.display = 'block';
+        ['driverName','driverLastName','driverNationalCode','driverPhone'].forEach(id => document.getElementById(id).value = '');
+        document.getElementById('driverTeamSelect').value = '';
+        editDriverMode = false;
+    });
+    document.getElementById('cancelDriverForm').addEventListener('click', () => document.getElementById('driverForm').style.display = 'none');
+    document.getElementById('saveDriverBtn').addEventListener('click', async () => {
+        const fname = document.getElementById('driverName').value.trim(), lname = document.getElementById('driverLastName').value.trim();
+        const code = document.getElementById('driverNationalCode').value.trim(), phone = document.getElementById('driverPhone').value.trim();
+        if (!fname || !lname || !code || !phone) return showToast('All fields required');
+        const action = editDriverMode ? 'MODIFY_DRIVER' : 'ADD_DRIVER';
+        const payload = {
+            action,
+            driverName: editDriverMode ? originalNationalCode : code, driverLastName: lname,
+            driversNationalCode: editDriverMode ? originalNationalCode : code,
+            newDriverName: editDriverMode ? fname : "", newDriverLastName: editDriverMode ? lname : "",
+            newDriversNationalCode: editDriverMode ? code : "",
+            driversPhoneNumber: phone, newDriversPhoneNumber: editDriverMode ? phone : "",
+            fleetTeamName: document.getElementById('driverTeamSelect').value || "",
+            newFleetTeamName:"", description:"", newDescription:""
+        };
+        try {
+            await callSP('/manageDriversAndTeamsAPI', payload);
+            showToast(editDriverMode ? 'Driver updated' : 'Driver created');
+            document.getElementById('driverForm').style.display = 'none'; await loadDrivers();
+        } catch(e) { showToast('Operation failed'); }
+    });
+    document.querySelector('#driversTable').addEventListener('click', (e) => {
+        const btn = e.target.closest('button'); if (!btn) return;
+        const code = btn.dataset.editDriver || btn.dataset.delDriver;
+        if (btn.dataset.editDriver) {
+            const d = drivers.find(d => d.DRIVERS_NATIONAL_CODE === code);
+            if (d) {
+                document.getElementById('driverForm').style.display = 'block';
+                const [first, ...rest] = (d.DRIVER_FULL_NAME || '').split(' ');
+                document.getElementById('driverName').value = first || '';
+                document.getElementById('driverLastName').value = rest.join(' ') || '';
+                document.getElementById('driverNationalCode').value = d.DRIVERS_NATIONAL_CODE;
+                document.getElementById('driverPhone').value = d.DRIVERS_PHONE_NUMBER || '';
+                document.getElementById('driverTeamSelect').value = '';
+                editDriverMode = true; originalNationalCode = code;
+            }
+        } else if (btn.dataset.delDriver && confirm(`Delete driver ${code}?`)) {
+            callSP('/manageDriversAndTeamsAPI', {
+                action:'DELETE_DRIVER', driverName:"", driverLastName:"", driversNationalCode:code,
+                newDriverName:"", newDriverLastName:"", newDriversNationalCode:"",
+                driversPhoneNumber:"", newDriversPhoneNumber:"",
+                fleetTeamName:"", newFleetTeamName:"", description:"", newDescription:""
+            }).then(() => { showToast('Driver deleted'); loadDrivers(); }).catch(() => showToast('Delete failed'));
+        }
+    });
+
+    // ---------- Map Functions ----------
+    function initMap() {
+        if (map) return;
+        map = L.map('mapContainer').setView([35.7, 51.4], 6);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution: '&copy; OSM' }).addTo(map);
+    }
+    function clearMap() {
+        if (!map) return;
+        markers.forEach(m => map.removeLayer(m)); markers = [];
+        if (polyline) { map.removeLayer(polyline); polyline = null; }
+    }
+    function haversine(lat1,lon1,lat2,lon2) {
+        const R=6371, dLat=(lat2-lat1)*Math.PI/180, dLon=(lon2-lon1)*Math.PI/180;
+        const a=Math.sin(dLat/2)**2+Math.cos(lat1*Math.PI/180)*Math.cos(lat2*Math.PI/180)*Math.sin(dLon/2)**2;
+        return R*2*Math.atan2(Math.sqrt(a),Math.sqrt(1-a));
+    }
+
+    async function showRequestOnMap(id) {
+        if (!map) initMap();
+        clearMap();
+        document.getElementById('distanceText').textContent = 'Distance: --';
+        document.getElementById('timeText').textContent = 'Est. Time: --';
+        document.getElementById('btnAcceptRequest').disabled = true;
+        if (!id) return;
+        try {
+            const details = await callSP('/manageInventoryStockRequest', { action:'GET_REQUEST_DETAILS', inventoryStockRequestId: id, driverId:0 });
+            if (!details || details.length===0) return;
+            const d = details[0];
+            const rLat=parseFloat(d.REQUESTING_LAT), rLng=parseFloat(d.REQUESTING_LONG);
+            const sLat=parseFloat(d.SUPPLYING_LAT), sLng=parseFloat(d.SUPPLYING_LONG);
+            if (isNaN(rLat)||isNaN(rLng)||isNaN(sLat)||isNaN(sLng)) return;
+            markers.push(L.marker([rLat,rLng]).addTo(map).bindPopup(d.REQUESTING_INVENTORY),
+                         L.marker([sLat,sLng]).addTo(map).bindPopup(d.SUPPLYING_INVENTORY));
+
+            // Try OSRM, fallback to straight line
+            let routeCoords;
+            try {
+                routeCoords = await fetchOSRMRoute(rLat, rLng, sLat, sLng);
+            } catch (e) {
+                routeCoords = [[rLat, rLng], [sLat, sLng]];
+            }
+            polyline = L.polyline(routeCoords, { color: 'red', weight: 4 }).addTo(map);
+            map.fitBounds([[rLat,rLng],[sLat,sLng]]);
+
+            const dist = haversine(rLat,rLng,sLat,sLng).toFixed(1);
+            document.getElementById('distanceText').textContent = `Distance: ${dist} km`;
+            document.getElementById('timeText').textContent = `Est. Time: ${(dist/60).toFixed(1)} h`;
+            const accepted = d.IS_ACCEPTED_BY_FLEET == 1;
+            document.getElementById('btnAcceptRequest').disabled = accepted || !selectedDriverId;
+        } catch(e) { showToast('Failed to load map details'); }
+    }
+
+    // Requests table click
+    document.querySelector('#requestsTable tbody').addEventListener('click', (e) => {
+        const row = e.target.closest('tr'); if (!row) return;
+        const id = parseInt(row.dataset.id);
+        if (id) {
+            selectedRequestId = id;
+            renderRequestsTable();
+            showRequestOnMap(id);
+        }
+    });
+
+    // ---------- Driver Modal ----------
+    const tripTeamSelect = document.getElementById('tripTeamSelect');
+    const btnOpenDriverModal = document.getElementById('btnOpenDriverModal');
+    const driverModal = document.getElementById('driverModal');
+    const driverModalSearch = document.getElementById('driverModalSearch');
+    const driverModalTableBody = document.querySelector('#driverModalTable tbody');
+    const noDriverMsg = document.getElementById('noDriverMsg');
+    const selectedDriverDisplay = document.getElementById('selectedDriverDisplay');
+    const btnAcceptRequest = document.getElementById('btnAcceptRequest');
+
+    tripTeamSelect.addEventListener('change', () => {
+        btnOpenDriverModal.disabled = !tripTeamSelect.value;
+        selectedDriverId = null;
+        selectedDriverDisplay.textContent = '';
+        btnAcceptRequest.disabled = true;
+    });
+
+    btnOpenDriverModal.addEventListener('click', () => {
+        const teamName = tripTeamSelect.value;
+        const filtered = allDriversWithTeam.filter(d => d.FLEET_TEAM_NAME === teamName);
+        renderModalDriverTable(filtered);
+        driverModal.classList.add('active');
+    });
+
+    function renderModalDriverTable(list) {
+        const query = driverModalSearch.value.toLowerCase().trim();
+        const filtered = query ? list.filter(d => (d.DRIVER_FULL_NAME||'').toLowerCase().includes(query)) : list;
+        driverModalTableBody.innerHTML = filtered.map(d => `<tr data-id="${d.DRIVER_ID}" data-name="${esc(d.DRIVER_FULL_NAME)}">
+            <td>${d.DRIVER_ID}</td><td>${esc(d.DRIVER_FULL_NAME)}</td><td>${esc(d.DRIVERS_NATIONAL_CODE||'')}</td>
+        </tr>`).join('');
+        noDriverMsg.style.display = filtered.length === 0 ? 'block' : 'none';
+        driverModalTableBody.querySelectorAll('tr').forEach(row => {
+            row.addEventListener('click', () => {
+                selectedDriverId = parseInt(row.dataset.id);
+                selectedDriverDisplay.textContent = row.dataset.name;
+                driverModal.classList.remove('active');
+                const req = requests.find(r => r.INVENTORY_STOCK_REQUEST_ID == selectedRequestId);
+                btnAcceptRequest.disabled = !req || req.IS_ACCEPTED_BY_FLEET == 1;
+            });
+        });
+    }
+
+    driverModalSearch.addEventListener('input', () => {
+        const teamName = tripTeamSelect.value;
+        const baseList = allDriversWithTeam.filter(d => d.FLEET_TEAM_NAME === teamName);
+        renderModalDriverTable(baseList);
+    });
+
+    document.getElementById('closeDriverModalBtn').addEventListener('click', () => driverModal.classList.remove('active'));
+    document.getElementById('cancelDriverModalBtn').addEventListener('click', () => driverModal.classList.remove('active'));
+    window.addEventListener('click', (e) => { if (e.target === driverModal) driverModal.classList.remove('active'); });
+
+    // Accept button
+    btnAcceptRequest.addEventListener('click', async () => {
+        if (!selectedRequestId || !selectedDriverId) return;
+        try {
+            await callSP('/manageInventoryStockRequest', { action:'ACCEPT_REQUEST', inventoryStockRequestId: selectedRequestId, driverId: selectedDriverId });
+            showToast('Request accepted');
+            await loadRequests();
+            showRequestOnMap(selectedRequestId);
+            selectedDriverId = null;
+            selectedDriverDisplay.textContent = '';
+            btnAcceptRequest.disabled = true;
+        } catch(e) { showToast('Accept failed'); }
+    });
+
+    // Initial load
+    (async () => {
+        await loadTeams();
+        await loadDrivers();
+        await loadRequests();
+    })();
+
+    function esc(s) {
+        const div = document.createElement('div');
+        div.textContent = s;
+        return div.innerHTML;
+    }
+})();
+</script>
 </body>
 </html>
