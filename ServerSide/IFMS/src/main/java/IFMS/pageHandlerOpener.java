@@ -22,6 +22,7 @@ public class pageHandlerOpener implements HttpHandler{
         public pageHandlerOpener(String baseAddress, files fileInfo)
         {      
             this.fileAddress = baseAddress + fileInfo.relativeAddress();   
+            System.out.println(this.fileAddress);
             this.isIframe = fileInfo.loadedByIframe();
             this.accessId = fileInfo.accessCode();
             File file = new File(this.fileAddress);

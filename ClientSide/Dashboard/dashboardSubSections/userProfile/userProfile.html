@@ -1450,7 +1450,7 @@
             }
 
             function fetchRolesData() {
-                fetch('http://192.168.100.11:55952/selectUserRolesLogAPI', { method: 'POST' })
+                fetch('http://192.168.100.11:55952/usersRoleListAPI', { method: 'POST' })
                     .then(response => {
                         if (!response.ok) throw new Error('Network response was not ok');
                         return response.json();

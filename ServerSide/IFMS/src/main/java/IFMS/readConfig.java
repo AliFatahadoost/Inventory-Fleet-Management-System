@@ -18,7 +18,7 @@ import java.util.logging.Logger;
 public class readConfig {
 
     // ──────────── Configurable properties (public static) ────────────
-    public static String BASE_FILE_ADDRESS = Paths.get("").toAbsolutePath().resolve("./../../ClientSide").normalize().toString();
+    public static String BASE_FILE_ADDRESS = Paths.get("").toAbsolutePath().resolve("./../../../ClientSide").normalize().toString();
     public static int MAX_SESSION_TIME = 86400;
     public static String server = "localhost";          // Database host
     public static int port = 1433;                      // Database port
