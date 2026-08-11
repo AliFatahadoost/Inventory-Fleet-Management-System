@@ -19,7 +19,7 @@ public enum files {
         3
     ),
     Home(
-        "/Dashboard/dashboardSubSections/Home.html",
+        "/Dashboard/dashboardSubSections/homeDashboard/Home.html",
         true,
         4
     ),
@@ -102,6 +102,51 @@ public enum files {
         "/Dashboard/dashboardSubSections/userManagement/EditRolesForm.html",
         true,
         15
+    ),
+    cargoSent(
+        "/Dashboard/dashboardSubSections/homeDashboard/cargoSent.html",
+        true,
+        26
+    ),
+    setOwnerShipFleet(
+        "/Dashboard/dashboardSubSections/homeDashboard/setOwnerShipFleet.html",
+        true,
+        22
+    ),
+    setOwnerShipInventory(
+        "/Dashboard/dashboardSubSections/homeDashboard/setOwnerShipInventory.html",
+        true,
+        21
+    ),
+    giveUserTask(
+        "/Dashboard/dashboardSubSections/homeDashboard/giveUserTask.html",
+        true,
+        23
+    ),
+    setUserSalary(
+        "/Dashboard/dashboardSubSections/homeDashboard/setUserSalary.html",
+        true,
+        24
+    ),
+    productArrival(
+        "/Dashboard/dashboardSubSections/homeDashboard/productArrival.html",
+        true,
+        25
+    ),
+    inventoryOperations(
+        "/Dashboard/dashboardSubSections/homeDashboard/inventoryOperations.html",
+        true,
+        27
+    ),
+    productsPricing(
+        "/Dashboard/dashboardSubSections/homeDashboard/productsPricing.html",
+        true,
+        28
+    ),
+    vendors(
+        "/Dashboard/dashboardSubSections/homeDashboard/vendors.html",
+        true,
+        29
     );
     
     private final String relativeAddress;

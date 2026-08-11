@@ -1,0 +1,699 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+    <title>Admin Navigation Panel</title>
+    <style>
+        /* ---------- GLOBAL VARIABLES ---------- */
+        :root {
+            --bg-body: #eef2f7;
+            --bg-card: #ffffff;
+            --bg-input: #f8fafc;
+            --bg-badge: #e8edf4;
+            --bg-stat-card: #f8fafc;
+            --text-primary: #1e293b;
+            --text-secondary: #475569;
+            --text-muted: #94a3b8;
+            --text-label: #334155;
+            --border-card: #dde4ef;
+            --border-input: #d5dce8;
+            --shadow-card: 0 4px 24px rgba(0, 0, 0, 0.05), 0 1px 6px rgba(0, 0, 0, 0.03);
+            --shadow-card-hover: 0 8px 30px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 12px 40px rgba(0, 0, 0, 0.08);
+            --accent: #4a6fa5;
+            --accent-light: #5a8fc7;
+            --accent-soft: #e8edf4;
+            --radius-sm: 6px;
+            --radius-md: 10px;
+            --radius-lg: 14px;
+            --radius-xl: 18px;
+            --transition-smooth: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            --transition-bounce: 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+            --font-stack: 'Segoe UI', 'Inter', system-ui, -apple-system, sans-serif;
+            --letter-spacing-tight: -0.01em;
+            --bg-scrollbar: #c8d2e0;
+            --bg-scrollbar-track: #f1f5f9;
+        }
+
+        body.dark-mode {
+            --bg-body: #171a21;
+            --bg-card: #1e2128;
+            --bg-input: #252830;
+            --bg-badge: #252d3a;
+            --bg-stat-card: #252830;
+            --text-primary: #e2e6ec;
+            --text-secondary: #b0b8c4;
+            --text-muted: #6b7280;
+            --text-label: #c5cad4;
+            --border-card: #2e333d;
+            --border-input: #3a404d;
+            --shadow-card: 0 4px 24px rgba(0, 0, 0, 0.25), 0 1px 6px rgba(0, 0, 0, 0.2);
+            --shadow-card-hover: 0 8px 30px rgba(0, 0, 0, 0.35);
+            --shadow-lg: 0 12px 40px rgba(0, 0, 0, 0.3);
+            --bg-scrollbar: #3a404d;
+            --bg-scrollbar-track: #1e2128;
+        }
+
+        * {
+            box-sizing: border-box;
+            font-family: var(--font-stack);
+            letter-spacing: 0.01em;
+        }
+
+        html,
+        body {
+            margin: 0;
+            padding: 0;
+            min-height: 100%;
+            background-color: var(--bg-body);
+            transition: background-color var(--transition-smooth);
+            overflow-x: hidden;
+            overflow-y: auto;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: var(--bg-scrollbar-track);
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: var(--bg-scrollbar);
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--accent);
+        }
+
+        /* ---------- MAIN WRAPPER ---------- */
+        .admin-panel {
+            display: flex;
+            flex-direction: column;
+            gap: 22px;
+            padding: 24px 28px 28px;
+            max-width: 1100px;
+            margin: 0 auto;
+            min-height: 100vh;
+        }
+
+        /* ---------- HEADER CARD ---------- */
+        .header-card {
+            background-color: var(--bg-card);
+            border: 2px solid var(--border-card);
+            border-radius: var(--radius-xl);
+            padding: 20px 28px;
+            box-shadow: var(--shadow-card);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+            flex-wrap: wrap;
+            transition: all var(--transition-smooth);
+        }
+
+        .header-title-group {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            flex-shrink: 0;
+        }
+
+        .header-icon-circle {
+            width: 48px;
+            height: 48px;
+            border-radius: var(--radius-md);
+            background: linear-gradient(135deg, #4a6fa5, #3b5998);
+            color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            flex-shrink: 0;
+            box-shadow: 0 4px 12px rgba(74, 111, 165, 0.3);
+        }
+        body.dark-mode .header-icon-circle {
+            background: linear-gradient(135deg, #5a8fc7, #4a7db5);
+            box-shadow: 0 4px 12px rgba(90, 143, 199, 0.3);
+        }
+
+        .header-title {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            letter-spacing: var(--letter-spacing-tight);
+            margin: 0;
+            line-height: 1.2;
+        }
+        .header-subtitle {
+            font-size: 0.78rem;
+            color: var(--text-muted);
+            margin: 3px 0 0;
+            font-weight: 500;
+        }
+
+        .header-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            background-color: var(--bg-badge);
+            color: var(--text-secondary);
+            white-space: nowrap;
+            transition: all var(--transition-smooth);
+        }
+        .header-badge .pulse-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #22c55e;
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0%,
+            100% {
+                box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.6);
+            }
+            50% {
+                box-shadow: 0 0 0 8px rgba(34, 197, 94, 0);
+            }
+        }
+
+        /* ---------- NAVIGATION GRID ---------- */
+        .nav-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 16px;
+        }
+
+        /* ---------- NAV CARD (button styled as card) ---------- */
+        .nav-card {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 18px 20px;
+            border-radius: var(--radius-lg);
+            cursor: pointer;
+            user-select: none;
+            background-color: var(--bg-card);
+            border: 2px solid var(--border-card);
+            transition: all var(--transition-bounce);
+            text-align: left;
+            box-shadow: var(--shadow-card);
+            position: relative;
+            overflow: hidden;
+            text-decoration: none;
+            color: inherit;
+            outline: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        /* Subtle left accent line */
+        .nav-card::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 15%;
+            height: 70%;
+            width: 4px;
+            border-radius: 0 4px 4px 0;
+            background: var(--accent-soft);
+            transition: all var(--transition-smooth);
+            opacity: 0;
+        }
+
+        .nav-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-lg);
+            border-color: var(--accent);
+        }
+        .nav-card:hover::before {
+            opacity: 1;
+            top: 8%;
+            height: 84%;
+        }
+        .nav-card:active {
+            transform: translateY(-2px) scale(0.985);
+            transition: all 0.1s ease;
+        }
+        .nav-card:focus-visible {
+            outline: 2px solid var(--accent);
+            outline-offset: 3px;
+            border-radius: var(--radius-lg);
+        }
+
+        /* Icon circle */
+        .nav-card .nav-icon-circle {
+            width: 46px;
+            height: 46px;
+            border-radius: var(--radius-md);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.4rem;
+            flex-shrink: 0;
+            font-weight: 700;
+            color: #fff;
+            transition: all var(--transition-smooth);
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.12);
+        }
+        .nav-card:hover .nav-icon-circle {
+            transform: scale(1.08);
+            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Individual icon gradients — each distinct */
+        .nav-icon-circle.inventory-ownership {
+            background: linear-gradient(135deg, #0891b2, #0e7490);
+        }
+        .nav-icon-circle.fleet-ownership {
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+        }
+        .nav-icon-circle.assign-task {
+            background: linear-gradient(135deg, #10b981, #059669);
+        }
+        .nav-icon-circle.salaries {
+            background: linear-gradient(135deg, #fbbf24, #f59e0b);
+        }
+        .nav-icon-circle.arrival {
+            background: linear-gradient(135deg, #3b82f6, #2563eb);
+        }
+        .nav-icon-circle.cargo-sent {
+            background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+        }
+        .nav-icon-circle.operations {
+            background: linear-gradient(135deg, #6366f1, #4f46e5);
+        }
+        .nav-icon-circle.pricing {
+            background: linear-gradient(135deg, #14b8a6, #0f766e);
+        }
+        .nav-icon-circle.vendors {
+            background: linear-gradient(135deg, #64748b, #475569);
+        }
+
+        /* Text group */
+        .nav-card .nav-text-group {
+            display: flex;
+            flex-direction: column;
+            gap: 3px;
+            flex: 1;
+            min-width: 0;
+        }
+        .nav-card .nav-label {
+            font-weight: 700;
+            font-size: 0.9rem;
+            color: var(--text-primary);
+            margin: 0;
+            line-height: 1.3;
+            transition: color var(--transition-smooth);
+        }
+        .nav-card:hover .nav-label {
+            color: var(--accent-light);
+        }
+        .nav-card .nav-desc {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            margin: 0;
+            line-height: 1.3;
+            /* Removed white-space: nowrap, overflow: hidden, text-overflow: ellipsis
+               to allow full text wrapping without truncation */
+            white-space: normal;
+            overflow-wrap: break-word;
+            word-break: break-word;
+        }
+
+        /* Access code badge */
+        .nav-card .access-code-badge {
+            flex-shrink: 0;
+            font-size: 0.65rem;
+            font-weight: 700;
+            padding: 4px 9px;
+            border-radius: 14px;
+            background-color: var(--bg-badge);
+            color: var(--text-muted);
+            letter-spacing: 0.4px;
+            transition: all var(--transition-smooth);
+            white-space: nowrap;
+        }
+        .nav-card:hover .access-code-badge {
+            background-color: var(--accent-soft);
+            color: var(--accent);
+        }
+
+        /* Arrow indicator on hover */
+        .nav-card .nav-arrow {
+            flex-shrink: 0;
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            transition: all var(--transition-smooth);
+            opacity: 0;
+            transform: translateX(-6px);
+        }
+        .nav-card:hover .nav-arrow {
+            opacity: 1;
+            transform: translateX(0);
+            color: var(--accent);
+        }
+
+        /* ---------- FOOTER NOTE ---------- */
+        .footer-note {
+            text-align: center;
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            padding: 8px 0;
+            letter-spacing: 0.3px;
+        }
+
+        /* ---------- RESPONSIVE ---------- */
+        @media (max-width: 700px) {
+            .admin-panel {
+                padding: 14px 14px 20px;
+                gap: 14px;
+            }
+            .header-card {
+                padding: 14px 18px;
+                flex-direction: column;
+                align-items: stretch;
+                gap: 10px;
+            }
+            .header-badge {
+                align-self: flex-start;
+            }
+            .nav-grid {
+                grid-template-columns: 1fr;
+                gap: 10px;
+            }
+            .nav-card {
+                padding: 14px 16px;
+                gap: 12px;
+            }
+            .nav-card .nav-icon-circle {
+                width: 40px;
+                height: 40px;
+                font-size: 1.2rem;
+            }
+            .nav-card .nav-label {
+                font-size: 0.82rem;
+            }
+            .nav-card .access-code-badge {
+                font-size: 0.6rem;
+                padding: 3px 7px;
+            }
+        }
+
+        @media (max-width: 400px) {
+            .nav-card .nav-arrow {
+                display: none;
+            }
+            .nav-card .access-code-badge {
+                display: none;
+            }
+            .nav-card {
+                gap: 10px;
+                padding: 12px 14px;
+            }
+        }
+
+        @media (min-width: 1400px) {
+            .nav-grid {
+                grid-template-columns: repeat(3, 1fr);
+                gap: 20px;
+            }
+            .nav-card {
+                padding: 22px 24px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="admin-panel">
+        <!-- HEADER CARD -->
+        <div class="header-card">
+            <div class="header-title-group">
+                <div class="header-icon-circle">⚙️</div>
+                <div>
+                    <p class="header-title">Administration Panel</p>
+                    <p class="header-subtitle">Inventory, fleet, tasks &amp; operations management</p>
+                </div>
+            </div>
+            <div class="header-badge">
+                <span class="pulse-dot"></span> 9 modules available
+            </div>
+        </div>
+
+        <!-- NAVIGATION GRID -->
+        <div class="nav-grid">
+            <!-- 21: Set Inventory Ownership -->
+            <button onclick="createTab(this)"
+            class="nav-card"
+            data-AccessCode="21"
+            data-direction="ownershipInventory"
+            aria-label="Set Inventory Ownership">
+            <div class="nav-icon-circle inventory-ownership">📋</div>
+            <div class="nav-text-group">
+                <span class="nav-label">Inventory Ownership</span>
+                <span class="nav-desc">Assign supervisor roles to inventory locations</span>
+            </div>
+            <span class="nav-arrow">→</span>
+        </button>
+
+        <!-- 22: Set Fleet Ownership -->
+        <button onclick="createTab(this)"
+        class="nav-card"
+        data-AccessCode="22"
+        data-direction="ownershipFleet"
+        aria-label="Set Fleet Ownership">
+        <div class="nav-icon-circle fleet-ownership">🚛</div>
+        <div class="nav-text-group">
+            <span class="nav-label">Fleet Ownership</span>
+            <span class="nav-desc">Assign supervisor roles for fleet teams</span>
+        </div>
+        <span class="nav-arrow">→</span>
+    </button>
+
+    <!-- 23: Assign User Task -->
+    <button onclick="createTab(this)"
+    class="nav-card"
+    data-AccessCode="23"
+    data-direction="giveUserTask"
+    aria-label="Assign User Task">
+    <div class="nav-icon-circle assign-task">✅</div>
+    <div class="nav-text-group">
+        <span class="nav-label">Assign Users Tasks</span>
+        <span class="nav-desc">Define duties via task templates for users</span>
+    </div>
+    <span class="nav-arrow">→</span>
+</button>
+
+<!-- 24: Set User Salaries -->
+<button onclick="createTab(this)"
+class="nav-card"
+data-AccessCode="24"
+data-direction="setUserSalary"
+aria-label="Set User Salaries">
+<div class="nav-icon-circle salaries">💰</div>
+<div class="nav-text-group">
+    <span class="nav-label">Set Users Salaries</span>
+    <span class="nav-desc">Manage user salary configurations</span>
+</div>
+<span class="nav-arrow">→</span>
+</button>
+
+<!-- 25: Product Arrival -->
+<button onclick="createTab(this)"
+class="nav-card"
+data-AccessCode="25"
+data-direction="productArrival"
+aria-label="Product Arrival">
+<div class="nav-icon-circle arrival">📥</div>
+<div class="nav-text-group">
+    <span class="nav-label">Product Arrival</span>
+    <span class="nav-desc">Log incoming product shipments at inventory</span>
+</div>
+<span class="nav-arrow">→</span>
+</button>
+
+<!-- 26: Cargo Sent -->
+<button onclick="createTab(this)"
+class="nav-card"
+data-AccessCode="26"
+data-direction="cargoSent"
+aria-label="Cargo Sent">
+<div class="nav-icon-circle cargo-sent">📤</div>
+<div class="nav-text-group">
+    <span class="nav-label">Cargo Sent</span>
+    <span class="nav-desc">Record dispatched cargo shipments</span>
+</div>
+<span class="nav-arrow">→</span>
+</button>
+
+<!-- 27: Inventory Operations -->
+<button onclick="createTab(this)"
+class="nav-card"
+data-AccessCode="27"
+data-direction="inventoryOperations"
+aria-label="Inventory Operations">
+<div class="nav-icon-circle operations">🔄</div>
+<div class="nav-text-group">
+    <span class="nav-label">Inventory Operations</span>
+    <span class="nav-desc">Manage sales, imports, and inventory losses</span>
+</div>
+<span class="nav-arrow">→</span>
+</button>
+
+<!-- 28: Product Pricing -->
+<button onclick="createTab(this)"
+class="nav-card"
+data-AccessCode="28"
+data-direction="productsPricing"
+aria-label="Product Pricing">
+<div class="nav-icon-circle pricing">💲</div>
+<div class="nav-text-group">
+    <span class="nav-label">Product Pricing</span>
+    <span class="nav-desc">Configure product cost and pricing details</span>
+</div>
+<span class="nav-arrow">→</span>
+</button>
+
+<!-- 29: Vendors / Suppliers -->
+<button onclick="createTab(this)"
+class="nav-card"
+data-AccessCode="29"
+data-direction="vendors"
+aria-label="Vendors / Suppliers">
+<div class="nav-icon-circle vendors">🏭</div>
+<div class="nav-text-group">
+    <span class="nav-label">Vendors / Suppliers</span>
+    <span class="nav-desc">Manage vendor and supplier partnerships</span>
+</div>
+<span class="nav-arrow">→</span>
+</button>
+</div>
+
+<!-- FOOTER NOTE -->
+<p class="footer-note">🔒 Access-controlled modules </p>
+</div>
+
+<script>
+    (function() {
+        // ── DARK MODE SYNC WITH PARENT ──
+        function applyTheme(mode) {
+            if (mode === 'dark') {
+                document.body.classList.add('dark-mode');
+            } else {
+                document.body.classList.remove('dark-mode');
+            }
+        }
+
+        // Initial theme detection
+        let currentTheme = 'light';
+        try {
+            const parentBody = parent.document.querySelector("body");
+            if (parentBody && parentBody.classList.contains("dark-mode")) {
+                currentTheme = 'dark';
+            }
+        } catch (e) {
+            // cross-origin or not in iframe — fallback to localStorage
+            const stored = localStorage.getItem('dashboardTheme');
+            if (stored === 'dark') currentTheme = 'dark';
+        }
+        applyTheme(currentTheme);
+
+        // Observe parent body class changes (for iframe scenario)
+        try {
+            const parentBody = parent.document.querySelector("body");
+            if (parentBody) {
+                const observer = new MutationObserver(() => {
+                    const isDark = parentBody.classList.contains('dark-mode');
+                    applyTheme(isDark ? 'dark' : 'light');
+                });
+                observer.observe(parentBody, {
+                    attributes: true,
+                    attributeFilter: ['class']
+                });
+            }
+        } catch (e) {
+            // Not in an observable iframe — ignore
+        }
+
+        // Fallback: listen for localStorage changes
+        window.addEventListener('storage', function(e) {
+            if (e.key === 'dashboardTheme') {
+                applyTheme(e.newValue === 'dark' ? 'dark' : 'light');
+            }
+        });
+
+        // Also listen for postMessage from parent (iframe-safe)
+        window.addEventListener('message', function(event) {
+            if (event.data && event.data.type === 'themeChange') {
+                applyTheme(event.data.theme === 'dark' ? 'dark' : 'light');
+            }
+        });
+
+        // ── CORE TAB FUNCTION (iframe-safe, preserves original behavior) ──
+        window.createTab = function(element) {
+            const direction = element.getAttribute('data-direction');
+            const label =
+                element.querySelector('.nav-label')?.textContent?.trim() ||
+                element.textContent.trim() ||
+                element.innerText.trim();
+
+            // Try parent.createTab first (iframe scenario)
+            try {
+                if (window.parent && typeof window.parent.createTab === 'function') {
+                    window.parent.createTab(direction, label);
+                    console.log('[AdminNav] Opened via parent.createTab:', direction);
+                    return;
+                }
+            } catch (e) {
+                // cross-origin restriction — fall through
+                console.warn('[AdminNav] Cannot access parent.createTab due to cross-origin policy.');
+            }
+
+            // Fallback: try same-window createTab
+            if (typeof window.createTab === 'function' && window.createTab !== arguments.callee) {
+                // Avoid recursive call — check it's not self
+                const selfCreateTab = window.createTab;
+                if (selfCreateTab.name !== 'createTab') {
+                    selfCreateTab(direction, label);
+                    return;
+                }
+            }
+
+            // Ultimate fallback: navigate or log
+            console.log('[AdminNav] Fallback — direction:', direction, '| label:', label);
+            // Optionally: window.open(direction, '_blank');
+            // Or postMessage to parent:
+            try {
+                window.parent.postMessage({
+                    type: 'createTab',
+                    direction: direction,
+                    label: label
+                }, '*');
+            } catch (e2) {
+                console.warn('[AdminNav] postMessage fallback also failed.');
+            }
+        };
+
+        // ── KEYBOARD ACCESSIBILITY ──
+        document.querySelectorAll('.nav-card').forEach(function(card) {
+            card.addEventListener('keydown', function(e) {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    card.click();
+                }
+            });
+        });
+
+        console.log('[AdminNav] Navigation panel initialized — 9 modules ready.');
+    })();
+</script>
+</body>
+</html>

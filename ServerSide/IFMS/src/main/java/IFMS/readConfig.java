@@ -659,7 +659,17 @@ public class readConfig {
         server.createContext("/Dashboard/reportSection",                                new pageHandlerOpener(BASE_FILE_ADDRESS, files.ReportSection));
         server.createContext("/Dashboard/usersManagement",                              new pageHandlerOpener(BASE_FILE_ADDRESS, files.UsersManagement));
         server.createContext("/Dashboard/EditUsersFormUsrMngmnt",                       new pageHandlerOpener(BASE_FILE_ADDRESS, files.EditUsersForm));
-        server.createContext("/Dashboard/EditRolesFormUsrMngmnt",                       new pageHandlerOpener(BASE_FILE_ADDRESS, files.EditRolesForm));
+        server.createContext("/Dashboard/EditRolesFormUsrMngmnt",                       new pageHandlerOpener(BASE_FILE_ADDRESS, files.EditRolesForm));       
+        server.createContext("/Dashboard/ownershipInventory",                           new pageHandlerOpener(BASE_FILE_ADDRESS, files.setOwnerShipInventory));
+        server.createContext("/Dashboard/ownershipFleet",                               new pageHandlerOpener(BASE_FILE_ADDRESS, files.setOwnerShipFleet));
+        server.createContext("/Dashboard/giveUserTask",                                 new pageHandlerOpener(BASE_FILE_ADDRESS, files.giveUserTask));
+        server.createContext("/Dashboard/setUserSalary",                                new pageHandlerOpener(BASE_FILE_ADDRESS, files.setUserSalary));
+        server.createContext("/Dashboard/productArrival",                               new pageHandlerOpener(BASE_FILE_ADDRESS, files.EditRolesForm));
+        server.createContext("/Dashboard/cargoSent",                                    new pageHandlerOpener(BASE_FILE_ADDRESS, files.cargoSent));
+        server.createContext("/Dashboard/inventoryOperations",                          new pageHandlerOpener(BASE_FILE_ADDRESS, files.inventoryOperations));
+        server.createContext("/Dashboard/productsPricing",                              new pageHandlerOpener(BASE_FILE_ADDRESS, files.productsPricing));
+        server.createContext("/Dashboard/vendors",                                      new pageHandlerOpener(BASE_FILE_ADDRESS, files.vendors));
+        
         
         // API calls Listeners ACCEABLE FOR ALL USERS
         server.createContext("/changeUserName",                         new apiManagement.changeUsername()); //this has token injection
@@ -677,8 +687,9 @@ public class readConfig {
         server.createContext("/createUpdateDeleteDriverAPI",            new apiManagement.dateModifyApiGen.builder().setQuery("EXEC CREATE_UPDATE_DELETE_DRIVER ?, ?, ?, ?, ?, ?").setMethodAccepted("POST").setApiName("createUpdateDeleteDriverAPI").build());
         server.createContext("/handleInventoryRequestAPI",              new apiManagement.dateModifyApiGen.builder().setQuery("EXEC HANDLE_INVENTORY_REQUEST ?, ?, ?, ?, ?").setMethodAccepted("POST").setApiName("handleInventoryRequestAPI").build());
         server.createContext("/manageDriversAndTeamsAPI",               new apiManagement.dateModifyApiGen.builder().setQuery("EXEC MANAGE_DRIVERS_AND_TEAMS ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?").setMethodAccepted("POST").setApiName("manageDriversAndTeamsAPI").build());
-        //this ones Special and has a return or modify mode
-        server.createContext("/manageInventoryStockRequest",            new apiManagement.manageInventoryStockRequest());
+        
+//this ones Special and has a return or modify mode
+        server.createContext("/manageInventoryStockRequest",          new apiManagement.manageInventoryStockRequest());
         
         // Selects the login log entries for a user
         server.createContext("/selectUserLoginLogAPI",              new apiManagement.reportBasedOnUserTokenMaker( selectQueries.selectUserLoginLog.sql() ));
