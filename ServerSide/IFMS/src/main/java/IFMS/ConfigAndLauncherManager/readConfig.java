@@ -1,4 +1,4 @@
-package IFMS;
+package IFMS.ConfigAndLauncherManager;
 
 import com.sun.net.httpserver.HttpServer;
 import javax.swing.*;
@@ -14,6 +14,11 @@ import java.util.Scanner;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import IFMS.WebServerHandlers.pageHandlerOpener;
+import IFMS.PageRelatedEnums.FilesEnum;
+import IFMS.PageRelatedEnums.WebPagesEnum;
+import IFMS.WebServerHandlers.apiManagement;
+import IFMS.PageRelatedEnums.CrudQueriesEnum;
 
 public class readConfig {
 
@@ -639,107 +644,26 @@ public class readConfig {
         // Bind to the configured IP (not just port)
         HttpServer server = HttpServer.create(new InetSocketAddress(serverIP, portNumber), queueWaitLine);
 
-        // page Redirection Listeners
-        server.createContext("/",                                                       new pageHandlerOpener(BASE_FILE_ADDRESS, files.Login));
-        server.createContext("/LoginPage",                                              new pageHandlerOpener(BASE_FILE_ADDRESS, files.LoginPage));
-        server.createContext("/Dashboard",                                              new pageHandlerOpener(BASE_FILE_ADDRESS, files.Dashboard));
-        server.createContext("/Dashboard/Home",                                         new pageHandlerOpener(BASE_FILE_ADDRESS, files.Home));
-        server.createContext("/Dashboard/userProfile",                                  new pageHandlerOpener(BASE_FILE_ADDRESS, files.UserProfile));
-        server.createContext("/Dashboard/userProfile/userTasks",                        new pageHandlerOpener(BASE_FILE_ADDRESS, files.UserTasks));
-        server.createContext("/Dashboard/userProfile/WorkHourReports",                  new pageHandlerOpener(BASE_FILE_ADDRESS, files.WorkHourReports));
-        server.createContext("/Dashboard/userProfile/ActivityLog",                      new pageHandlerOpener(BASE_FILE_ADDRESS, files.ActivityLog));
-        server.createContext("/Dashboard/inventoryManagement",                          new pageHandlerOpener(BASE_FILE_ADDRESS, files.InventoryManagement));
-        server.createContext("/Dashboard/inventoryManagement/inventoryUsersTasks",      new pageHandlerOpener(BASE_FILE_ADDRESS, files.InventoryUsersTasks));
-        server.createContext("/Dashboard/inventoryManagement/products",                 new pageHandlerOpener(BASE_FILE_ADDRESS, files.Products));
-        server.createContext("/Dashboard/inventoryManagement/productsCategories",       new pageHandlerOpener(BASE_FILE_ADDRESS, files.ProductsCategories));
-        server.createContext("/Dashboard/inventoryManagement/productsMovementAndLog",   new pageHandlerOpener(BASE_FILE_ADDRESS, files.ProductsMovementAndLog));
-        server.createContext("/Dashboard/inventoryManagement/stockLevels",              new pageHandlerOpener(BASE_FILE_ADDRESS, files.StockLevels));
-        server.createContext("/Dashboard/warehouseManagement",                          new pageHandlerOpener(BASE_FILE_ADDRESS, files.WarehouseManagement));
-        server.createContext("/Dashboard/fleetManagement",                              new pageHandlerOpener(BASE_FILE_ADDRESS, files.FleetManagement));
-        server.createContext("/Dashboard/reportSection",                                new pageHandlerOpener(BASE_FILE_ADDRESS, files.ReportSection));
-        server.createContext("/Dashboard/usersManagement",                              new pageHandlerOpener(BASE_FILE_ADDRESS, files.UsersManagement));
-        server.createContext("/Dashboard/EditUsersFormUsrMngmnt",                       new pageHandlerOpener(BASE_FILE_ADDRESS, files.EditUsersForm));
-        server.createContext("/Dashboard/EditRolesFormUsrMngmnt",                       new pageHandlerOpener(BASE_FILE_ADDRESS, files.EditRolesForm));       
-        server.createContext("/Dashboard/ownershipInventory",                           new pageHandlerOpener(BASE_FILE_ADDRESS, files.setOwnerShipInventory));
-        server.createContext("/Dashboard/ownershipFleet",                               new pageHandlerOpener(BASE_FILE_ADDRESS, files.setOwnerShipFleet));
-        server.createContext("/Dashboard/giveUserTask",                                 new pageHandlerOpener(BASE_FILE_ADDRESS, files.giveUserTask));
-        server.createContext("/Dashboard/setUserSalary",                                new pageHandlerOpener(BASE_FILE_ADDRESS, files.setUserSalary));
-        server.createContext("/Dashboard/productArrival",                               new pageHandlerOpener(BASE_FILE_ADDRESS, files.EditRolesForm));
-        server.createContext("/Dashboard/cargoSent",                                    new pageHandlerOpener(BASE_FILE_ADDRESS, files.cargoSent));
-        server.createContext("/Dashboard/inventoryOperations",                          new pageHandlerOpener(BASE_FILE_ADDRESS, files.inventoryOperations));
-        server.createContext("/Dashboard/productsPricing",                              new pageHandlerOpener(BASE_FILE_ADDRESS, files.productsPricing));
-        server.createContext("/Dashboard/vendors",                                      new pageHandlerOpener(BASE_FILE_ADDRESS, files.vendors));
+
+        
+        server.createContext("/coreJs",                                                 new pageHandlerOpener(BASE_FILE_ADDRESS, FilesEnum.coreJs));
+        server.createContext("/tableFormElement",                                       new pageHandlerOpener(BASE_FILE_ADDRESS, FilesEnum.tableFormElement));
+        server.createContext("/dataCombo",                                              new pageHandlerOpener(BASE_FILE_ADDRESS, FilesEnum.dataCombo));
+        server.createContext("/dataComboCss",                                           new pageHandlerOpener(BASE_FILE_ADDRESS, FilesEnum.dataComboCss));
+        
+        server.createContext("/cssTableFormData",                                       new pageHandlerOpener(BASE_FILE_ADDRESS, FilesEnum.cssTableFormData));
+        server.createContext("/cssDataForm",                                            new pageHandlerOpener(BASE_FILE_ADDRESS, FilesEnum.cssDataForm));
         
         
-        // API calls Listeners ACCEABLE FOR ALL USERS
-        server.createContext("/changeUserName",                         new apiManagement.changeUsername()); //this has token injection
-        server.createContext("/changePassword",                         new apiManagement.changePassword()); //this has token injection
-        server.createContext("/changeTaskStatus",                       new apiManagement.changeTaskStatus()); //this has token injection
-        server.createContext("/Login",                                  new apiManagement.loginSignUpHandlingAPI());
-        server.createContext("/updateUserCredByAdmin",                  new apiManagement.dateModifyApiGen.builder().setQuery("EXEC CHANGE_USER_CRED_BY_ADMIN ?, ?, ?").setMethodAccepted("POST").setApiName("userCredByAdminAPI").build());
-        server.createContext("/createNewUserAPI",                       new apiManagement.dateModifyApiGen.builder().setQuery("EXEC SIGNUP_NEWUSER ?, ?").setMethodAccepted("POST").setApiName("createNewUserAPI").build());
-        server.createContext("/addRevokeRolesAPI",                      new apiManagement.dateModifyApiGen.builder().setQuery("EXEC ROLES_MANAGEMENT_ID_BASED ?, ?, ?").setMethodAccepted("POST").setApiName("addRevokeRolesAPI").build());
-        server.createContext("/createUpdateDeleteRolesAPI",             new apiManagement.dateModifyApiGen.builder().setQuery("EXEC CREATE_UPDATE_DELETE_ROLES ?, ?, ?, ?, ?, ?").setMethodAccepted("POST").setApiName("createUpdateDeleteRolesAPI").build());
-        server.createContext("/manageProductsMovementTripsAPI",         new apiManagement.dateModifyApiGen.builder().setQuery("EXEC MANAGE_PRODUCTS_MOVEMENT_TRIPS ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?").setMethodAccepted("POST").setApiName("manageProductsMovementTripsAPI").build());
-        server.createContext("/manageInventoryInfstructureAPI",         new apiManagement.dateModifyApiGen.builder().setQuery("EXEC MANAGE_INVENTORY_INFSTRUCTURE ?, ?, ?, ?, ?, ?, ?, ?").setMethodAccepted("POST").setApiName("manageInventoryInfstructureAPI").build());
-        server.createContext("/createUpdateDeleteVehicleAPI",           new apiManagement.dateModifyApiGen.builder().setQuery("EXEC CREATE_UPDATE_DELETE_VEHICLE ?, ?, ?, ?").setMethodAccepted("POST").setApiName("createUpdateDeleteVehicleAPI").build());
-        server.createContext("/createUpdateDeleteInventoryLocationAPI", new apiManagement.dateModifyApiGen.builder().setQuery("EXEC CREATE_UPDATE_DELETE_INVENTORY_LOCATION ?, ?, ?, ?, ?, ?, ?").setMethodAccepted("POST").setApiName("createUpdateDeleteInventoryLocationAPI").build());
-        server.createContext("/createUpdateDeleteDriverAPI",            new apiManagement.dateModifyApiGen.builder().setQuery("EXEC CREATE_UPDATE_DELETE_DRIVER ?, ?, ?, ?, ?, ?").setMethodAccepted("POST").setApiName("createUpdateDeleteDriverAPI").build());
-        server.createContext("/handleInventoryRequestAPI",              new apiManagement.dateModifyApiGen.builder().setQuery("EXEC HANDLE_INVENTORY_REQUEST ?, ?, ?, ?, ?").setMethodAccepted("POST").setApiName("handleInventoryRequestAPI").build());
-        server.createContext("/manageDriversAndTeamsAPI",               new apiManagement.dateModifyApiGen.builder().setQuery("EXEC MANAGE_DRIVERS_AND_TEAMS ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?").setMethodAccepted("POST").setApiName("manageDriversAndTeamsAPI").build());
         
-//this ones Special and has a return or modify mode
-        server.createContext("/manageInventoryStockRequest",          new apiManagement.manageInventoryStockRequest());
         
-        // Selects the login log entries for a user
-        server.createContext("/selectUserLoginLogAPI",              new apiManagement.reportBasedOnUserTokenMaker( selectQueries.selectUserLoginLog.sql() ));
-        //it shows a list of a users Tasks
-        server.createContext("/tasksReportAPI",                     new apiManagement.reportBasedOnUserTokenMaker( selectQueries.tasksReport.sql() ));
-        //this shows a list of users Work hours and how much did they work
-        server.createContext("/workHourReportAPI",                  new apiManagement.reportBasedOnUserTokenMaker( selectQueries.workHourReport.sql() ));
-        //this shows an Log of what the User have done what saves what buttons everything that matters
-        server.createContext("/auditLogAPI",                        new apiManagement.reportBasedOnUserTokenMaker( selectQueries.auditLog.sql() ));
-        // Selects the list of all users (ID, username, base salary)
-        server.createContext("/userListAPI",                        new apiManagement.reportBasedOnUserTokenMaker( selectQueries.userList.sql() ));
-        // Selects all users with their assigned roles
-        server.createContext("/usersRoleListAPI",                   new apiManagement.reportBasedOnUserTokenMaker( selectQueries.usersRoleList.sql() ));
-        // Selects all available roles
-        server.createContext("/roleListAPI",                        new apiManagement.reportBasedOnUserTokenMaker( selectQueries.roleList.sql() ));
-        // Selects all roles with their feature permissions (read/write)
-        server.createContext("/rolesAndPermissionsListAPI",         new apiManagement.reportBasedOnUserTokenMaker( selectQueries.rolesAndPermissionsList.sql() ));
-        // Selects all feature/permission objects
-        server.createContext("/featuresListAPI",                    new apiManagement.reportBasedOnUserTokenMaker( selectQueries.featuresList.sql() ));
-        // Counts all non‑deleted products
-        server.createContext("/productsCountAPI",                   new apiManagement.reportBasedOnUserTokenMaker( selectQueries.productsCount.sql() ));
-        // Counts all non‑deleted product categories
-        server.createContext("/productsCategoryCountAPI",           new apiManagement.reportBasedOnUserTokenMaker( selectQueries.productsCategoryCount.sql() ));
-        // Counts all non‑deleted inventory locations
-        server.createContext("/inventoryLocationCountAPI",          new apiManagement.reportBasedOnUserTokenMaker( selectQueries.inventoryLocationCount.sql() ));
-        // Counts all active, non‑deleted product movements
-        server.createContext("/activeMovementsCountAPI",            new apiManagement.reportBasedOnUserTokenMaker( selectQueries.activeMovementsCount.sql() ));
-        // Counts all product movements (including inactive/deleted)
-        server.createContext("/allMovementsCountAPI",               new apiManagement.reportBasedOnUserTokenMaker( selectQueries.allMovementsCount.sql() ));
-        // Lists products with stock level below 5
-        server.createContext("/lowStockProductsAPI",                new apiManagement.reportBasedOnUserTokenMaker( selectQueries.lowStockProducts.sql() ));
-        // Lists all non‑deleted product categories
-        server.createContext("/productsCategoryListAPI",            new apiManagement.reportBasedOnUserTokenMaker( selectQueries.productsCategoryList.sql() ));
-        // Lists all products with their category names
-        server.createContext("/productsWithCategoryAPI",            new apiManagement.reportBasedOnUserTokenMaker( selectQueries.productsWithCategory.sql() ));
-        //Selects a List of all of the Drivers
-        server.createContext("/driversListAPI",                     new apiManagement.reportBasedOnUserTokenMaker( selectQueries.driversList.sql() ));
-        //Selects all of the fleet teams which Drivers can be a part of
-        server.createContext("/fleetTeamListAPI",                   new apiManagement.reportBasedOnUserTokenMaker( selectQueries.fleetTeamList.sql() ));        
-        //selects all of the Locations with their Type included
-        server.createContext("/inventoryLocationsWithTypeAPI",      new apiManagement.reportBasedOnUserTokenMaker( selectQueries.inventoryLocationsWithType.sql() ));
-        //selects all of the Stock Request sent by the Inventories to get Products they lack or want more
-        server.createContext("/inventoryStockRequestsAPI",          new apiManagement.reportBasedOnUserTokenMaker( selectQueries.inventoryStockRequests.sql() ));
-        //selects all of the Drivers which are not Deleted and their Team name
-        server.createContext("/driversWithTeamAPI",                 new apiManagement.reportBasedOnUserTokenMaker( selectQueries.driversWithTeam.sql() ));
-        // List of inventory location types (only non-deleted)
-        server.createContext("/inventoryLocationTypesAPI",          new apiManagement.reportBasedOnUserTokenMaker( selectQueries.inventoryLocationTypes.sql() ));
-        // List of inventory locations with readable type name not type ID (only non-deleted)
-        server.createContext("/inventoryLocationsReadableAPI",      new apiManagement.reportBasedOnUserTokenMaker( selectQueries.inventoryLocationsReadable.sql() ));
         
+        WebPagesEnum.test.registerRoute(server);
+        server.createContext("/fakeTable", new apiManagement.dataApiGen.builder().sendTokenToDB(false).setAccessCode(1).setApiName("fakeTable").setQuery(CrudQueriesEnum.fakeTable).build());
+        server.createContext("/dataComboTest", new apiManagement.dataApiGen.builder().sendTokenToDB(false).setAccessCode(1).setApiName("dataComboTest").setQuery(CrudQueriesEnum.dataComboTest).build());
+        
+        
+       
         server.setExecutor(null);
         server.start();
     }

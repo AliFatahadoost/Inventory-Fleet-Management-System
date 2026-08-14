@@ -1,8 +1,8 @@
-package IFMS;
+package IFMS.DataBase;
+
+import IFMS.ConfigAndLauncherManager.readConfig;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.sql.*;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 public class dataBaseManager {
         

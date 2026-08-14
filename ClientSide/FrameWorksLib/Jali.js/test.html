@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <!--<link rel="styleSheet" href="http://127.0.0.1:8080/cssDataForm">
+    <link rel="styleSheet" href="http://127.0.0.1:8080/cssTableFormData">-->
+
+    
+
+</head>
+<body>   
+  <script type="module" src="http://127.0.0.1:8080/coreJs"></script>
+    
+  <input type="data-combo"
+         name="http://127.0.0.1:8080/dataComboTest"
+         title="dataCombo1"
+         >
+
+         <!-- title is id, name is api endpoint and type is data-combo -->
+
+
+  <fetch-data-table
+    api="http://127.0.0.1:8080/fakeTable"
+    table-id="myTable1"
+    caption="users"
+    classes="dark-purple pastel small dark"
+    inputs="|name::username|title::username|type::text|value::;;
+            |name::country|title::country|type::text|value::;;
+            |name::password|title::password|type::password|value::;;"
+    columns="username,country,password">
+  </fetch-data-table>
+  
+  <script type="module" src="http://127.0.0.1:8080/coreJs"></script>
+    
+
+      <!--     <fetch-data-table
+    api="http://127.0.0.1:8080/fakeTable"
+    table-id="myTable1"
+    caption="users"
+    classes="dark-blue pastel small dark"
+    inputs="|name::username|title::username|type::text|value::;;
+            |name::country|title::country|type::text|value::;;
+            |name::password|title::password|type::password|value::;;"
+    columns="username,country,password">
+  </fetch-data-table> -->
+
+</body>
+</html>

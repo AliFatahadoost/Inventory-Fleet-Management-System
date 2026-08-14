@@ -1,0 +1,233 @@
+ /* ============================================================
+   JALIFRAME DATA COMBO
+   Modern / neutral / reusable styling
+   ============================================================ */
+
+
+/* ============================================================
+   INPUT
+   ============================================================ */
+
+input[type="data-combo"] {
+    font-family: "Segoe UI", Inter, Arial, sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+
+    color: #1f2937;
+    background: #ffffff;
+
+    border: 1px solid #d1d5db;
+    border-radius: 10px;
+
+    box-sizing: border-box;
+
+    outline: none;
+
+    transition:
+        border-color 0.15s ease,
+        box-shadow 0.15s ease;
+}
+
+input[type="data-combo"]:focus {
+    border-color: #9ca3af;
+
+    box-shadow:
+        0 0 0 3px rgba(107, 114, 128, 0.12);
+}
+
+
+/* ============================================================
+   VISIBLE DISPLAY OVERLAY
+   ============================================================ */
+
+[data-jali-combo-display] {
+    display: flex;
+
+    align-items: center;
+    justify-content: flex-start;
+
+    padding: 0 12px;
+
+    font-family: "Segoe UI", Inter, Arial, sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+
+    color: #1f2937;
+    background: #ffffff;
+
+    border: 1px solid #d1d5db;
+    border-radius: 10px;
+
+    box-sizing: border-box;
+
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+
+    cursor: default;
+    user-select: none;
+
+    transition:
+        border-color 0.15s ease,
+        box-shadow 0.15s ease,
+        background-color 0.15s ease;
+
+    z-index: 3;
+}
+
+
+/* Hover */
+
+[data-jali-combo-display]:hover {
+    border-color: #9ca3af;
+
+    box-shadow:
+        0 2px 8px rgba(0, 0, 0, 0.06);
+}
+
+
+/* ============================================================
+   DROPDOWN CONTAINER
+   ============================================================ */
+
+[id^="div_"] {
+    box-sizing: border-box;
+
+    padding: 5px;
+
+    font-family: "Segoe UI", Inter, Arial, sans-serif;
+    font-size: 14px;
+
+    color: #1f2937;
+    background: #ffffff;
+
+    border: 1px solid #d1d5db;
+    border-radius: 10px;
+
+    box-shadow:
+        0 8px 24px rgba(0, 0, 0, 0.10);
+
+    overflow-y: auto;
+    overflow-x: hidden;
+
+    max-height: 280px;
+
+    z-index: 4;
+}
+
+
+/* ============================================================
+   DROPDOWN OPTIONS
+   ============================================================ */
+
+[id^="div_"] > div {
+    display: flex;
+
+    align-items: center;
+
+    min-height: 36px;
+
+    padding: 0 10px;
+
+    border-radius: 7px;
+
+    color: #374151;
+
+    cursor: pointer;
+
+    user-select: none;
+
+    box-sizing: border-box;
+
+    transition:
+        background-color 0.12s ease,
+        color 0.12s ease;
+}
+
+
+/* Hover */
+
+[id^="div_"] > div:hover {
+    background: #f3f4f6;
+}
+
+
+/* Active / pressed */
+
+[id^="div_"] > div:active {
+    background: #e5e7eb;
+}
+
+
+/* ============================================================
+   SCROLLBAR
+   ============================================================ */
+
+[id^="div_"]::-webkit-scrollbar {
+    width: 7px;
+}
+
+[id^="div_"]::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+[id^="div_"]::-webkit-scrollbar-thumb {
+    background: #d1d5db;
+
+    border-radius: 999px;
+}
+
+[id^="div_"]::-webkit-scrollbar-thumb:hover {
+    background: #9ca3af;
+}
+
+
+/* Firefox */
+
+[id^="div_"] {
+    scrollbar-width: thin;
+    scrollbar-color: #d1d5db transparent;
+}
+
+
+/* ============================================================
+   SELECTED OPTION
+   ============================================================ */
+
+[id^="div_"] > div[aria-selected="true"] {
+    background: #f3f4f6;
+    font-weight: 600;
+}
+
+
+/* ============================================================
+   DISABLED STATE
+   ============================================================ */
+
+input[type="data-combo"]:disabled + [data-jali-combo-display],
+[data-jali-combo-display][aria-disabled="true"] {
+    background: #f9fafb;
+
+    color: #9ca3af;
+
+    border-color: #e5e7eb;
+
+    box-shadow: none;
+
+    cursor: not-allowed;
+}
+
+
+/* ============================================================
+   FOCUS-LIKE STATE FOR THE DISPLAY
+   ============================================================ */
+
+[data-jali-combo-display][data-open="true"] {
+    border-color: #9ca3af;
+
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+
+    box-shadow:
+        0 0 0 3px rgba(107, 114, 128, 0.10);
+}

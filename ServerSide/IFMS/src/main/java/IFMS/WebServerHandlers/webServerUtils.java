@@ -1,17 +1,9 @@
+package IFMS.WebServerHandlers;
 
-package IFMS;
-
-import com.sun.net.httpserver.HttpServer;
-import com.sun.net.httpserver.HttpHandler;
+import IFMS.DataBase.dataBaseUtils;
 import com.sun.net.httpserver.HttpExchange;
-import java.io.BufferedReader;
-import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.OutputStream;
-import java.net.InetSocketAddress;
-import java.nio.file.Files;
 
 public class webServerUtils {
     
@@ -137,9 +129,41 @@ public class webServerUtils {
                 exchange.getResponseHeaders().set("Location", "/LoginPage");
                 exchange.sendResponseHeaders(302, -1); // 302 Found redirect
                 exchange.close();
+                try{
                 dataBaseUtils.runSelectQueryGetJSON("EXEC ACTIVITY_LOG_MANAGER 0, ?, ?", token, "User kicked. users token was invalid");
                 return;
+                }catch(Exception e){ System.out.println("something went wrong cought in Line 135 file webServerUtils : " + e.toString()); }
             }
     }
     
+    
+    public static String[][] parseGetRequestURL(String URL) {
+        if (!URL.contains("?")) {
+            String [][] i = new String[2][2];
+            i[0][1]= "empty";
+            i[1][1]= "";
+            i[0][0]= "empty";
+            i[1][0]= "";
+            return  i;
+        }
+
+        String queryString = URL.substring(URL.indexOf("?") + 1);
+        String[] pairs = queryString.split("&");
+        String[][] values = new String[2][pairs.length];
+
+        for (int i = 0; i < pairs.length; i++) {
+            String[] keyValue = pairs[i].split("=", 2);
+            if (keyValue.length > 1)
+                for(int j = 0; j < 2; j++)
+                {
+                    values[j][i] = keyValue[j];
+                }
+            else{
+                values[0][i] = keyValue[0];
+                values[1][i] = "";
+            }
+        }
+        //System.out.println(URL);
+        return values;
+    }
 }

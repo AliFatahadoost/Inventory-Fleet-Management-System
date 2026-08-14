@@ -1,167 +1,204 @@
 
-package IFMS;
+package IFMS.PageRelatedEnums;
 
-public enum files {
+public enum FilesEnum {
     
     Login(
         "/Login/Login.html",
         false,
-        1
+        FileTypesEnum.html
     ),
     LoginPage(
         "/Login/Login.html",
         false,
-        2
+        FileTypesEnum.html
     ),
     Dashboard(
         "/Dashboard/Dashboard.html",
         false,
-        3
+        FileTypesEnum.html
     ),
     Home(
         "/Dashboard/dashboardSubSections/homeDashboard/Home.html",
         true,
-        4
+        FileTypesEnum.html
     ),
     UserProfile(
         "/Dashboard/dashboardSubSections/userProfile/userProfile.html",
         true,
-        5
+        FileTypesEnum.html
     ),
     UserTasks(
         "/Dashboard/dashboardSubSections/userProfile/userTasks.html",
         true,
-        6
+        FileTypesEnum.html
     ),
     WorkHourReports(
         "/Dashboard/dashboardSubSections/userProfile/WorkHourReports.html",
         true,
-        7
+        FileTypesEnum.html
     ),
     ActivityLog(
         "/Dashboard/dashboardSubSections/userProfile/ActivityLog.html",
         true,
-        8
+        FileTypesEnum.html
     ),
     InventoryManagement(
         "/Dashboard/dashboardSubSections/inventoryManagement/inventoryManagement.html",
         true,
-        9
+        FileTypesEnum.html
     ),
     InventoryUsersTasks(
         "/Dashboard/dashboardSubSections/inventoryManagement/inventoryUsersTasks.html",
         true,
-        19
+        FileTypesEnum.html
     ),
     Products(
         "/Dashboard/dashboardSubSections/inventoryManagement/products.html",
         true,
-        16
+        FileTypesEnum.html
     ),
     ProductsCategories(
         "/Dashboard/dashboardSubSections/inventoryManagement/productsCategories.html",
         true,
-        17
+        FileTypesEnum.html
     ),
     ProductsMovementAndLog(
         "/Dashboard/dashboardSubSections/inventoryManagement/productsMovementAndLog.html",
         true,
-        20
+        FileTypesEnum.html
     ),
     StockLevels(
         "/Dashboard/dashboardSubSections/inventoryManagement/stockLevels.html",
         true,
-        18
+        FileTypesEnum.html
     ),
     WarehouseManagement(
         "/Dashboard/dashboardSubSections/warehouseManagement.html",
         true,
-        10
+        FileTypesEnum.html
     ),
     FleetManagement(
         "/Dashboard/dashboardSubSections/fleetManagement.html",
         true,
-        11
+        FileTypesEnum.html
     ),
     ReportSection(
         "/Dashboard/dashboardSubSections/reportSection.html",
         true,
-        12
+        FileTypesEnum.html
     ),
     UsersManagement(
         "/Dashboard/dashboardSubSections/userManagement/usersManagement.html",
         true,
-        13
+        FileTypesEnum.html
     ),
     EditUsersForm(
         "/Dashboard/dashboardSubSections/userManagement/EditUsersForm.html",
         true,
-        14
+        FileTypesEnum.html
     ),
     EditRolesForm(
         "/Dashboard/dashboardSubSections/userManagement/EditRolesForm.html",
         true,
-        15
+        FileTypesEnum.html
     ),
     cargoSent(
         "/Dashboard/dashboardSubSections/homeDashboard/cargoSent.html",
         true,
-        26
+        FileTypesEnum.html
     ),
     setOwnerShipFleet(
         "/Dashboard/dashboardSubSections/homeDashboard/setOwnerShipFleet.html",
         true,
-        22
+        FileTypesEnum.html
     ),
     setOwnerShipInventory(
         "/Dashboard/dashboardSubSections/homeDashboard/setOwnerShipInventory.html",
         true,
-        21
+        FileTypesEnum.html
     ),
     giveUserTask(
         "/Dashboard/dashboardSubSections/homeDashboard/giveUserTask.html",
         true,
-        23
+        FileTypesEnum.html
     ),
     setUserSalary(
         "/Dashboard/dashboardSubSections/homeDashboard/setUserSalary.html",
         true,
-        24
+        FileTypesEnum.html
     ),
     productArrival(
         "/Dashboard/dashboardSubSections/homeDashboard/productArrival.html",
         true,
-        25
+        FileTypesEnum.html
     ),
     inventoryOperations(
         "/Dashboard/dashboardSubSections/homeDashboard/inventoryOperations.html",
         true,
-        27
+        FileTypesEnum.html
     ),
     productsPricing(
         "/Dashboard/dashboardSubSections/homeDashboard/productsPricing.html",
         true,
-        28
+        FileTypesEnum.html
     ),
     vendors(
         "/Dashboard/dashboardSubSections/homeDashboard/vendors.html",
         true,
-        29
+        FileTypesEnum.html
+    ),
+    test(
+        "/FrameWorksLib/Jali.js/test.html",
+        true,
+        FileTypesEnum.html
+    ),
+    coreJs(
+        "/FrameWorksLib/Jali.js/core.js",
+        true,
+        FileTypesEnum.js
+    ),
+    tableFormElement(
+        "/FrameWorksLib/Jali.js/custom_elements/dataTable.js",
+        true,
+        FileTypesEnum.js
+    ),
+    dataCombo(
+        "/FrameWorksLib/Jali.js/custom_elements/dataCombo.js",
+        true,
+        FileTypesEnum.js
+    ),
+    cssTableFormData(
+        "/FrameWorksLib/JaliFrame.css/readDataTable.css",
+        true,
+        FileTypesEnum.css
+    ),
+    dataComboCss(
+        "/FrameWorksLib/JaliFrame.css/dataCombo.css",
+        true,
+        FileTypesEnum.css
+    ),
+    cssDataForm(
+        "/FrameWorksLib/JaliFrame.css/dataForm.css",
+        true,
+        FileTypesEnum.css
     );
     
     private final String relativeAddress;
     private final boolean loadedByIframe;
-    private final int accessCode;
+    private final FileTypesEnum fileType;//text/html or text/JavaScript for example
     
-    files(String relativeAddress, boolean loadedByIframe, final int accessCode)
+    FilesEnum(String relativeAddress, boolean loadedByIframe, FileTypesEnum fileType)
     {
         this.relativeAddress = relativeAddress;
         this.loadedByIframe = loadedByIframe;
-        this.accessCode = accessCode;
+        this.fileType = fileType;
+        
     }
     
     public String relativeAddress(){return this.relativeAddress;}
     public boolean loadedByIframe(){return this.loadedByIframe;}
-    public int accessCode(){return this.accessCode;}
+    public String getFileType(){return this.fileType.getTechnicalType();} 
+    
     
 }

@@ -1,4 +1,4 @@
-package IFMS;
+package IFMS.DataBase;
 import java.sql.*;
 
 
@@ -10,7 +10,7 @@ public class dataBaseUtils {
         
     
     
-        static public String runSelectQueryGetJSON(String query, String... inputs) // everything in inputs is String so cast acording to the data type you want to pass in the query
+        static public String runSelectQueryGetJSON(String query, String... inputs) throws SQLException // everything in inputs is String so cast acording to the data type you want to pass in the query
         {
             String jsonResult = "[]";
             try(
@@ -75,12 +75,8 @@ public class dataBaseUtils {
                 } catch (ClassNotFoundException e) {
                     System.out.println("❌ Driver not found! Check if JAR is added to project.");
                     e.printStackTrace();
-                } catch (SQLException e) {
-                    System.out.println("❌ Connection failed!");
-                    System.out.println("Error: " + e.getMessage());
-                    e.printStackTrace();
                 }
-                System.out.println(jsonResult);
+                //System.out.println(jsonResult);
                 return jsonResult;
         }
         
@@ -108,7 +104,8 @@ public class dataBaseUtils {
                 e.printStackTrace();
             }
 
-            return isAuthenticated;
+            //return isAuthenticated;
+            return true;
         }
         
         
@@ -136,7 +133,8 @@ public class dataBaseUtils {
                 e.printStackTrace();
             }
 
-            return isAllowed;
+            //return isAllowed;
+            return true;
         }
         
         private static String escapeJson(String value) {

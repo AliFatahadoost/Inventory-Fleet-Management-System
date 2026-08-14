@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes" />
+  <title>Fleet Ownership Management</title>
+  <style>
+    :root {
+      --bg-body: #eef2f7;
+      --bg-card: #ffffff;
+      --bg-input: #f8fafc;
+      --bg-table-header: #f1f5f9;
+      --bg-table-row-even: #fafbfc;
+      --bg-table-row-hover: #eef2ff;
+      --bg-modal: #ffffff;
+      --text-primary: #1e293b;
+      --text-secondary: #475569;
+      --text-muted: #94a3b8;
+      --text-input: #1e293b;
+      --border-card: #dde4ef;
+      --border-input: #d5dce8;
+      --border-table: #e2e8f0;
+      --shadow-card: 0 4px 24px rgba(0,0,0,0.05);
+      --accent: #4a6fa5;
+      --radius-sm: 6px;
+      --radius-md: 10px;
+      --radius-lg: 14px;
+      --transition: 0.2s ease;
+    }
+    body.dark-mode {
+      --bg-body: #171a21;
+      --bg-card: #1e2128;
+      --bg-input: #252830;
+      --bg-table-header: #252830;
+      --bg-table-row-even: #1f2229;
+      --bg-table-row-hover: #282d38;
+      --bg-modal: #1e2128;
+      --text-primary: #e2e6ec;
+      --text-secondary: #b0b8c4;
+      --text-muted: #6b7280;
+      --text-input: #e2e6ec;
+      --border-card: #2e333d;
+      --border-input: #3a404d;
+      --border-table: #2a2f3a;
+      --shadow-card: 0 4px 24px rgba(0,0,0,0.3);
+    }
+    * { box-sizing: border-box; font-family: 'Segoe UI', system-ui, sans-serif; margin: 0; padding: 0; }
+    body { background: var(--bg-body); color: var(--text-primary); height: 100vh; display: flex; transition: background 0.3s; }
+    button { cursor: pointer; border: none; background: none; font-size: inherit; }
+    input, select { font-size: 0.9rem; }
+
+    .app-container { display: flex; flex-direction: column; width: 100%; height: 100%; overflow: hidden; padding: 16px; }
+    .toolbar { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; margin-bottom: 12px; }
+    .mode-toggle { display: flex; gap: 0; border: 1px solid var(--border-input); border-radius: var(--radius-sm); overflow: hidden; }
+    .mode-toggle button {
+      padding: 8px 20px; font-weight: 600; background: var(--bg-input); color: var(--text-secondary);
+      transition: all var(--transition);
+    }
+    .mode-toggle button.active { background: var(--accent); color: #fff; }
+    .mode-toggle button:not(:last-child) { border-right: 1px solid var(--border-input); }
+
+    .search-wrapper { position: relative; flex: 1; max-width: 240px; }
+    .search-wrapper input {
+      width: 100%; padding: 8px 36px 8px 14px;
+      border: 1px solid var(--border-input); border-radius: var(--radius-sm);
+      background: var(--bg-input); color: var(--text-input);
+    }
+    .search-icon { position: absolute; right: 12px; top: 50%; transform: translateY(-50%); color: var(--text-muted); }
+
+    .dual-panel { display: flex; flex: 1; gap: 16px; min-height: 0; }
+    .panel { flex: 1; display: flex; flex-direction: column; background: var(--bg-card); border: 1px solid var(--border-card); border-radius: var(--radius-md); overflow: hidden; min-width: 0; }
+    .panel-header { padding: 10px 16px; font-weight: 700; background: var(--bg-table-header); border-bottom: 1px solid var(--border-table); }
+    .panel-body { flex: 1; overflow-y: auto; padding: 0; }
+    table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+    th { background: var(--bg-table-header); padding: 10px; text-align: left; position: sticky; top: 0; }
+    td { padding: 8px 10px; border-bottom: 1px solid var(--border-table); }
+    tbody tr:nth-child(even) { background: var(--bg-table-row-even); }
+    tbody tr:hover { background: var(--bg-table-row-hover); }
+    .radio-cell { width: 40px; text-align: center; }
+
+    .panel-footer { display: flex; justify-content: space-between; align-items: center; padding: 10px 16px; border-top: 1px solid var(--border-table); }
+    .pagination { display: flex; gap: 4px; }
+    .pagination button { padding: 4px 10px; border: 1px solid var(--border-input); border-radius: var(--radius-sm); background: var(--bg-card); color: var(--text-primary); font-size: 0.8rem; }
+    .pagination button.active { background: var(--accent); color: #fff; border-color: var(--accent); }
+    .pagination button:disabled { opacity: 0.4; }
+
+    .action-area { display: flex; justify-content: center; align-items: flex-start; padding: 0 8px; }
+    .btn-assign { background: var(--accent); color: #fff; border: none; padding: 10px 24px; border-radius: var(--radius-sm); font-weight: 600; margin-top: 8px; }
+    .btn-assign:disabled { opacity: 0.5; cursor: not-allowed; }
+    .delete-btn { background: #e74c3c; color: #fff; border: none; padding: 4px 12px; border-radius: var(--radius-sm); font-size: 0.8rem; }
+
+    .toast { position: fixed; bottom: 30px; right: 30px; background: #1e293b; color: #fff; padding: 10px 20px; border-radius: var(--radius-sm); z-index: 2000; opacity: 0; transition: 0.3s; }
+    .toast.show { opacity: 1; }
+    body.dark-mode .toast { background: #f1f5f9; color: #1e293b; }
+  </style>
+</head>
+<body>
+<div class="app-container">
+  <div class="toolbar">
+    <div class="mode-toggle" id="modeToggle">
+      <button id="assignModeBtn" class="active">ASSIGN</button>
+      <button id="deleteModeBtn">DELETE</button>
+    </div>
+    <div class="search-wrapper" id="userSearchWrapper">
+      <input type="text" id="userSearch" placeholder="Search users..." autocomplete="off" />
+      <span class="search-icon">🔍</span>
+    </div>
+    <div class="search-wrapper" id="fleetSearchWrapper">
+      <input type="text" id="fleetSearch" placeholder="Search fleets..." autocomplete="off" />
+      <span class="search-icon">🔍</span>
+    </div>
+  </div>
+
+  <div class="dual-panel">
+    <!-- Left panel: Users -->
+    <div class="panel">
+      <div class="panel-header">Users</div>
+      <div class="panel-body">
+        <table>
+          <thead><tr><th></th><th>ID</th><th>Username</th></tr></thead>
+          <tbody id="userTableBody"></tbody>
+        </table>
+      </div>
+      <div class="panel-footer">
+        <span id="userPageInfo">Page 1 of 1</span>
+        <div class="pagination" id="userPagination"></div>
+      </div>
+    </div>
+
+    <!-- Action area with arrow pointing LEFT (assign fleet to user) -->
+    <div class="action-area" id="actionArea">
+      <button class="btn-assign" id="assignBtn" disabled>← Assign</button>
+    </div>
+
+    <!-- Right panel: Fleets / Owned fleets -->
+    <div class="panel" id="rightPanel">
+      <div class="panel-header" id="rightPanelHeader">Fleet Teams</div>
+      <div class="panel-body">
+        <table id="rightTable">
+          <thead id="rightTableHead"></thead>
+          <tbody id="rightTableBody"></tbody>
+        </table>
+      </div>
+      <div class="panel-footer" id="rightPanelFooter">
+        <span id="fleetPageInfo">Page 1 of 1</span>
+        <div class="pagination" id="fleetPagination"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+  (() => {
+    // ── Theme sync with parent ──
+    function syncTheme() {
+      try {
+        const parentBody = parent.document.querySelector("body");
+        if (parentBody && parentBody.classList.contains("dark-mode")) document.body.classList.add("dark-mode");
+        else document.body.classList.remove("dark-mode");
+      } catch(e) {}
+    }
+    syncTheme();
+    try {
+      const parentBody = parent.document.querySelector("body");
+      if (parentBody) new MutationObserver(syncTheme).observe(parentBody, {attributes: true, attributeFilter: ['class']});
+    } catch(e) {}
+
+    // ⚠️ Adjust this to your actual API base URL if needed
+    const API_BASE = "http://192.168.100.11:55952";
+    const PER_PAGE = 50;
+    let currentMode = 'ASSIGN'; // 'ASSIGN' | 'DELETE'
+
+    // Data stores
+    let allUsers = [];
+    let allFleets = [];
+    let allOwnerships = null;   // null = not loaded yet
+
+    // Pagination state
+    let userPage = 1;
+    let fleetPage = 1;
+
+    // Selected IDs
+    let selectedUserId = null;
+    let selectedFleetId = null;    // used only in ASSIGN mode
+
+    // DOM elements
+    const assignModeBtn = document.getElementById('assignModeBtn');
+    const deleteModeBtn = document.getElementById('deleteModeBtn');
+    const userSearch = document.getElementById('userSearch');
+    const fleetSearch = document.getElementById('fleetSearch');
+    const userTableBody = document.getElementById('userTableBody');
+    const userPagination = document.getElementById('userPagination');
+    const userPageInfo = document.getElementById('userPageInfo');
+    const rightTableHead = document.getElementById('rightTableHead');
+    const rightTableBody = document.getElementById('rightTableBody');
+    const rightPanelHeader = document.getElementById('rightPanelHeader');
+    const rightPanelFooter = document.getElementById('rightPanelFooter');
+    const fleetPagination = document.getElementById('fleetPagination');
+    const fleetPageInfo = document.getElementById('fleetPageInfo');
+    const assignBtn = document.getElementById('assignBtn');
+    const actionArea = document.getElementById('actionArea');
+    const fleetSearchWrapper = document.getElementById('fleetSearchWrapper');
+    const userSearchWrapper = document.getElementById('userSearchWrapper');
+    const toast = document.getElementById('toast');
+
+    function showToast(msg, duration = 2500) {
+      toast.textContent = msg;
+      toast.classList.add('show');
+      setTimeout(() => toast.classList.remove('show'), duration);
+    }
+
+    // ── API helpers ──
+    async function fetchJSON(url) {
+      const res = await fetch(url, { method: 'POST' });
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      return res.json();
+    }
+
+    // Load users exactly like the edit form
+    async function loadUsers() {
+      try {
+        const data = await fetchJSON(API_BASE + '/usersRoleListAPI');
+        // Deduplicate to get unique users
+        const userMap = new Map();
+        data.forEach(row => {
+          if (!userMap.has(row.SYS_USER_ID)) {
+            userMap.set(row.SYS_USER_ID, { SYS_USER_ID: row.SYS_USER_ID, USERNAME: row.USERNAME });
+          }
+        });
+        allUsers = Array.from(userMap.values());
+      } catch(e) {
+        console.error(e);
+        showToast('Failed to load users.');
+        allUsers = [];
+      }
+    }
+
+    async function loadFleets() {
+      try {
+        const data = await fetchJSON(API_BASE + '/fleetTeamListAPI');
+        allFleets = Array.isArray(data) ? data : [];
+      } catch(e) {
+        console.error(e);
+        showToast('Failed to load fleet teams.');
+        allFleets = [];
+      }
+    }
+
+    // Ownership is loaded only when needed (on entering DELETE mode)
+    async function ensureOwnershipsLoaded() {
+      if (allOwnerships !== null) return;
+      try {
+        const data = await fetchJSON(API_BASE + '/userOwnerShipListAPI');
+        allOwnerships = Array.isArray(data) ? data : [];
+      } catch(e) {
+        console.error(e);
+        showToast('Failed to load ownership records.');
+        allOwnerships = [];
+      }
+    }
+
+    // ── Filtered data helpers ──
+    function getFilteredUsers() {
+      const q = userSearch.value.toLowerCase().trim();
+      if (!q) return allUsers;
+      return allUsers.filter(u => (u.USERNAME || '').toLowerCase().includes(q));
+    }
+
+    function getFilteredFleets() {
+      const q = fleetSearch.value.toLowerCase().trim();
+      if (!q) return allFleets;
+      return allFleets.filter(f => (f.FLEET_TEAM_NAME || '').toLowerCase().includes(q));
+    }
+
+    function getOwnedFleetsForUser(userId) {
+      if (!allOwnerships) return [];
+      return allOwnerships.filter(o => o.SYS_USER_ID == userId && o.FLEET_ID != null);
+    }
+
+    // ── Render functions ──
+    function renderUserTable() {
+      const filtered = getFilteredUsers();
+      const totalPages = Math.ceil(filtered.length / PER_PAGE) || 1;
+      if (userPage > totalPages) userPage = totalPages;
+      const start = (userPage - 1) * PER_PAGE;
+      const pageItems = filtered.slice(start, start + PER_PAGE);
+
+      let html = '';
+      pageItems.forEach(u => {
+        html += `<tr>
+          <td class="radio-cell"><input type="radio" name="userSelect" value="${u.SYS_USER_ID}" ${selectedUserId == u.SYS_USER_ID ? 'checked' : ''} /></td>
+          <td>${escapeHtml(u.SYS_USER_ID)}</td>
+          <td>${escapeHtml(u.USERNAME)}</td>
+        </tr>`;
+      });
+      userTableBody.innerHTML = html || '<tr><td colspan="3" style="text-align:center;padding:20px;">No users found.</td></tr>';
+
+      document.querySelectorAll('input[name="userSelect"]').forEach(radio => {
+        radio.addEventListener('change', function() {
+          selectedUserId = parseInt(this.value);
+          onUserSelectionChanged();
+        });
+      });
+
+      // Pagination
+      userPageInfo.textContent = `Page ${userPage} of ${totalPages}`;
+      let pagHtml = '';
+      pagHtml += `<button ${userPage === 1 ? 'disabled' : ''} data-page="prev">←</button>`;
+      for (let i = 1; i <= totalPages; i++) {
+        pagHtml += `<button class="${i === userPage ? 'active' : ''}" data-page="${i}">${i}</button>`;
+      }
+      pagHtml += `<button ${userPage === totalPages ? 'disabled' : ''} data-page="next">→</button>`;
+      userPagination.innerHTML = pagHtml;
+      userPagination.querySelectorAll('button').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const page = btn.dataset.page;
+          if (page === 'prev' && userPage > 1) userPage--;
+          else if (page === 'next' && userPage < totalPages) userPage++;
+          else if (!isNaN(page)) userPage = parseInt(page);
+          renderUserTable();
+        });
+      });
+    }
+
+    function renderAssignRightPanel() {
+      rightPanelHeader.textContent = 'Fleet Teams';
+      rightTableHead.innerHTML = '<tr><th></th><th>ID</th><th>Name</th><th>Description</th></tr>';
+      const filtered = getFilteredFleets();
+      const totalPages = Math.ceil(filtered.length / PER_PAGE) || 1;
+      if (fleetPage > totalPages) fleetPage = totalPages;
+      const start = (fleetPage - 1) * PER_PAGE;
+      const pageItems = filtered.slice(start, start + PER_PAGE);
+
+      let html = '';
+      pageItems.forEach(f => {
+        html += `<tr>
+          <td class="radio-cell"><input type="radio" name="fleetSelect" value="${f.FLEET_TEAM_ID}" ${selectedFleetId == f.FLEET_TEAM_ID ? 'checked' : ''} /></td>
+          <td>${escapeHtml(f.FLEET_TEAM_ID)}</td>
+          <td>${escapeHtml(f.FLEET_TEAM_NAME)}</td>
+          <td>${escapeHtml(f.DESCRIPTION || '')}</td>
+        </tr>`;
+      });
+      rightTableBody.innerHTML = html || '<tr><td colspan="4" style="text-align:center;padding:20px;">No fleet teams found.</td></tr>';
+
+      document.querySelectorAll('input[name="fleetSelect"]').forEach(radio => {
+        radio.addEventListener('change', function() {
+          selectedFleetId = parseInt(this.value);
+          updateAssignButtonState();
+        });
+      });
+
+      // Pagination
+      fleetPageInfo.textContent = `Page ${fleetPage} of ${totalPages}`;
+      let pagHtml = '';
+      pagHtml += `<button ${fleetPage === 1 ? 'disabled' : ''} data-page="prev">←</button>`;
+      for (let i = 1; i <= totalPages; i++) {
+        pagHtml += `<button class="${i === fleetPage ? 'active' : ''}" data-page="${i}">${i}</button>`;
+      }
+      pagHtml += `<button ${fleetPage === totalPages ? 'disabled' : ''} data-page="next">→</button>`;
+      fleetPagination.innerHTML = pagHtml;
+      fleetPagination.querySelectorAll('button').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const page = btn.dataset.page;
+          if (page === 'prev' && fleetPage > 1) fleetPage--;
+          else if (page === 'next' && fleetPage < totalPages) fleetPage++;
+          else if (!isNaN(page)) fleetPage = parseInt(page);
+          renderAssignRightPanel();
+        });
+      });
+
+      rightPanelFooter.style.display = 'flex';
+      fleetSearchWrapper.style.display = 'flex';
+      actionArea.style.display = 'flex';
+      updateAssignButtonState();
+    }
+
+    async function renderDeleteRightPanel(userId) {
+      await ensureOwnershipsLoaded();
+      rightPanelHeader.textContent = 'Owned Fleet Teams';
+      rightTableHead.innerHTML = '<tr><th>ID</th><th>Name</th><th>Description</th><th>Action</th></tr>';
+      const owned = getOwnedFleetsForUser(userId);
+      const ownedFleets = owned.map(o => {
+        const fleet = allFleets.find(f => f.FLEET_TEAM_ID == o.FLEET_ID);
+        return {
+          ownershipId: o.USER_OWNER_SHIP_ID,
+          fleetId: o.FLEET_ID,
+          fleetName: fleet ? fleet.FLEET_TEAM_NAME : 'Unknown',
+          description: fleet ? fleet.DESCRIPTION : ''
+        };
+      });
+
+      let html = '';
+      if (ownedFleets.length === 0) {
+        html = '<tr><td colspan="4" style="text-align:center;padding:20px;">No owned fleets for this user.</td></tr>';
+      } else {
+        ownedFleets.forEach(f => {
+          html += `<tr>
+            <td>${escapeHtml(f.fleetId)}</td>
+            <td>${escapeHtml(f.fleetName)}</td>
+            <td>${escapeHtml(f.description)}</td>
+            <td><button class="delete-btn" data-fleetid="${f.fleetId}">🗑️ Delete</button></td>
+          </tr>`;
+        });
+      }
+      rightTableBody.innerHTML = html;
+
+      rightTableBody.querySelectorAll('.delete-btn').forEach(btn => {
+        btn.addEventListener('click', async () => {
+          const fleetId = parseInt(btn.dataset.fleetid);
+          await revokeOwnership(selectedUserId, fleetId);
+        });
+      });
+
+      rightPanelFooter.style.display = 'none';
+      fleetSearchWrapper.style.display = 'none';
+      actionArea.style.display = 'none';
+    }
+
+    function updateAssignButtonState() {
+      assignBtn.disabled = !(selectedUserId && selectedFleetId);
+    }
+
+    function onUserSelectionChanged() {
+      if (currentMode === 'ASSIGN') {
+        updateAssignButtonState();
+      } else if (currentMode === 'DELETE' && selectedUserId) {
+        renderDeleteRightPanel(selectedUserId);
+      }
+    }
+
+    // ── Ownership actions ──
+        // ── Ownership actions ──
+    async function assignOwnership(userId, fleetId) {
+      try {
+        const res = await fetch(API_BASE + '/setFleetOwnerAPI', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({ userId: userId, fleetId: fleetId })      // ✅ only userId and fleetId
+        });
+        if (!res.ok) throw new Error('HTTP ' + res.status);
+        showToast('Ownership assigned successfully.');
+        if (allOwnerships !== null) await ensureOwnershipsLoaded();
+        if (currentMode === 'DELETE' && selectedUserId) {
+          renderDeleteRightPanel(selectedUserId);
+        }
+      } catch(e) {
+        console.error(e);
+        showToast('Failed to assign ownership.');
+      }
+    }
+
+    async function revokeOwnership(userId, fleetId) {
+      try {
+        const res = await fetch(API_BASE + '/revokeFleetOwnerAPI', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({ userId: userId, fleetId: fleetId })     // ✅ only userId and fleetId
+        });
+        if (!res.ok) throw new Error('HTTP ' + res.status);
+        showToast('Ownership revoked.');
+        if (allOwnerships !== null) await ensureOwnershipsLoaded();
+        if (currentMode === 'DELETE' && selectedUserId) {
+          renderDeleteRightPanel(selectedUserId);
+        }
+      } catch(e) {
+        console.error(e);
+        showToast('Failed to revoke ownership.');
+      }
+    }
+
+    // ── Mode switching ──
+    async function setMode(mode) {
+      currentMode = mode;
+      assignModeBtn.classList.toggle('active', mode === 'ASSIGN');
+      deleteModeBtn.classList.toggle('active', mode === 'DELETE');
+
+      selectedFleetId = null;
+      if (mode === 'ASSIGN') {
+        assignBtn.style.display = 'block';
+        fleetSearchWrapper.style.display = 'flex';
+        actionArea.style.display = 'flex';
+        renderAssignRightPanel();
+      } else {
+        assignBtn.style.display = 'none';
+        fleetSearchWrapper.style.display = 'none';
+        actionArea.style.display = 'none';
+        // Load ownership data now
+        await ensureOwnershipsLoaded();
+        if (selectedUserId) {
+          renderDeleteRightPanel(selectedUserId);
+        } else {
+          rightTableBody.innerHTML = '<tr><td colspan="4" style="text-align:center;padding:20px;">Select a user to view owned fleets.</td></tr>';
+          rightPanelHeader.textContent = 'Owned Fleet Teams';
+          rightTableHead.innerHTML = '<tr><th>ID</th><th>Name</th><th>Description</th><th>Action</th></tr>';
+          rightPanelFooter.style.display = 'none';
+        }
+      }
+    }
+
+    // ── Event listeners ──
+    assignModeBtn.addEventListener('click', () => setMode('ASSIGN'));
+    deleteModeBtn.addEventListener('click', () => setMode('DELETE'));
+
+    userSearch.addEventListener('input', () => {
+      userPage = 1;
+      renderUserTable();
+      if (currentMode === 'DELETE' && selectedUserId) {
+        renderDeleteRightPanel(selectedUserId);
+      }
+    });
+
+    fleetSearch.addEventListener('input', () => {
+      if (currentMode === 'ASSIGN') {
+        fleetPage = 1;
+        renderAssignRightPanel();
+      }
+    });
+
+    assignBtn.addEventListener('click', async () => {
+      if (!selectedUserId || !selectedFleetId) return;
+      await assignOwnership(selectedUserId, selectedFleetId);
+      selectedFleetId = null;
+      renderAssignRightPanel();
+    });
+
+    // ── Initialization ──
+    (async () => {
+      await Promise.all([loadUsers(), loadFleets()]); // Ownership NOT loaded here
+      renderUserTable();
+      setMode('ASSIGN');
+    })();
+
+    function escapeHtml(text) {
+      const div = document.createElement('div');
+      div.textContent = text;
+      return div.innerHTML;
+    }
+  })();
+</script>
+</body>
+</html>
+

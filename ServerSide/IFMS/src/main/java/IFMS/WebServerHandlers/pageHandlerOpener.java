@@ -1,34 +1,30 @@
+package IFMS.WebServerHandlers;
 
-package IFMS;
-
-import com.sun.net.httpserver.HttpServer;
 import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.httpserver.HttpExchange;
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.OutputStream;
-import java.net.InetSocketAddress;
 import java.nio.file.Files;
 import java.nio.charset.StandardCharsets;
+import IFMS.DataBase.dataBaseUtils;
+import IFMS.ConfigAndLauncherManager.readConfig;
+import IFMS.PageRelatedEnums.FilesEnum;
 
 public class pageHandlerOpener implements HttpHandler{
     
-        private String fileAddress = "";
-        private boolean isIframe = false;
-        private int accessId = 0;
-        public pageHandlerOpener(String baseAddress, files fileInfo)
+        private String fileAddress;
+        FilesEnum fileInfo;
+
+        public pageHandlerOpener(String baseAddress, FilesEnum fileInfo)
         {      
-            this.fileAddress = baseAddress + fileInfo.relativeAddress();   
-            System.out.println(this.fileAddress);
-            this.isIframe = fileInfo.loadedByIframe();
-            this.accessId = fileInfo.accessCode();
+            this.fileInfo = fileInfo;
+            this.fileAddress = baseAddress + this.fileInfo.relativeAddress();   
             File file = new File(this.fileAddress);
             String filesName = file.getName().contains(".")?file.getName().substring(0, file.getName().lastIndexOf('.')) : file.getName();
-            dataBaseUtils.runSelectQueryGetJSON("EXEC UPDATING_LIST_OF_SYS_OBJECTS ?, ?", filesName, this.accessId+"");
             
+            //dataBaseUtils.runSelectQueryGetJSON("EXEC UPDATING_LIST_OF_SYS_OBJECTS ?, ?", filesName, this.accessId+"");
+
         }
         
     @Override
@@ -36,21 +32,18 @@ public class pageHandlerOpener implements HttpHandler{
         {
             
             String token = webServerUtils.extractTokenFromCookie(exchange);
-            boolean isAuthenticated = token != null && dataBaseUtils.isAuthenticated(token);
+            boolean isAuthenticated = /*token != null &&*/ dataBaseUtils.isAuthenticated(token);
             if(!(this.fileAddress.contains("/Login/Login.html")))
                 if (!isAuthenticated) {
-                    if(this.isIframe)
+                    if(this.fileInfo.loadedByIframe()){
                         webServerUtils.refreshPage(exchange);
+                       
+                    }
                     else
                         webServerUtils.kickUnAuthenticated(exchange);
                     return;
                 }
-            
-            if(!(this.fileAddress.contains("/Login/Login.html")))
-                if (!dataBaseUtils.isAllowedRead(token, this.accessId)) {
-                    return;
-                }
-            //dataBaseUtils.runSelectQueryGetJSON("EXEC ACTIVITY_LOG_MANAGER 0, ?, ?", token, "User Tried and Opened Page" + exchange.getRequestURI());
+
                 File file = new File(this.fileAddress);
         byte[] response;
 
@@ -72,7 +65,7 @@ public class pageHandlerOpener implements HttpHandler{
             
             
             // 3. Set content type and length
-            exchange.getResponseHeaders().set("Content-Type", "text/html");
+            exchange.getResponseHeaders().set("Content-Type", this.fileInfo.getFileType());
             exchange.sendResponseHeaders(200, response.length);
         } else {
             response = "404 - File not found - sorry".getBytes();

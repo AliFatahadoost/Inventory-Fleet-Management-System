@@ -1,0 +1,1169 @@
+/* ============================================================
+   DATA MANIPULATION MODAL
+   Polished component / theme system
+   ============================================================ */
+
+:host {
+    display: block;
+
+    --modal-radius: 18px;
+    --field-radius: 10px;
+
+    --bg-card: #ffffff;
+    --bg-input: #f8fafc;
+    --bg-input-focus: #ffffff;
+
+    --bg-button-secondary: #f1f5f9;
+    --bg-button-secondary-hover: #e2e8f0;
+
+    --text-primary: #1e293b;
+    --text-secondary: #475569;
+    --text-muted: #94a3b8;
+
+    --border-color: #e2e8f0;
+    --border-strong: #cbd5e1;
+
+    --theme-primary: #2563eb;
+    --theme-primary-dark: #1d4ed8;
+    --theme-primary-soft: rgba(37, 99, 235, 0.10);
+
+    --theme-shadow: rgba(37, 99, 235, 0.20);
+
+    --shadow-card:
+        0 20px 60px rgba(15, 23, 42, 0.20),
+        0 8px 24px rgba(15, 23, 42, 0.08);
+
+    --scrollbar-track: #f1f5f9;
+    --scrollbar-thumb: #cbd5e1;
+    --scrollbar-thumb-hover: #94a3b8;
+
+    --transition-fast: 0.16s ease;
+    --transition-normal: 0.25s ease;
+}
+
+
+/* ============================================================
+   MODAL OVERLAY
+   ============================================================ */
+
+.containerInputForm {
+    position: fixed;
+    inset: 0;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 1rem;
+
+    box-sizing: border-box;
+
+    z-index: 1000;
+
+    background: transparent;
+
+    isolation: isolate;
+}
+
+
+/* ============================================================
+   BACKDROP
+   ============================================================ */
+
+.backGround {
+    position: absolute;
+    inset: 0;
+
+    background:
+        rgba(15, 23, 42, 0.52);
+
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
+
+    z-index: -1;
+
+    animation: fadeIn 0.22s ease-out;
+
+    transition:
+        background var(--transition-normal),
+        backdrop-filter var(--transition-normal);
+}
+
+
+/* ============================================================
+   CARD
+   ============================================================ */
+
+.dataCard {
+    position: relative;
+
+    display: flex;
+    flex-direction: column;
+
+    width: min(860px, 100%);
+
+    min-width: min(90vw, 420px);
+    max-width: 860px;
+
+    max-height: 90vh;
+
+    padding: 0;
+
+    overflow: hidden;
+
+    background: var(--bg-card);
+    color: var(--text-primary);
+
+    border: 1px solid var(--border-color);
+    border-radius: var(--modal-radius);
+
+    box-shadow: var(--shadow-card);
+
+    animation: modalEnter 0.28s cubic-bezier(.2, .8, .2, 1);
+
+    transition:
+        background var(--transition-normal),
+        color var(--transition-normal),
+        border-color var(--transition-normal),
+        box-shadow var(--transition-normal);
+}
+
+
+/* ============================================================
+   TITLE SECTION
+   ============================================================ */
+
+.titleHolder {
+    position: relative;
+
+    flex-shrink: 0;
+
+    display: flex;
+    align-items: center;
+
+    min-height: 68px;
+
+    padding: 0.9rem 1.5rem;
+
+    border-bottom: 1px solid var(--border-color);
+
+    background:
+        linear-gradient(
+            to bottom,
+            var(--bg-card),
+            color-mix(
+                in srgb,
+                var(--bg-card) 96%,
+                var(--theme-primary)
+            )
+        );
+}
+
+
+.Title {
+    margin: 0;
+
+    font-size: 1.45rem;
+    line-height: 1.2;
+
+    font-weight: 700;
+
+    letter-spacing: -0.025em;
+
+    color: var(--text-primary);
+
+    transition: color var(--transition-normal);
+}
+
+
+/* Decorative accent underneath title */
+
+.titleHolder::after {
+    content: "";
+
+    position: absolute;
+
+    left: 1.5rem;
+    bottom: -1px;
+
+    width: 56px;
+    height: 3px;
+
+    border-radius: 999px;
+
+    background: var(--theme-primary);
+
+    box-shadow:
+        0 0 10px var(--theme-shadow);
+}
+
+
+/* ============================================================
+   INPUT SECTION
+   ============================================================ */
+
+.inputSection {
+    flex: 1 1 auto;
+
+    min-height: 0;
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(2, minmax(0, 1fr));
+
+    gap: 1rem 1.25rem;
+
+    padding: 1.25rem 1.5rem;
+
+    overflow-y: auto;
+    overflow-x: hidden;
+
+    scrollbar-width: thin;
+
+    scrollbar-color:
+        var(--scrollbar-thumb)
+        var(--scrollbar-track);
+}
+
+
+/* ============================================================
+   SCROLLBAR
+   ============================================================ */
+
+.inputSection::-webkit-scrollbar {
+    width: 8px;
+}
+
+.inputSection::-webkit-scrollbar-track {
+    background: var(--scrollbar-track);
+
+    border-radius: 999px;
+}
+
+.inputSection::-webkit-scrollbar-thumb {
+    background: var(--scrollbar-thumb);
+
+    border-radius: 999px;
+
+    border: 2px solid var(--scrollbar-track);
+}
+
+.inputSection::-webkit-scrollbar-thumb:hover {
+    background: var(--scrollbar-thumb-hover);
+}
+
+
+/* ============================================================
+   FIELD WRAPPER
+   ============================================================ */
+
+.inputSection > div {
+    min-width: 0;
+
+    display: flex;
+    align-items: center;
+
+    gap: 0.65rem;
+
+    padding: 0.35rem 0;
+}
+
+
+/* ============================================================
+   LABELS
+   ============================================================ */
+
+.inputSection label {
+    flex: 0 0 auto;
+
+    min-width: 85px;
+
+    color: var(--text-secondary);
+
+    font-size: 0.85rem;
+
+    font-weight: 600;
+
+    line-height: 1.25;
+
+    transition:
+        color var(--transition-fast);
+}
+
+
+/* ============================================================
+   GENERAL INPUTS
+   ============================================================ */
+
+.inputSection input[type="text"],
+.inputSection input[type="number"],
+.inputSection input[type="email"],
+.inputSection input[type="password"],
+.inputSection input[type="date"],
+.inputSection input[type="datetime-local"],
+.inputSection input[type="time"],
+.inputSection input[type="search"],
+.inputSection input[type="url"],
+.inputSection input[type="tel"] {
+
+    box-sizing: border-box;
+
+    flex: 1 1 auto;
+
+    min-width: 0;
+    width: 100%;
+
+    padding: 0.68rem 0.85rem;
+
+    border: 1px solid var(--border-color);
+
+    border-radius: var(--field-radius);
+
+    outline: none;
+
+    background: var(--bg-input);
+    color: var(--text-primary);
+
+    font-family: inherit;
+    font-size: 0.92rem;
+
+    box-shadow:
+        inset 0 1px 2px rgba(15, 23, 42, 0.025);
+
+    transition:
+        border-color var(--transition-fast),
+        background var(--transition-fast),
+        box-shadow var(--transition-fast),
+        color var(--transition-fast),
+        transform var(--transition-fast);
+}
+
+
+/* ============================================================
+   INPUT HOVER
+   ============================================================ */
+
+.inputSection input[type="text"]:hover,
+.inputSection input[type="number"]:hover,
+.inputSection input[type="email"]:hover,
+.inputSection input[type="password"]:hover,
+.inputSection input[type="date"]:hover,
+.inputSection input[type="datetime-local"]:hover,
+.inputSection input[type="time"]:hover,
+.inputSection input[type="search"]:hover,
+.inputSection input[type="url"]:hover,
+.inputSection input[type="tel"]:hover {
+
+    border-color: var(--border-strong);
+}
+
+
+/* ============================================================
+   INPUT FOCUS
+   ============================================================ */
+
+.inputSection input:focus {
+    border-color: var(--theme-primary);
+
+    background: var(--bg-input-focus);
+
+    box-shadow:
+        0 0 0 3px var(--theme-primary-soft),
+        0 2px 5px rgba(15, 23, 42, 0.05);
+}
+
+
+/* ============================================================
+   PLACEHOLDER
+   ============================================================ */
+
+.inputSection input::placeholder {
+    color: var(--text-muted);
+
+    font-weight: 400;
+
+    opacity: 1;
+}
+
+
+/* ============================================================
+   DISABLED INPUT
+   ============================================================ */
+
+.inputSection input:disabled {
+    cursor: not-allowed;
+
+    opacity: 0.65;
+
+    background:
+        color-mix(
+            in srgb,
+            var(--bg-input) 90%,
+            var(--border-color)
+        );
+}
+
+
+/* ============================================================
+   CHECKBOX / RADIO FIELD
+   ============================================================ */
+
+.inputSection div:has(input[type="checkbox"]),
+.inputSection div:has(input[type="radio"]) {
+
+    gap: 0.55rem;
+
+    padding: 0.45rem 0.65rem;
+
+    border-radius: 10px;
+
+    background:
+        color-mix(
+            in srgb,
+            var(--theme-primary) 4%,
+            var(--bg-card)
+        );
+
+    transition:
+        background var(--transition-fast),
+        box-shadow var(--transition-fast);
+}
+
+
+.inputSection div:has(input[type="checkbox"]):hover,
+.inputSection div:has(input[type="radio"]):hover {
+
+    background:
+        color-mix(
+            in srgb,
+            var(--theme-primary) 8%,
+            var(--bg-card)
+        );
+}
+
+
+/* ============================================================
+   CHECKBOX / RADIO
+   ============================================================ */
+
+.inputSection input[type="checkbox"],
+.inputSection input[type="radio"] {
+
+    flex: 0 0 auto;
+
+    width: 17px;
+    height: 17px;
+
+    margin: 0;
+
+    accent-color: var(--theme-primary);
+
+    cursor: pointer;
+}
+
+
+/* ============================================================
+   BUTTON AREA
+   ============================================================ */
+
+.buttonsPlace {
+
+    flex-shrink: 0;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: flex-end;
+
+    gap: 0.75rem;
+
+    padding: 1rem 1.5rem;
+
+    border-top: 1px solid var(--border-color);
+
+    background:
+        color-mix(
+            in srgb,
+            var(--bg-card) 96%,
+            var(--border-color)
+        );
+}
+
+
+/* ============================================================
+   BUTTON BASE
+   ============================================================ */
+
+.btn {
+
+    display: inline-flex;
+
+    align-items: center;
+    justify-content: center;
+
+    min-width: 105px;
+
+    padding: 0.68rem 1.25rem;
+
+    border: 1px solid transparent;
+
+    border-radius: 10px;
+
+    font-family: inherit;
+    font-size: 0.9rem;
+    font-weight: 600;
+
+    line-height: 1;
+
+    cursor: pointer;
+
+    user-select: none;
+
+    transition:
+        background var(--transition-fast),
+        border-color var(--transition-fast),
+        color var(--transition-fast),
+        box-shadow var(--transition-fast),
+        transform var(--transition-fast);
+}
+
+
+/* ============================================================
+   BUTTON FOCUS
+   ============================================================ */
+
+.btn:focus-visible {
+    outline: none;
+
+    box-shadow:
+        0 0 0 3px var(--theme-primary-soft);
+}
+
+
+/* ============================================================
+   BUTTON PRESS
+   ============================================================ */
+
+.btn:active {
+    transform: translateY(1px);
+}
+
+
+/* ============================================================
+   CANCEL
+   ============================================================ */
+
+.btnDelete {
+
+    background: var(--bg-button-secondary);
+
+    color: var(--text-secondary);
+
+    border-color: var(--border-color);
+
+    box-shadow:
+        0 1px 2px rgba(15, 23, 42, 0.04);
+}
+
+
+.btnDelete:hover {
+
+    background: var(--bg-button-secondary-hover);
+
+    color: var(--text-primary);
+
+    border-color: var(--border-strong);
+}
+
+
+/* ============================================================
+   SAVE
+   ============================================================ */
+
+.btnSave {
+
+    background: var(--theme-primary);
+
+    color: var(--header-text-color, #ffffff);
+
+    border-color: var(--theme-primary);
+
+    box-shadow:
+        0 4px 10px var(--theme-shadow);
+}
+
+
+.btnSave:hover {
+
+    background: var(--theme-primary-dark);
+
+    border-color: var(--theme-primary-dark);
+
+    box-shadow:
+        0 6px 16px var(--theme-shadow);
+
+    transform: translateY(-1px);
+}
+
+
+.btnSave:active {
+    transform: translateY(0);
+}
+
+
+/* ============================================================
+   DISABLED BUTTON
+   ============================================================ */
+
+.btn:disabled {
+
+    cursor: not-allowed;
+
+    opacity: 0.55;
+
+    box-shadow: none;
+
+    transform: none;
+}
+
+
+/* ============================================================
+   ERROR STATE
+   ============================================================ */
+
+.inputSection input.error {
+    border-color: #dc3545;
+
+    box-shadow:
+        0 0 0 3px rgba(220, 53, 69, 0.12);
+}
+
+
+.inputSection input.error:focus {
+    border-color: #dc3545;
+
+    box-shadow:
+        0 0 0 3px rgba(220, 53, 69, 0.16);
+}
+
+
+/* ============================================================
+   SUCCESS STATE
+   ============================================================ */
+
+.inputSection input.success {
+    border-color: #198754;
+
+    box-shadow:
+        0 0 0 3px rgba(25, 135, 84, 0.10);
+}
+
+
+/* ============================================================
+   LIGHT MODE
+   ============================================================ */
+
+.containerInputForm.light {
+
+    --bg-card: #ffffff;
+
+    --bg-input: #f8fafc;
+    --bg-input-focus: #ffffff;
+
+    --bg-button-secondary: #f1f5f9;
+    --bg-button-secondary-hover: #e2e8f0;
+
+    --text-primary: #1e293b;
+    --text-secondary: #475569;
+    --text-muted: #94a3b8;
+
+    --border-color: #e2e8f0;
+    --border-strong: #cbd5e1;
+
+    --shadow-color:
+        rgba(15, 23, 42, 0.22);
+
+    --scrollbar-track: #f1f5f9;
+    --scrollbar-thumb: #cbd5e1;
+    --scrollbar-thumb-hover: #94a3b8;
+
+    --header-text-color: #ffffff;
+}
+
+
+/* ============================================================
+   DARK MODE
+   ============================================================ */
+
+.containerInputForm.dark {
+
+    --bg-card: #111827;
+
+    --bg-input: #1f2937;
+    --bg-input-focus: #243044;
+
+    --bg-button-secondary: #1f2937;
+    --bg-button-secondary-hover: #273449;
+
+    --text-primary: #f1f5f9;
+    --text-secondary: #cbd5e1;
+    --text-muted: #64748b;
+
+    --border-color: #2d3a4d;
+    --border-strong: #40506a;
+
+    --shadow-color:
+        rgba(0, 0, 0, 0.60);
+
+    --scrollbar-track: #172033;
+    --scrollbar-thumb: #3f506b;
+    --scrollbar-thumb-hover: #5a6f8f;
+
+    --header-text-color: #ffffff;
+}
+
+
+.containerInputForm.dark .backGround {
+    background:
+        rgba(0, 0, 0, 0.72);
+}
+
+
+/* ============================================================
+   RED
+   ============================================================ */
+
+.containerInputForm.red {
+    --theme-primary: #dc3545;
+    --theme-primary-dark: #bb2d3b;
+    --theme-primary-soft: rgba(220, 53, 69, 0.12);
+    --theme-shadow: rgba(220, 53, 69, 0.25);
+}
+
+.containerInputForm.light-red {
+    --theme-primary: #e57373;
+    --theme-primary-dark: #d95f5f;
+    --theme-primary-soft: rgba(220, 53, 69, 0.10);
+    --theme-shadow: rgba(220, 53, 69, 0.18);
+    --header-text-color: #721c24;
+}
+
+.containerInputForm.dark-red {
+    --theme-primary: #8f1d2c;
+    --theme-primary-dark: #721c24;
+    --theme-primary-soft: rgba(220, 53, 69, 0.14);
+    --theme-shadow: rgba(220, 53, 69, 0.28);
+}
+
+
+/* ============================================================
+   GREEN
+   ============================================================ */
+
+.containerInputForm.green {
+    --theme-primary: #198754;
+    --theme-primary-dark: #146c43;
+    --theme-primary-soft: rgba(25, 135, 84, 0.11);
+    --theme-shadow: rgba(25, 135, 84, 0.25);
+}
+
+.containerInputForm.light-green {
+    --theme-primary: #70c58a;
+    --theme-primary-dark: #58b275;
+    --theme-primary-soft: rgba(25, 135, 84, 0.10);
+    --theme-shadow: rgba(25, 135, 84, 0.18);
+    --header-text-color: #155724;
+}
+
+.containerInputForm.dark-green {
+    --theme-primary: #146c43;
+    --theme-primary-dark: #0f5132;
+    --theme-primary-soft: rgba(25, 135, 84, 0.14);
+    --theme-shadow: rgba(25, 135, 84, 0.28);
+}
+
+
+/* ============================================================
+   BLUE
+   ============================================================ */
+
+.containerInputForm.blue {
+    --theme-primary: #2563eb;
+    --theme-primary-dark: #1d4ed8;
+    --theme-primary-soft: rgba(37, 99, 235, 0.11);
+    --theme-shadow: rgba(37, 99, 235, 0.25);
+}
+
+.containerInputForm.light-blue {
+    --theme-primary: #6ea8fe;
+    --theme-primary-dark: #4d8fe8;
+    --theme-primary-soft: rgba(37, 99, 235, 0.10);
+    --theme-shadow: rgba(37, 99, 235, 0.18);
+    --header-text-color: #084298;
+}
+
+.containerInputForm.dark-blue {
+    --theme-primary: #174ea6;
+    --theme-primary-dark: #123d80;
+    --theme-primary-soft: rgba(37, 99, 235, 0.14);
+    --theme-shadow: rgba(37, 99, 235, 0.30);
+}
+
+
+/* ============================================================
+   PURPLE
+   ============================================================ */
+
+.containerInputForm.purple {
+    --theme-primary: #7c3aed;
+    --theme-primary-dark: #6d28d9;
+    --theme-primary-soft: rgba(124, 58, 237, 0.11);
+    --theme-shadow: rgba(124, 58, 237, 0.25);
+}
+
+.containerInputForm.light-purple {
+    --theme-primary: #a78bfa;
+    --theme-primary-dark: #8b6ee8;
+    --theme-primary-soft: rgba(124, 58, 237, 0.10);
+    --theme-shadow: rgba(124, 58, 237, 0.18);
+    --header-text-color: #4c1d95;
+}
+
+.containerInputForm.dark-purple {
+    --theme-primary: #5b21b6;
+    --theme-primary-dark: #4c1d95;
+    --theme-primary-soft: rgba(124, 58, 237, 0.14);
+    --theme-shadow: rgba(124, 58, 237, 0.30);
+}
+
+
+/* ============================================================
+   YELLOW
+   ============================================================ */
+
+.containerInputForm.yellow {
+    --theme-primary: #e0a800;
+    --theme-primary-dark: #c89500;
+    --theme-primary-soft: rgba(224, 168, 0, 0.11);
+    --theme-shadow: rgba(224, 168, 0, 0.25);
+    --header-text-color: #212529;
+}
+
+.containerInputForm.light-yellow {
+    --theme-primary: #f4d35e;
+    --theme-primary-dark: #e8c345;
+    --theme-primary-soft: rgba(224, 168, 0, 0.10);
+    --theme-shadow: rgba(224, 168, 0, 0.18);
+    --header-text-color: #664d03;
+}
+
+.containerInputForm.dark-yellow {
+    --theme-primary: #a67c00;
+    --theme-primary-dark: #806100;
+    --theme-primary-soft: rgba(224, 168, 0, 0.14);
+    --theme-shadow: rgba(224, 168, 0, 0.30);
+}
+
+
+/* ============================================================
+   WHITE
+   ============================================================ */
+
+.containerInputForm.white {
+    --theme-primary: #64748b;
+    --theme-primary-dark: #475569;
+    --theme-primary-soft: rgba(100, 116, 139, 0.10);
+    --theme-shadow: rgba(100, 116, 139, 0.16);
+    --header-text-color: #1e293b;
+}
+
+.containerInputForm.light-white {
+    --theme-primary: #ffffff;
+    --theme-primary-dark: #e2e8f0;
+    --theme-primary-soft: rgba(100, 116, 139, 0.08);
+    --theme-shadow: rgba(15, 23, 42, 0.08);
+    --header-text-color: #1e293b;
+}
+
+.containerInputForm.dark-white {
+    --theme-primary: #cbd5e1;
+    --theme-primary-dark: #94a3b8;
+    --theme-primary-soft: rgba(100, 116, 139, 0.10);
+    --theme-shadow: rgba(15, 23, 42, 0.15);
+    --header-text-color: #1e293b;
+}
+
+
+/* ============================================================
+   GRAY
+   ============================================================ */
+
+.containerInputForm.gray {
+    --theme-primary: #64748b;
+    --theme-primary-dark: #475569;
+    --theme-primary-soft: rgba(100, 116, 139, 0.10);
+    --theme-shadow: rgba(100, 116, 139, 0.24);
+}
+
+.containerInputForm.light-gray {
+    --theme-primary: #cbd5e1;
+    --theme-primary-dark: #94a3b8;
+    --theme-primary-soft: rgba(100, 116, 139, 0.08);
+    --theme-shadow: rgba(100, 116, 139, 0.15);
+    --header-text-color: #1e293b;
+}
+
+.containerInputForm.dark-gray {
+    --theme-primary: #475569;
+    --theme-primary-dark: #334155;
+    --theme-primary-soft: rgba(100, 116, 139, 0.14);
+    --theme-shadow: rgba(71, 85, 105, 0.30);
+}
+
+
+/* ============================================================
+   NEON
+   ============================================================ */
+
+.containerInputForm.neon .dataCard {
+    border-color: var(--theme-primary);
+
+    box-shadow:
+        0 0 12px var(--theme-shadow),
+        0 0 30px var(--theme-shadow),
+        0 20px 60px rgba(0, 0, 0, 0.25);
+}
+
+
+.containerInputForm.neon .titleHolder::after {
+    box-shadow:
+        0 0 8px var(--theme-primary),
+        0 0 18px var(--theme-primary);
+}
+
+
+.containerInputForm.neon .btnSave {
+    box-shadow:
+        0 0 8px var(--theme-primary),
+        0 5px 16px var(--theme-shadow);
+}
+
+
+.containerInputForm.neon .inputSection input:focus {
+    box-shadow:
+        0 0 8px var(--theme-primary),
+        0 0 0 3px var(--theme-primary-soft);
+}
+
+
+/* ============================================================
+   PASTEL
+   ============================================================ */
+
+.containerInputForm.pastel .dataCard {
+    border-color:
+        color-mix(
+            in srgb,
+            var(--theme-primary) 30%,
+            var(--border-color)
+        );
+}
+
+
+.containerInputForm.pastel .titleHolder {
+    background:
+        color-mix(
+            in srgb,
+            var(--theme-primary) 7%,
+            var(--bg-card)
+        );
+}
+
+
+.containerInputForm.pastel .btnSave {
+    background:
+        color-mix(
+            in srgb,
+            var(--theme-primary) 85%,
+            white
+        );
+
+    box-shadow:
+        0 4px 12px var(--theme-shadow);
+}
+
+
+.containerInputForm.pastel .btnSave:hover {
+    background: var(--theme-primary);
+}
+
+
+/* ============================================================
+   ANIMATIONS
+   ============================================================ */
+
+@keyframes modalEnter {
+
+    from {
+        opacity: 0;
+
+        transform:
+            translateY(18px)
+            scale(0.97);
+    }
+
+    to {
+        opacity: 1;
+
+        transform:
+            translateY(0)
+            scale(1);
+    }
+}
+
+
+@keyframes fadeIn {
+
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
+
+@media (max-width: 700px) {
+
+    .containerInputForm {
+        padding: 0.5rem;
+    }
+
+
+    .dataCard {
+        width: 100%;
+        min-width: 0;
+
+        max-height: 95vh;
+
+        border-radius: 14px;
+    }
+
+
+    .titleHolder {
+        min-height: 60px;
+
+        padding:
+            0.8rem
+            1.1rem;
+    }
+
+
+    .titleHolder::after {
+        left: 1.1rem;
+    }
+
+
+    .Title {
+        font-size: 1.25rem;
+    }
+
+
+    .inputSection {
+        grid-template-columns: 1fr;
+
+        gap: 0.7rem;
+
+        padding:
+            1rem;
+    }
+
+
+    .inputSection > div {
+        width: 100%;
+    }
+
+
+    .buttonsPlace {
+
+        flex-direction: column-reverse;
+        align-items: stretch;
+
+        padding:
+            0.9rem 1rem;
+    }
+
+
+    .btn {
+        width: 100%;
+    }
+
+
+    .inputSection label {
+        min-width: 80px;
+    }
+}
+
+
+/* ============================================================
+   SMALL MOBILE
+   ============================================================ */
+
+@media (max-width: 480px) {
+
+    .containerInputForm {
+        padding: 0;
+    }
+
+
+    .dataCard {
+
+        width: 100%;
+        height: 100%;
+
+        max-height: 100vh;
+
+        border-radius: 0;
+    }
+
+
+    .inputSection > div {
+        flex-direction: column;
+        align-items: stretch;
+
+        gap: 0.35rem;
+    }
+
+
+    .inputSection label {
+        min-width: 0;
+    }
+
+
+    .inputSection input {
+        width: 100%;
+    }
+}
+
+
+/* ============================================================
+   REDUCED MOTION
+   ============================================================ */
+
+@media (prefers-reduced-motion: reduce) {
+
+    .containerInputForm *,
+    .containerInputForm *::before,
+    .containerInputForm *::after {
+
+        animation: none !important;
+
+        transition: none !important;
+    }
+}
