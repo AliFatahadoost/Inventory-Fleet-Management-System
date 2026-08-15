@@ -1,3 +1,10 @@
+
+const dataCombo = document.createElement("link");
+        dataCombo.rel = "stylesheet";
+        dataCombo.href = "http://127.0.0.1:8080/dataComboCss";
+
+document.body.appendChild(dataCombo);
+
 renderDataCombo();
 export function renderDataCombo()
 {

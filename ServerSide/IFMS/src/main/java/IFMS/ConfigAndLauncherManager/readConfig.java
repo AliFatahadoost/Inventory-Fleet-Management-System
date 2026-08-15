@@ -650,7 +650,7 @@ public class readConfig {
         server.createContext("/tableFormElement",                                       new pageHandlerOpener(BASE_FILE_ADDRESS, FilesEnum.tableFormElement));
         server.createContext("/dataCombo",                                              new pageHandlerOpener(BASE_FILE_ADDRESS, FilesEnum.dataCombo));
         server.createContext("/dataComboCss",                                           new pageHandlerOpener(BASE_FILE_ADDRESS, FilesEnum.dataComboCss));
-        
+        server.createContext("/FindObjectBoxCss",                                       new pageHandlerOpener(BASE_FILE_ADDRESS, FilesEnum.findObjectBoxCss));
         server.createContext("/cssTableFormData",                                       new pageHandlerOpener(BASE_FILE_ADDRESS, FilesEnum.cssTableFormData));
         server.createContext("/cssDataForm",                                            new pageHandlerOpener(BASE_FILE_ADDRESS, FilesEnum.cssDataForm));
         
@@ -659,9 +659,11 @@ public class readConfig {
         
         
         WebPagesEnum.test.registerRoute(server);
-        server.createContext("/fakeTable", new apiManagement.dataApiGen.builder().sendTokenToDB(false).setAccessCode(1).setApiName("fakeTable").setQuery(CrudQueriesEnum.fakeTable).build());
-        server.createContext("/dataComboTest", new apiManagement.dataApiGen.builder().sendTokenToDB(false).setAccessCode(1).setApiName("dataComboTest").setQuery(CrudQueriesEnum.dataComboTest).build());
+        server.createContext("/fakeTable", new apiManagement.dataApiGen.builder().shouldAuthenticate(false).sendTokenToDB(false).setQuery(CrudQueriesEnum.fakeTable).build());
+        server.createContext("/dataComboTest", new apiManagement.dataApiGen.builder().sendTokenToDB(false).setQuery(CrudQueriesEnum.dataComboTest).build());
         
+        server.createContext("/Login", new apiManagement.dataApiGen.builder().shouldSetCookie(true).shouldAuthenticate(false).sendTokenToDB(false).setQuery(CrudQueriesEnum.Login).build());
+        server.createContext("/createUser", new apiManagement.dataApiGen.builder().shouldAuthenticate(true).sendTokenToDB(false).setQuery(CrudQueriesEnum.dataComboTest).build());
         
        
         server.setExecutor(null);

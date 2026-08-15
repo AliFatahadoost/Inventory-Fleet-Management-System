@@ -1,0 +1,1622 @@
+/* ============================================================
+   JALIFRAME FIND OBJECT BOX
+   Tailwind-inspired modal table theme
+   ============================================================ */
+
+
+/* ============================================================
+   COMPONENT VARIABLES
+   ============================================================ */
+
+:root {
+
+    --fob-font:
+        "Segoe UI",
+        Inter,
+        Arial,
+        sans-serif;
+
+    --fob-radius:
+        14px;
+
+    --fob-cell-radius:
+        8px;
+
+
+    /* ---------- Surfaces ---------- */
+
+    --fob-bg:
+        #ffffff;
+
+    --fob-bg-soft:
+        #f8fafc;
+
+    --fob-bg-hover:
+        #f1f5f9;
+
+    --fob-bg-selected:
+        #e8f1ff;
+
+
+    /* ---------- Text ---------- */
+
+    --fob-text:
+        #0f172a;
+
+    --fob-text-secondary:
+        #64748b;
+
+    --fob-text-muted:
+        #94a3b8;
+
+
+    /* ---------- Borders ---------- */
+
+    --fob-border:
+        #e2e8f0;
+
+    --fob-border-strong:
+        #cbd5e1;
+
+
+    /* ---------- Theme ---------- */
+
+    --fob-primary:
+        #2563eb;
+
+    --fob-primary-dark:
+        #1d4ed8;
+
+    --fob-accent:
+        #60a5fa;
+
+
+    --fob-primary-soft:
+        rgba(37, 99, 235, 0.10);
+
+
+    /* ---------- Shadows ---------- */
+
+    --fob-card-shadow:
+        0
+        10px
+        30px
+        rgba(15, 23, 42, 0.18),
+
+        0
+        24px
+        70px
+        rgba(15, 23, 42, 0.20);
+
+
+    --fob-table-shadow:
+        0
+        4px
+        12px
+        rgba(15, 23, 42, 0.04),
+
+        0
+        14px
+        32px
+        rgba(15, 23, 42, 0.06);
+
+
+    /* ---------- Motion ---------- */
+
+    --fob-transition-fast:
+        160ms ease;
+
+    --fob-transition-normal:
+        240ms ease;
+}
+
+
+
+/* ============================================================
+   MODAL BACKDROP
+
+   The JS creates:
+
+   <div id="fobModal_x">
+       <div>...</div>
+   </div>
+
+   ============================================================ */
+
+[id^="fobModal_"] {
+
+    position:
+        fixed;
+
+    inset:
+        0;
+
+    width:
+        100vw;
+
+    height:
+        100vh;
+
+    z-index:
+        999999;
+
+
+    display:
+        flex;
+
+    align-items:
+        center;
+
+    justify-content:
+        center;
+
+
+    box-sizing:
+        border-box;
+
+    padding:
+        2rem;
+
+
+    /*
+     * Full-screen dark translucent background.
+     */
+    background:
+        rgba(15, 23, 42, 0.62);
+
+
+    /*
+     * Slightly soften whatever is behind the modal.
+     */
+    backdrop-filter:
+        blur(2px);
+
+
+    -webkit-backdrop-filter:
+        blur(2px);
+
+
+    font-family:
+        var(--fob-font);
+
+    color:
+        var(--fob-text);
+
+
+    animation:
+        fobModalFadeIn
+        var(--fob-transition-normal);
+}
+
+
+
+/* ============================================================
+   MODAL CARD
+
+   This is the first child of the modal root.
+
+   It becomes the actual centered window.
+   ============================================================ */
+
+[id^="fobModal_"] > div {
+
+    position:
+        relative;
+
+
+    width:
+        min(1400px, 96vw);
+
+    height:
+        min(850px, 92vh);
+
+
+    max-width:
+        1400px;
+
+
+    display:
+        flex;
+
+    flex-direction:
+        column;
+
+
+    box-sizing:
+        border-box;
+
+
+    background:
+        var(--fob-bg);
+
+
+    border:
+        1px solid
+        var(--fob-border);
+
+
+    border-radius:
+        var(--fob-radius);
+
+
+    overflow:
+        hidden;
+
+
+    box-shadow:
+        var(--fob-card-shadow);
+
+
+    animation:
+        fobModalScaleIn
+        var(--fob-transition-normal);
+}
+
+
+
+/* ============================================================
+   MODAL TITLE
+
+   h2 is the first child of the card.
+   ============================================================ */
+
+[id^="fobModal_"] > div > h2 {
+
+    flex:
+        0 0 auto;
+
+
+    margin:
+        0;
+
+
+    padding:
+        17px
+        22px;
+
+
+    display:
+        flex;
+
+    align-items:
+        center;
+
+
+    min-height:
+        58px;
+
+
+    box-sizing:
+        border-box;
+
+
+    background:
+        var(--fob-bg);
+
+
+    border-bottom:
+        1px solid
+        var(--fob-border);
+
+
+    color:
+        var(--fob-text);
+
+
+    font-family:
+        var(--fob-font);
+
+    font-size:
+        18px;
+
+    font-weight:
+        700;
+
+
+    letter-spacing:
+        -0.01em;
+}
+
+
+
+/* ============================================================
+   SEARCH AREA
+   ============================================================ */
+
+[id^="fobSearchArea_"] {
+
+    flex:
+        0 0 auto;
+
+
+    display:
+        flex;
+
+    align-items:
+        flex-end;
+
+    gap:
+        10px;
+
+
+    padding:
+        14px
+        16px;
+
+
+    box-sizing:
+        border-box;
+
+
+    background:
+        var(--fob-bg-soft);
+
+
+    border-bottom:
+        1px solid
+        var(--fob-border);
+
+
+    overflow-x:
+        auto;
+}
+
+
+
+/* ============================================================
+   SEARCH FIELD WRAPPER
+
+   The JS creates:
+
+   <div>
+       <label>username</label>
+       <input ...>
+   </div>
+   ============================================================ */
+
+[id^="fobSearchArea_"] > div {
+
+    flex:
+        1 1 180px;
+
+
+    min-width:
+        150px;
+
+
+    display:
+        flex;
+
+    flex-direction:
+        column;
+
+
+    gap:
+        5px;
+}
+
+
+
+/* ============================================================
+   SEARCH LABEL
+   ============================================================ */
+
+[id^="fobSearchArea_"] label {
+
+    display:
+        block;
+
+
+    color:
+        var(--fob-text-secondary);
+
+
+    font-size:
+        11px;
+
+    font-weight:
+        700;
+
+
+    letter-spacing:
+        0.04em;
+
+    text-transform:
+        uppercase;
+}
+
+
+
+/* ============================================================
+   SEARCH INPUT
+   ============================================================ */
+
+.fob-search-input {
+
+    width:
+        100%;
+
+
+    height:
+        36px;
+
+
+    padding:
+        0
+        0.75rem;
+
+
+    box-sizing:
+        border-box;
+
+
+    border:
+        1px solid
+        var(--fob-border);
+
+
+    border-radius:
+        var(--fob-cell-radius);
+
+
+    outline:
+        none;
+
+
+    background:
+        var(--fob-bg);
+
+
+    color:
+        var(--fob-text);
+
+
+    font-family:
+        var(--fob-font);
+
+    font-size:
+        13px;
+
+    font-weight:
+        500;
+
+
+    box-shadow:
+        0
+        1px
+        2px
+        rgba(15, 23, 42, 0.04);
+
+
+    transition:
+        background-color var(--fob-transition-fast),
+        border-color var(--fob-transition-fast),
+        box-shadow var(--fob-transition-fast);
+}
+
+
+.fob-search-input:hover {
+
+    border-color:
+        var(--fob-border-strong);
+}
+
+
+.fob-search-input:focus {
+
+    border-color:
+        var(--fob-primary);
+
+
+    box-shadow:
+        0
+        0
+        0
+        3px
+        var(--fob-primary-soft);
+}
+
+
+.fob-search-input::placeholder {
+
+    color:
+        var(--fob-text-muted);
+}
+
+
+
+/* ============================================================
+   SEARCH BUTTON
+
+   Last child of search area.
+   ============================================================ */
+
+[id^="fobSearchArea_"] > button {
+
+    flex:
+        0 0 auto;
+
+
+    height:
+        36px;
+
+
+    padding:
+        0
+        14px;
+
+
+    border:
+        1px solid
+        var(--fob-primary);
+
+
+    border-radius:
+        var(--fob-cell-radius);
+
+
+    background:
+        var(--fob-primary);
+
+
+    color:
+        white;
+
+
+    font-family:
+        var(--fob-font);
+
+    font-size:
+        13px;
+
+    font-weight:
+        600;
+
+
+    cursor:
+        pointer;
+
+
+    transition:
+        background-color var(--fob-transition-fast),
+        border-color var(--fob-transition-fast),
+        box-shadow var(--fob-transition-fast),
+        transform var(--fob-transition-fast);
+}
+
+
+[id^="fobSearchArea_"] > button:hover {
+
+    background:
+        var(--fob-primary-dark);
+
+    border-color:
+        var(--fob-primary-dark);
+
+
+    box-shadow:
+        0
+        5px
+        12px
+        rgba(37, 99, 235, 0.24);
+
+
+    transform:
+        translateY(-1px);
+}
+
+
+[id^="fobSearchArea_"] > button:active {
+
+    transform:
+        translateY(0)
+        scale(0.97);
+}
+
+
+
+/* ============================================================
+   TABLE
+
+   JS:
+   table.id = fobTable_x
+   ============================================================ */
+
+[id^="fobTable_"] {
+
+    flex:
+        1 1 auto;
+
+
+    width:
+        calc(100% - 32px);
+
+
+    margin:
+        16px;
+
+
+    border:
+        1px solid
+        var(--fob-border);
+
+
+    border-radius:
+        var(--fob-radius);
+
+
+    border-collapse:
+        separate;
+
+
+    border-spacing:
+        0;
+
+
+    overflow:
+        auto;
+
+
+    background:
+        var(--fob-bg);
+
+
+    color:
+        var(--fob-text);
+
+
+    font-family:
+        var(--fob-font);
+
+    font-size:
+        14px;
+
+
+    box-shadow:
+        var(--fob-table-shadow);
+
+
+    display:
+        block;
+
+
+    box-sizing:
+        border-box;
+
+
+    /*
+     * The table itself scrolls while the modal remains fixed.
+     */
+    max-height:
+        none;
+}
+
+
+
+/* ============================================================
+   TABLE HEAD / BODY
+
+   Since the table is display:block, keep inner table width full.
+   ============================================================ */
+
+[id^="fobTable_"] thead,
+[id^="fobTable_"] tbody {
+
+    width:
+        100%;
+}
+
+
+[id^="fobTable_"] tr {
+
+    width:
+        100%;
+}
+
+
+
+/* ============================================================
+   TABLE CELLS
+   ============================================================ */
+
+[id^="fobTable_"] th,
+[id^="fobTable_"] td {
+
+    min-width:
+        90px;
+
+
+    padding:
+        10px
+        13px;
+
+
+    box-sizing:
+        border-box;
+
+
+    border-right:
+        1px solid
+        var(--fob-border);
+
+
+    border-bottom:
+        1px solid
+        var(--fob-border);
+
+
+    background:
+        var(--fob-bg);
+
+
+    color:
+        var(--fob-text);
+
+
+    text-align:
+        center;
+
+    vertical-align:
+        middle;
+
+
+    white-space:
+        nowrap;
+
+
+    max-width:
+        360px;
+
+
+    overflow:
+        hidden;
+
+    text-overflow:
+        ellipsis;
+
+
+    transition:
+        background-color var(--fob-transition-fast),
+        border-color var(--fob-transition-fast);
+}
+
+
+
+/* Remove final right border */
+
+[id^="fobTable_"] th:last-child,
+[id^="fobTable_"] td:last-child {
+
+    border-right:
+        none;
+}
+
+
+
+/* ============================================================
+   STICKY TABLE HEADER
+   ============================================================ */
+
+[id^="fobTable_"] thead {
+
+    position:
+        sticky;
+
+    top:
+        0;
+
+    z-index:
+        5;
+}
+
+
+[id^="fobTable_"] thead th {
+
+    background:
+        var(--fob-primary);
+
+    color:
+        white;
+
+
+    font-size:
+        12px;
+
+    font-weight:
+        700;
+
+
+    letter-spacing:
+        0.04em;
+
+    text-transform:
+        uppercase;
+
+
+    box-shadow:
+        0
+        2px
+        8px
+        rgba(15, 23, 42, 0.08);
+}
+
+
+
+/* ============================================================
+   HEADER CORNERS
+   ============================================================ */
+
+[id^="fobTable_"] thead tr:first-child th:first-child {
+
+    border-top-left-radius:
+        var(--fob-radius);
+}
+
+
+[id^="fobTable_"] thead tr:first-child th:last-child {
+
+    border-top-right-radius:
+        var(--fob-radius);
+}
+
+
+
+/* ============================================================
+   BODY STRIPING
+   ============================================================ */
+
+[id^="fobTable_"] tbody tr:nth-child(even) td {
+
+    background:
+        var(--fob-bg-soft);
+}
+
+
+
+/* ============================================================
+   BODY HOVER
+   ============================================================ */
+
+[id^="fobTable_"] tbody tr:hover td {
+
+    background:
+        var(--fob-bg-hover);
+
+
+    border-color:
+        var(--fob-border-strong);
+
+
+    cursor:
+        pointer;
+}
+
+
+
+/* ============================================================
+   RADIO BUTTON
+   ============================================================ */
+
+[id^="fobTable_"] input[type="radio"] {
+
+    appearance:
+        none;
+
+
+    width:
+        17px;
+
+    height:
+        17px;
+
+
+    margin:
+        0;
+
+
+    padding:
+        0;
+
+
+    border:
+        2px solid
+        var(--fob-border-strong);
+
+
+    border-radius:
+        50%;
+
+
+    background:
+        var(--fob-bg);
+
+
+    vertical-align:
+        middle;
+
+
+    cursor:
+        pointer;
+
+
+    transition:
+        border-color var(--fob-transition-fast),
+        background-color var(--fob-transition-fast),
+        box-shadow var(--fob-transition-fast);
+}
+
+
+[id^="fobTable_"] input[type="radio"]:hover {
+
+    border-color:
+        var(--fob-accent);
+
+
+    box-shadow:
+        0
+        0
+        0
+        4px
+        var(--fob-primary-soft);
+}
+
+
+[id^="fobTable_"] input[type="radio"]:checked {
+
+    border-color:
+        var(--fob-primary);
+
+
+    background:
+        radial-gradient(
+            circle,
+            var(--fob-primary)
+            0 42%,
+            transparent 44%
+        );
+
+
+    box-shadow:
+        0
+        0
+        0
+        3px
+        rgba(37, 99, 235, 0.22);
+}
+
+
+
+/* ============================================================
+   SELECTED ROW
+
+   Works with the JS radio selection.
+   ============================================================ */
+
+[id^="fobTable_"] tbody tr:has(
+    input[type="radio"]:checked
+) td {
+
+    background:
+        var(--fob-bg-selected);
+
+
+    border-top-color:
+        var(--fob-accent);
+
+    border-bottom-color:
+        var(--fob-accent);
+}
+
+
+[id^="fobTable_"] tbody tr:has(
+    input[type="radio"]:checked
+) {
+
+    box-shadow:
+        inset
+        4px
+        0
+        0
+        var(--fob-primary);
+}
+
+
+
+/* ============================================================
+   PAGINATION
+   ============================================================ */
+
+[id^="fobTable_"] + div {
+
+    flex:
+        0 0 auto;
+}
+
+
+/*
+ * The pagination div is directly after the table.
+ */
+
+[id^="fobModal_"] > div > div:nth-last-child(2) {
+
+    display:
+        flex;
+
+    align-items:
+        center;
+
+    justify-content:
+        center;
+
+
+    gap:
+        10px;
+
+
+    padding:
+        12px
+        16px;
+
+
+    border-top:
+        1px solid
+        var(--fob-border);
+
+
+    background:
+        var(--fob-bg-soft);
+}
+
+
+
+/* ============================================================
+   PAGINATION BUTTONS
+   ============================================================ */
+
+[id^="fobModal_"] > div > div:nth-last-child(2) button {
+
+    height:
+        36px;
+
+
+    padding:
+        0
+        13px;
+
+
+    border:
+        1px solid
+        var(--fob-border-strong);
+
+
+    border-radius:
+        var(--fob-cell-radius);
+
+
+    background:
+        var(--fob-bg);
+
+
+    color:
+        var(--fob-text);
+
+
+    font-family:
+        var(--fob-font);
+
+
+    font-size:
+        13px;
+
+    font-weight:
+        600;
+
+
+    cursor:
+        pointer;
+
+
+    transition:
+        background-color var(--fob-transition-fast),
+        border-color var(--fob-transition-fast),
+        color var(--fob-transition-fast),
+        box-shadow var(--fob-transition-fast);
+}
+
+
+[id^="fobModal_"] > div > div:nth-last-child(2) button:hover {
+
+    background:
+        var(--fob-primary);
+
+    border-color:
+        var(--fob-primary);
+
+    color:
+        white;
+
+
+    box-shadow:
+        0
+        4px
+        10px
+        rgba(37, 99, 235, 0.20);
+}
+
+
+[id^="fobModal_"] > div > div:nth-last-child(2) button:disabled {
+
+    opacity:
+        0.45;
+
+    cursor:
+        not-allowed;
+}
+
+
+
+/* ============================================================
+   PAGE INFO
+   ============================================================ */
+
+.fob-page-info {
+
+    min-width:
+        70px;
+
+
+    text-align:
+        center;
+
+
+    color:
+        var(--fob-text-secondary);
+
+
+    font-size:
+        13px;
+
+    font-weight:
+        600;
+}
+
+
+
+/* ============================================================
+   ROW COUNT INPUT
+   ============================================================ */
+
+[id^="fobModal_"] > div > div:nth-last-child(2) input[type="number"] {
+
+    width:
+        80px;
+
+    height:
+        36px;
+
+
+    padding:
+        0
+        9px;
+
+
+    box-sizing:
+        border-box;
+
+
+    border:
+        1px solid
+        var(--fob-border);
+
+
+    border-radius:
+        var(--fob-cell-radius);
+
+
+    outline:
+        none;
+
+
+    background:
+        var(--fob-bg);
+
+    color:
+        var(--fob-text);
+
+
+    font-family:
+        var(--fob-font);
+
+    font-size:
+        13px;
+
+
+    transition:
+        border-color var(--fob-transition-fast),
+        box-shadow var(--fob-transition-fast);
+}
+
+
+[id^="fobModal_"] > div > div:nth-last-child(2) input[type="number"]:focus {
+
+    border-color:
+        var(--fob-primary);
+
+
+    box-shadow:
+        0
+        0
+        0
+        3px
+        var(--fob-primary-soft);
+}
+
+
+
+/* ============================================================
+   FOOTER
+
+   The final div inside modal card.
+   ============================================================ */
+
+[id^="fobModal_"] > div > div:last-child {
+
+    flex:
+        0 0 auto;
+
+
+    display:
+        flex;
+
+    align-items:
+        center;
+
+    justify-content:
+        flex-end;
+
+
+    gap:
+        10px;
+
+
+    padding:
+        14px
+        16px;
+
+
+    box-sizing:
+        border-box;
+
+
+    border-top:
+        1px solid
+        var(--fob-border);
+
+
+    background:
+        var(--fob-bg-soft);
+}
+
+
+
+/* ============================================================
+   FOOTER BUTTONS
+   ============================================================ */
+
+[id^="fobModal_"] > div > div:last-child button {
+
+    min-width:
+        85px;
+
+
+    height:
+        38px;
+
+
+    padding:
+        0
+        16px;
+
+
+    border-radius:
+        var(--fob-cell-radius);
+
+
+    font-family:
+        var(--fob-font);
+
+    font-size:
+        13px;
+
+    font-weight:
+        600;
+
+
+    cursor:
+        pointer;
+
+
+    transition:
+        background-color var(--fob-transition-fast),
+        border-color var(--fob-transition-fast),
+        color var(--fob-transition-fast),
+        box-shadow var(--fob-transition-fast),
+        transform var(--fob-transition-fast);
+}
+
+
+
+/* ============================================================
+   EXIT
+   ============================================================ */
+
+[id^="fobModal_"] > div > div:last-child button:first-child {
+
+    border:
+        1px solid
+        var(--fob-border-strong);
+
+
+    background:
+        var(--fob-bg);
+
+
+    color:
+        var(--fob-text);
+}
+
+
+[id^="fobModal_"] > div > div:last-child button:first-child:hover {
+
+    background:
+        var(--fob-bg-hover);
+
+    border-color:
+        var(--fob-border-strong);
+}
+
+
+
+/* ============================================================
+   SELECT
+   ============================================================ */
+
+[id^="fobModal_"] > div > div:last-child button:last-child {
+
+    border:
+        1px solid
+        var(--fob-primary);
+
+
+    background:
+        var(--fob-primary);
+
+
+    color:
+        white;
+}
+
+
+[id^="fobModal_"] > div > div:last-child button:last-child:hover {
+
+    background:
+        var(--fob-primary-dark);
+
+    border-color:
+        var(--fob-primary-dark);
+
+
+    box-shadow:
+        0
+        5px
+        12px
+        rgba(37, 99, 235, 0.24);
+
+
+    transform:
+        translateY(-1px);
+}
+
+
+[id^="fobModal_"] > div > div:last-child button:last-child:active {
+
+    transform:
+        translateY(0)
+        scale(0.97);
+}
+
+
+
+/* ============================================================
+   TABLE SCROLLBAR
+   ============================================================ */
+
+[id^="fobTable_"]::-webkit-scrollbar {
+
+    width:
+        9px;
+
+    height:
+        9px;
+}
+
+
+[id^="fobTable_"]::-webkit-scrollbar-track {
+
+    background:
+        #f1f5f9;
+
+    border-radius:
+        999px;
+}
+
+
+[id^="fobTable_"]::-webkit-scrollbar-thumb {
+
+    background:
+        #cbd5e1;
+
+
+    border:
+        2px solid
+        #f1f5f9;
+
+
+    border-radius:
+        999px;
+}
+
+
+[id^="fobTable_"]::-webkit-scrollbar-thumb:hover {
+
+    background:
+        #94a3b8;
+}
+
+
+
+/* ============================================================
+   MODAL ANIMATION
+   ============================================================ */
+
+@keyframes fobModalFadeIn {
+
+    from {
+        opacity:
+            0;
+    }
+
+    to {
+        opacity:
+            1;
+    }
+}
+
+
+@keyframes fobModalScaleIn {
+
+    from {
+
+        opacity:
+            0;
+
+        transform:
+            translateY(8px)
+            scale(0.985);
+    }
+
+    to {
+
+        opacity:
+            1;
+
+        transform:
+            translateY(0)
+            scale(1);
+    }
+}
+
+
+
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
+
+@media (max-width: 900px) {
+
+    [id^="fobModal_"] {
+
+        padding:
+            1rem;
+    }
+
+
+    [id^="fobModal_"] > div {
+
+        width:
+            100%;
+
+        height:
+            94vh;
+    }
+
+
+    [id^="fobSearchArea_"] {
+
+        flex-wrap:
+            wrap;
+    }
+
+
+    [id^="fobSearchArea_"] > div {
+
+        flex:
+            1 1 45%;
+    }
+}
+
+
+
+@media (max-width: 600px) {
+
+    [id^="fobModal_"] {
+
+        padding:
+            0.5rem;
+    }
+
+
+    [id^="fobModal_"] > div {
+
+        width:
+            100%;
+
+        height:
+            97vh;
+
+        border-radius:
+            10px;
+    }
+
+
+    [id^="fobSearchArea_"] > div {
+
+        min-width:
+            100%;
+    }
+
+
+    [id^="fobModal_"] > div > div:last-child {
+
+        justify-content:
+            stretch;
+    }
+
+
+    [id^="fobModal_"] > div > div:last-child button {
+
+        flex:
+            1;
+    }
+}
+
+
+
+/* ============================================================
+   REDUCED MOTION
+   ============================================================ */
+
+@media (prefers-reduced-motion: reduce) {
+
+    [id^="fobModal_"],
+    [id^="fobModal_"] *,
+    [id^="fobModal_"] *::before,
+    [id^="fobModal_"] *::after {
+
+        animation:
+            none !important;
+
+        transition:
+            none !important;
+    }
+}

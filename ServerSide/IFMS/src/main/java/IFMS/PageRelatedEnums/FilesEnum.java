@@ -178,6 +178,11 @@ public enum FilesEnum {
         true,
         FileTypesEnum.css
     ),
+    findObjectBoxCss(
+        "/FrameWorksLib/JaliFrame.css/FindObjectBox.css",
+        true,
+        FileTypesEnum.css
+    ),
     cssDataForm(
         "/FrameWorksLib/JaliFrame.css/dataForm.css",
         true,

@@ -42,41 +42,7 @@ public class webServerUtils {
 
             return result;
         }
-    
-    
-    public static String[] extractCredentials(String input) {
-    String cleaned = input.trim();
-    if (cleaned.startsWith("{") && cleaned.endsWith("}")) {
-        cleaned = cleaned.substring(1, cleaned.length() - 1);
-    }
-    
-    String[] pairs = cleaned.split(",");
-    String action = "";
-    String username = "";
-    String password = "";
-    
-    for (String pair : pairs) {
-        String[] keyValue = pair.split(":", 2);
-        if (keyValue.length == 2) {
-            String key = keyValue[0].trim().replaceAll("\"", "");
-            String value = keyValue[1].trim().replaceAll("\"", "");
-            
-            switch (key) {
-                case "action":
-                    action = value;
-                    break;
-                case "username":
-                    username = value;
-                    break;
-                case "password":
-                    password = value;
-                    break;
-            }
-        }
-    }
-    
-    return new String[]{action, username, password};
-    }
+
     
     
     static public String extractTokenFromCookie(HttpExchange exchange) {

@@ -11,41 +11,38 @@ import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
 import IFMS.PageRelatedEnums.CrudQueriesEnum;
 import IFMS.DataBase.dataBaseUtils;
-import IFMS.DataBase.dataBaseManager;
 import IFMS.ConfigAndLauncherManager.readConfig;
-import com.microsoft.sqlserver.jdbc.SQLServerException;
-import java.util.Arrays;
 
 public class apiManagement{ 
+
     
     public static class dataApiGen implements HttpHandler {
         
         public static class builder{
-            
-            private String  apiName;
-            private String  methodAccepted;
-            private CrudQueriesEnum  query;
-            private int     accessCode;
-            private boolean sendTokenToDB;
 
-            public builder setApiName(String apiName){ this.apiName = apiName; return this;}
-            public builder setMethodAccepted(String methodAccepted){ this.methodAccepted = methodAccepted.toUpperCase(); return this;}
+            private CrudQueriesEnum  query;
+            private boolean sendTokenToDB;
+            private boolean shouldAuthenticate = true;
+            private boolean setCookie = false;
+
+
             public builder setQuery(CrudQueriesEnum query){ this.query = query; return this;}
-            public builder setAccessCode(int accessCode){ this.accessCode = accessCode; return this;}
             public builder sendTokenToDB(boolean sendTokenToDB){ this.sendTokenToDB = sendTokenToDB; return this;}
+            public builder shouldAuthenticate(boolean shouldAuthenticate){ this.shouldAuthenticate = shouldAuthenticate; return this;}
+            public builder shouldSetCookie(boolean setCookie){ this.setCookie = setCookie; return this;}
 
             public dataApiGen build()
             {
-                return new dataApiGen(this.apiName, this.methodAccepted, this.query, this.accessCode, this.sendTokenToDB);
+                return new dataApiGen(this.query, this.sendTokenToDB, this.shouldAuthenticate, this.setCookie);
             }
         }
         
-        private final String  apiName;
-        private final String  methodAccepted;
+
         private final CrudQueriesEnum  query;
-        private final int     accessCode;
         
         private final boolean sendTokenToDB;
+        private final boolean shouldAuthenticate;
+        private final boolean setCookie;
         
         private int countParameters(String query) {
                 int count = 0;
@@ -59,13 +56,12 @@ public class apiManagement{
                 return count;
             }
         
-        private dataApiGen(String apiName, String methodAccepted, CrudQueriesEnum query, int accessCode, boolean sendTokenToDB)
+        private dataApiGen( CrudQueriesEnum query, boolean sendTokenToDB, boolean shouldAuthenticate, boolean setCookie)
         {
-            this.apiName = apiName;
-            this.methodAccepted = methodAccepted;
             this.query = query;
-            this.accessCode = accessCode;
             this.sendTokenToDB = sendTokenToDB;
+            this.shouldAuthenticate = shouldAuthenticate;
+            this.setCookie = setCookie;
         }
         
         
@@ -73,8 +69,8 @@ public class apiManagement{
         public void handle(HttpExchange exchange) throws IOException {
             String token = webServerUtils.extractTokenFromCookie(exchange);
             //System.out.println("something is calling me");
-            boolean isAuthenticated = /*token != null &&*/ dataBaseUtils.isAuthenticated(token);
-            if (!isAuthenticated) {
+            
+            if (this.shouldAuthenticate && dataBaseUtils.isAuthenticated(token)) {
                 //System.out.println("401");
                 exchange.sendResponseHeaders(401, -1);
                 exchange.close();
@@ -97,6 +93,7 @@ public class apiManagement{
                 
             if("POST".equals(exchange.getRequestMethod()))
                 {         
+                    
                     InputStream is = exchange.getRequestBody();
                     BufferedReader reader = new BufferedReader(new InputStreamReader(is, "UTF-8"));
                     StringBuilder sb = new StringBuilder();
@@ -108,7 +105,7 @@ public class apiManagement{
                     String userData = sb.toString();
                     String[][] userSentJSON = webServerUtils.jsonParser(userData);
 
-
+                    System.out.print("Api is hit with this : " + userData);
                     int parametersCount = countParameters(this.query.getCreateQuery() != null? this.query.getCreateQuery() : "A");
 
                     if(userSentJSON.length == 0 || userSentJSON[0].length != parametersCount){
@@ -124,11 +121,17 @@ public class apiManagement{
                     
                     String status = webServerUtils.jsonParser(statusResult)[0][0];
                     
+                    if(this.setCookie)
+                    exchange.getResponseHeaders().add(
+                        "Set-Cookie",
+                        "token="+ status +"; Path=/; HttpOnly;Max-Age=" + readConfig.MAX_SESSION_TIME + "; SameSite=Strict"
+                    );
+                    
                     if(status.contains("1"))
                         exchange.sendResponseHeaders(200, -1);
                     else if(status.contains("0"))
                         exchange.sendResponseHeaders(500, -1);
-                    }catch(Exception e){}
+                    }catch(Exception e){ System.out.println("something happened in dataGenMod API management and its : " + e);}
                     exchange.close();
             }
             else if("GET".equals(exchange.getRequestMethod()))
@@ -260,47 +263,4 @@ public class apiManagement{
         
     }
     
-    
-    
-    
-        
-    static class loginSignUpHandlingAPI implements HttpHandler{ //this method handles SignUps and Logins    
-        @Override
-        public void handle(HttpExchange exchange) throws IOException
-        {
-            String Token = "";
-            if("POST".equals(exchange.getRequestMethod())){
-                InputStream is = exchange.getRequestBody();
-                String userDataSent;
-                BufferedReader reader = new BufferedReader(new InputStreamReader(is, "UTF-8"));
-                StringBuilder sb = new StringBuilder();
-                String line;
-                while((line = reader.readLine()) != null)
-                {
-                    sb.append(line);
-                }
-                reader.close();
-                String userData = sb.toString();
-
-                String[] credentialsUser = webServerUtils.extractCredentials(userData);
-                
-                if(credentialsUser[0].equals("1")){ //this part handles Logins
-                    Token = dataBaseManager.userLogin(credentialsUser[1], credentialsUser[2]);
-                }
-                else if(credentialsUser[0].equals("0")){ //this part handles Signups
-                    Token = (dataBaseManager.userSignUp(credentialsUser[1], credentialsUser[2])) + "";
-                }
-                if (Token != null && !Token.equals("0") && !Token.isEmpty()) {
-                    String cookieValue = "token=" + Token + "; Path=/;Max-Age=" + readConfig.MAX_SESSION_TIME + "; HttpOnly";
-                    exchange.getResponseHeaders().set("Set-Cookie", cookieValue);
-                }
-                String response = "{\"status\":\"" + Token + "\"}";
-                exchange.getResponseHeaders().set("Content-Type", "application/json");
-                exchange.sendResponseHeaders(200, response.getBytes().length);
-                OutputStream os = exchange.getResponseBody();
-                os.write(response.getBytes());
-                exchange.close();
-            }
-        }   
-    }
 }

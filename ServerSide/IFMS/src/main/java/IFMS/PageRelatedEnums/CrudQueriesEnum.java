@@ -12,21 +12,21 @@ public enum CrudQueriesEnum {
           + "DECLARE @FAKE_COUNTRY NVARCHAR(50) = ? "
           + "DECLARE @FAKE_FUCKING_FUCK NVARCHAR(50) = ? "
           + "SELECT * FROM FAKE_TABLE "
-          + "WHERE (@FAKE_NAME = '' OR FAKE_NAME LIKE N'%' + @FAKE_NAME + N'%') "
-          + "AND (@FAKE_COUNTRY = '' OR FAKE_COUNTRY LIKE N'%' + @FAKE_COUNTRY + N'%') "
-          + "AND (@FAKE_FUCKING_FUCK = '' OR FAKE_FUCKING_FUCK LIKE N'%' + @FAKE_FUCKING_FUCK + N'%') "
+          + "WHERE (@FAKE_NAME = '' OR NAME LIKE N'%' + @FAKE_NAME + N'%') "
+          + "AND (@FAKE_COUNTRY = '' OR LAST_NAME LIKE N'%' + @FAKE_COUNTRY + N'%') "
+          + "AND (@FAKE_FUCKING_FUCK = '' OR PASSWORD LIKE N'%' + @FAKE_FUCKING_FUCK + N'%') "
           + "ORDER BY FAKE_TABLE_ID "
           + "OFFSET ((@WHICH_PAGE - 1) * @PAGE_ROW_COUNT) ROWS FETCH NEXT @PAGE_ROW_COUNT ROWS ONLY ",
             
             //update Query
             "UPDATE FAKE_TABLE \n" +
-            "SET FAKE_NAME = ISNULL(NULLIF(?, ''), FAKE_NAME),\n" +
-            "FAKE_COUNTRY = ISNULL(NULLIF(?, ''), FAKE_COUNTRY),\n" +
-            "FAKE_FUCKING_FUCK = ISNULL(NULLIF(?, ''), FAKE_FUCKING_FUCK)\n" +
+            "SET NAME = ISNULL(NULLIF(?, ''), NAME),\n" +
+            "LAST_NAME = ISNULL(NULLIF(?, ''), LAST_NAME),\n" +
+            "PASSWORD = ISNULL(NULLIF(?, ''), PASSWORD)\n" +
             "WHERE FAKE_TABLE_ID = ?",
             
             //Create Query
-            "INSERT INTO FAKE_TABLE (FAKE_NAME, FAKE_COUNTRY, FAKE_FUCKING_FUCK) VALUES (? ,? ,?)",
+            "INSERT INTO FAKE_TABLE (NAME, LAST_NAME, PASSWORD) VALUES (? ,? ,?)",
             
             //Delete Query
             "DELETE FROM FAKE_TABLE WHERE FAKE_TABLE_ID = ?"       
@@ -37,7 +37,29 @@ public enum CrudQueriesEnum {
             "",
             "",
             ""
-    );
+    ),
+    
+    
+    
+    
+    
+    Login
+            (
+                "",
+                "",
+                "EXEC USERS_DATA_AND_PERMISSIONS.SHOULD_LOGIN ?, ?",
+                ""
+            ),
+    createUser
+            (
+                "",
+                "",
+                "EXEC USERS_DATA_AND_PERMISSIONS.MAKE_NEW_USER ?, ?, ?",
+                ""
+            )
+    
+    
+    ;
     
     
     private String readQuery;

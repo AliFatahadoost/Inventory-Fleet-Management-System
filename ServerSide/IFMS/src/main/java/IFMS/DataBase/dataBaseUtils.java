@@ -7,7 +7,20 @@ public class dataBaseUtils {
         
         
     
-        
+        static public void runStaticQuery(String query)
+        {
+            try(
+                dataBaseManager.PooledConnection con = dataBaseManager.getPooledConnection();
+                PreparedStatement pstmt = con.getConnection().prepareStatement(query);
+                )
+            {
+                pstmt.executeQuery();
+            }
+            catch(Exception e)
+            {
+                System.out.println("error happened in runStaticQuery in dataBaseUtils Exception : " + e.toString());
+            }
+        }
     
     
         static public String runSelectQueryGetJSON(String query, String... inputs) throws SQLException // everything in inputs is String so cast acording to the data type you want to pass in the query
@@ -84,7 +97,8 @@ public class dataBaseUtils {
         public static boolean isAuthenticated(String token)
         {
             boolean isAuthenticated = false;
-            String Query = "EXEC IS_AUTHENTICATED ?";
+            String Query = "EXEC USERS_DATA_AND_PERMISSIONS.IS_AUTHENTICATE ?";
+            System.out.println("authentication is running");
             try(
                     dataBaseManager.PooledConnection conn = dataBaseManager.getPooledConnection();
                     PreparedStatement pstmt = conn.getConnection().prepareStatement(Query);
@@ -92,7 +106,8 @@ public class dataBaseUtils {
                 pstmt.setString(1, token);
                 try(ResultSet rs = pstmt.executeQuery()){
                 if(rs.next()){
-                    isAuthenticated = rs.getInt("RESULT") == 1;
+                    isAuthenticated = rs.getInt("STATUS") == 1;
+                    System.out.println("was a Successes");
                 }
                 }
             } catch (ClassNotFoundException e) {
