@@ -27,11 +27,21 @@
     caption="users"
     classes="dark-purple pastel small dark"
     inputs="|name::username|title::username|type::text|value::;;
-            |name::country|title::country|type::text|value::;;
-            |name::password|title::password|type::password|value::;;"
+            |name::http://127.0.0.1:8080/fakeTable?s=40&a1=1&a2&a3&a4|title::country|type::data-combo|value::;;
+            |name::http://127.0.0.1:8080/fakeTable|title::password|type::find-object-box|value::username,country,password;;"
     columns="username,country,password">
   </fetch-data-table>
   
+  
+  <data-combo
+      title="Country"
+      name="http://127.0.0.1:8080/fakeTable?s=40&a1=1&a2&a3&a4">
+  </data-combo>
+  <find-object-box
+    title="Select User"
+    name="http://127.0.0.1:8080/fakeTable"
+    value="username,country,password">
+  </find-object-box>
 
   <!-- <input type="find-object-box"
          name="http://127.0.0.1:8080/fakeTable"

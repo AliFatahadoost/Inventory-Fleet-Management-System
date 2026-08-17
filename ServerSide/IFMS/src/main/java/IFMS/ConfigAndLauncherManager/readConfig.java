@@ -48,9 +48,10 @@ public class readConfig {
 
     // Server state
     private static final AtomicBoolean serverRunning = new AtomicBoolean(false);
+    private static volatile HttpServer httpServer;
 
     // ──────────── Entry point ────────────
-    public static void initiate() {
+    public static HttpServer initiate() {
         
         // Try to locate config.txt next to the JAR, otherwise use default path
         try {
@@ -81,11 +82,10 @@ public class readConfig {
         if(input.equalsIgnoreCase("s"))
         {
             try {
-                launchHttpServer();
+                return launchHttpServer();
             } catch (IOException ex) {
                 Logger.getLogger(readConfig.class.getName()).log(Level.SEVERE, null, ex);
             }
-            return;
         }
         
         boolean gui = input.equalsIgnoreCase("y") || input.isEmpty();
@@ -95,6 +95,8 @@ public class readConfig {
         } else {
             launchConsole();
         }/**/
+
+        return httpServer;
     }
 
     // ──────────── File I/O ────────────
@@ -639,7 +641,7 @@ public class readConfig {
     }
 
     // ──────────── Your existing HTTP server method ────────────
-    private static void launchHttpServer() throws IOException {
+    private static HttpServer launchHttpServer() throws IOException {
         System.out.println("Server attempting to Lunch on " + serverIP + ":" + portNumber + " ...");
         // Bind to the configured IP (not just port)
         HttpServer server = HttpServer.create(new InetSocketAddress(serverIP, portNumber), queueWaitLine);
@@ -651,22 +653,13 @@ public class readConfig {
         server.createContext("/dataCombo",                                              new pageHandlerOpener(BASE_FILE_ADDRESS, FilesEnum.dataCombo));
         server.createContext("/dataComboCss",                                           new pageHandlerOpener(BASE_FILE_ADDRESS, FilesEnum.dataComboCss));
         server.createContext("/FindObjectBoxCss",                                       new pageHandlerOpener(BASE_FILE_ADDRESS, FilesEnum.findObjectBoxCss));
+        server.createContext("/findObjectBox",                                          new pageHandlerOpener(BASE_FILE_ADDRESS, FilesEnum.findObjectBox));
         server.createContext("/cssTableFormData",                                       new pageHandlerOpener(BASE_FILE_ADDRESS, FilesEnum.cssTableFormData));
         server.createContext("/cssDataForm",                                            new pageHandlerOpener(BASE_FILE_ADDRESS, FilesEnum.cssDataForm));
-        
-        
-        
-        
-        
-        WebPagesEnum.test.registerRoute(server);
-        server.createContext("/fakeTable", new apiManagement.dataApiGen.builder().shouldAuthenticate(false).sendTokenToDB(false).setQuery(CrudQueriesEnum.fakeTable).build());
-        server.createContext("/dataComboTest", new apiManagement.dataApiGen.builder().sendTokenToDB(false).setQuery(CrudQueriesEnum.dataComboTest).build());
-        
-        server.createContext("/Login", new apiManagement.dataApiGen.builder().shouldSetCookie(true).shouldAuthenticate(false).sendTokenToDB(false).setQuery(CrudQueriesEnum.Login).build());
-        server.createContext("/createUser", new apiManagement.dataApiGen.builder().shouldAuthenticate(true).sendTokenToDB(false).setQuery(CrudQueriesEnum.dataComboTest).build());
-        
        
         server.setExecutor(null);
         server.start();
+        httpServer = server;
+        return server;
     }
 }

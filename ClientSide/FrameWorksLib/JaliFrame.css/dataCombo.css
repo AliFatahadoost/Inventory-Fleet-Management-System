@@ -1,143 +1,358 @@
- /* ============================================================
+/* ============================================================
    JALIFRAME DATA COMBO
    Modern / neutral / reusable styling
    ============================================================ */
 
 
 /* ============================================================
-   INPUT
+   COMPONENT
    ============================================================ */
 
-input[type="data-combo"] {
-    font-family: "Segoe UI", Inter, Arial, sans-serif;
-    font-size: 14px;
-    font-weight: 500;
+data-combo {
 
-    color: #1f2937;
-    background: #ffffff;
+    display:
+        inline-block;
 
-    border: 1px solid #d1d5db;
-    border-radius: 10px;
+    position:
+        relative;
 
-    box-sizing: border-box;
+    width:
+        280px;
 
-    outline: none;
+    max-width:
+        100%;
 
-    transition:
-        border-color 0.15s ease,
-        box-shadow 0.15s ease;
+    min-height:
+        36px;
+
+    box-sizing:
+        border-box;
+
+    vertical-align:
+        middle;
 }
 
-input[type="data-combo"]:focus {
-    border-color: #9ca3af;
-
-    box-shadow:
-        0 0 0 3px rgba(107, 114, 128, 0.12);
-}
 
 
 /* ============================================================
-   VISIBLE DISPLAY OVERLAY
+   INTERNAL WRAPPER
    ============================================================ */
 
-[data-jali-combo-display] {
-    display: flex;
+.jali-data-combo {
 
-    align-items: center;
-    justify-content: flex-start;
+    position:
+        relative;
 
-    padding: 0 12px;
+    width:
+        100%;
 
-    font-family: "Segoe UI", Inter, Arial, sans-serif;
-    font-size: 14px;
-    font-weight: 500;
+    box-sizing:
+        border-box;
+}
 
-    color: #1f2937;
-    background: #ffffff;
 
-    border: 1px solid #d1d5db;
-    border-radius: 10px;
 
-    box-sizing: border-box;
+/* ============================================================
+   VISIBLE DISPLAY
+   ============================================================ */
 
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
+.jali-data-combo-display {
 
-    cursor: default;
-    user-select: none;
+    display:
+        flex;
+
+    align-items:
+        center;
+
+    justify-content:
+        space-between;
+
+
+    width:
+        100%;
+
+    min-height:
+        36px;
+
+
+    padding:
+        0
+        12px;
+
+
+    box-sizing:
+        border-box;
+
+
+    font-family:
+        "Segoe UI",
+        Inter,
+        Arial,
+        sans-serif;
+
+    font-size:
+        14px;
+
+    font-weight:
+        500;
+
+
+    color:
+        #1f2937;
+
+    background:
+        #ffffff;
+
+
+    border:
+        1px solid
+        #d1d5db;
+
+    border-radius:
+        10px;
+
+
+    outline:
+        none;
+
+
+    white-space:
+        nowrap;
+
+    overflow:
+        hidden;
+
+    text-overflow:
+        ellipsis;
+
+
+    cursor:
+        pointer;
+
+    user-select:
+        none;
+
+
+    box-shadow:
+        0
+        1px
+        2px
+        rgba(0, 0, 0, 0.04);
+
 
     transition:
         border-color 0.15s ease,
         box-shadow 0.15s ease,
         background-color 0.15s ease;
-
-    z-index: 3;
 }
 
-
-/* Hover */
-
-[data-jali-combo-display]:hover {
-    border-color: #9ca3af;
-
-    box-shadow:
-        0 2px 8px rgba(0, 0, 0, 0.06);
-}
 
 
 /* ============================================================
-   DROPDOWN CONTAINER
+   DISPLAY HOVER
    ============================================================ */
 
-[id^="div_"] {
-    box-sizing: border-box;
+.jali-data-combo-display:hover {
 
-    padding: 5px;
+    border-color:
+        #9ca3af;
 
-    font-family: "Segoe UI", Inter, Arial, sans-serif;
-    font-size: 14px;
 
-    color: #1f2937;
-    background: #ffffff;
+    background:
+        #fafafa;
 
-    border: 1px solid #d1d5db;
-    border-radius: 10px;
 
     box-shadow:
-        0 8px 24px rgba(0, 0, 0, 0.10);
-
-    overflow-y: auto;
-    overflow-x: hidden;
-
-    max-height: 280px;
-
-    z-index: 4;
+        0
+        2px
+        8px
+        rgba(0, 0, 0, 0.06);
 }
+
+
+
+/* ============================================================
+   DISPLAY FOCUS
+   ============================================================ */
+
+data-combo:focus-visible
+.jali-data-combo-display {
+
+    border-color:
+        #9ca3af;
+
+
+    box-shadow:
+        0
+        0
+        0
+        3px
+        rgba(107, 114, 128, 0.12);
+}
+
+
+
+/* ============================================================
+   OPEN STATE
+   ============================================================ */
+
+data-combo[aria-expanded="true"]
+.jali-data-combo-display {
+
+    border-color:
+        #9ca3af;
+
+
+    border-bottom-left-radius:
+        0;
+
+    border-bottom-right-radius:
+        0;
+
+
+    box-shadow:
+        0
+        0
+        0
+        3px
+        rgba(107, 114, 128, 0.10);
+}
+
+
+
+/* ============================================================
+   DROPDOWN
+   ============================================================ */
+
+.jali-data-combo-dropdown {
+
+    position:
+        absolute;
+
+
+    left:
+        0;
+
+    top:
+        calc(100% + 4px);
+
+
+    width:
+        100%;
+
+
+    max-height:
+        280px;
+
+
+    padding:
+        5px;
+
+
+    box-sizing:
+        border-box;
+
+
+    font-family:
+        "Segoe UI",
+        Inter,
+        Arial,
+        sans-serif;
+
+    font-size:
+        14px;
+
+
+    color:
+        #1f2937;
+
+    background:
+        #ffffff;
+
+
+    border:
+        1px solid
+        #d1d5db;
+
+    border-radius:
+        10px;
+
+
+    box-shadow:
+        0
+        8px
+        24px
+        rgba(0, 0, 0, 0.10);
+
+
+    overflow-y:
+        auto;
+
+    overflow-x:
+        hidden;
+
+
+    z-index:
+        100000;
+}
+
 
 
 /* ============================================================
    DROPDOWN OPTIONS
    ============================================================ */
 
-[id^="div_"] > div {
-    display: flex;
+.jali-data-combo-row {
 
-    align-items: center;
+    display:
+        flex;
 
-    min-height: 36px;
 
-    padding: 0 10px;
+    align-items:
+        center;
 
-    border-radius: 7px;
 
-    color: #374151;
+    width:
+        100%;
 
-    cursor: pointer;
 
-    user-select: none;
+    min-height:
+        36px;
 
-    box-sizing: border-box;
+
+    padding:
+        0
+        10px;
+
+
+    box-sizing:
+        border-box;
+
+
+    border-radius:
+        7px;
+
+
+    color:
+        #374151;
+
+
+    cursor:
+        pointer;
+
+    user-select:
+        none;
+
+
+    white-space:
+        nowrap;
+
+    overflow:
+        hidden;
+
+    text-overflow:
+        ellipsis;
+
 
     transition:
         background-color 0.12s ease,
@@ -145,89 +360,213 @@ input[type="data-combo"]:focus {
 }
 
 
-/* Hover */
 
-[id^="div_"] > div:hover {
-    background: #f3f4f6;
+/* ============================================================
+   OPTION HOVER
+   ============================================================ */
+
+.jali-data-combo-row:hover {
+
+    background:
+        #f3f4f6;
+
+    color:
+        #111827;
 }
 
-
-/* Active / pressed */
-
-[id^="div_"] > div:active {
-    background: #e5e7eb;
-}
 
 
 /* ============================================================
-   SCROLLBAR
+   OPTION ACTIVE
    ============================================================ */
 
-[id^="div_"]::-webkit-scrollbar {
-    width: 7px;
+.jali-data-combo-row:active {
+
+    background:
+        #e5e7eb;
 }
 
-[id^="div_"]::-webkit-scrollbar-track {
-    background: transparent;
-}
-
-[id^="div_"]::-webkit-scrollbar-thumb {
-    background: #d1d5db;
-
-    border-radius: 999px;
-}
-
-[id^="div_"]::-webkit-scrollbar-thumb:hover {
-    background: #9ca3af;
-}
-
-
-/* Firefox */
-
-[id^="div_"] {
-    scrollbar-width: thin;
-    scrollbar-color: #d1d5db transparent;
-}
 
 
 /* ============================================================
    SELECTED OPTION
    ============================================================ */
 
-[id^="div_"] > div[aria-selected="true"] {
-    background: #f3f4f6;
-    font-weight: 600;
+.jali-data-combo-row[aria-selected="true"] {
+
+    background:
+        #f3f4f6;
+
+    font-weight:
+        600;
 }
 
 
+
 /* ============================================================
-   DISABLED STATE
+   LOADING
    ============================================================ */
 
-input[type="data-combo"]:disabled + [data-jali-combo-display],
-[data-jali-combo-display][aria-disabled="true"] {
-    background: #f9fafb;
+.jali-data-combo-loading {
 
-    color: #9ca3af;
+    padding:
+        10px;
 
-    border-color: #e5e7eb;
 
-    box-shadow: none;
+    color:
+        #64748b;
 
-    cursor: not-allowed;
+
+    font-size:
+        13px;
+
+    text-align:
+        center;
 }
 
 
+
 /* ============================================================
-   FOCUS-LIKE STATE FOR THE DISPLAY
+   EMPTY
    ============================================================ */
 
-[data-jali-combo-display][data-open="true"] {
-    border-color: #9ca3af;
+.jali-data-combo-empty {
 
-    border-bottom-left-radius: 0;
-    border-bottom-right-radius: 0;
+    padding:
+        10px;
+
+
+    color:
+        #94a3b8;
+
+
+    font-size:
+        13px;
+
+    text-align:
+        center;
+}
+
+
+
+/* ============================================================
+   ERROR
+   ============================================================ */
+
+.jali-data-combo-error {
+
+    padding:
+        10px;
+
+
+    color:
+        #dc2626;
+
+
+    font-size:
+        13px;
+
+    text-align:
+        center;
+}
+
+
+
+/* ============================================================
+   SCROLLBAR
+   ============================================================ */
+
+.jali-data-combo-dropdown::-webkit-scrollbar {
+
+    width:
+        7px;
+}
+
+
+.jali-data-combo-dropdown::-webkit-scrollbar-track {
+
+    background:
+        transparent;
+}
+
+
+.jali-data-combo-dropdown::-webkit-scrollbar-thumb {
+
+    background:
+        #d1d5db;
+
+    border-radius:
+        999px;
+}
+
+
+.jali-data-combo-dropdown::-webkit-scrollbar-thumb:hover {
+
+    background:
+        #9ca3af;
+}
+
+
+
+/* Firefox */
+
+.jali-data-combo-dropdown {
+
+    scrollbar-width:
+        thin;
+
+    scrollbar-color:
+        #d1d5db
+        transparent;
+}
+
+
+
+/* ============================================================
+   DISABLED
+   ============================================================ */
+
+data-combo[aria-disabled="true"]
+.jali-data-combo-display {
+
+    background:
+        #f9fafb;
+
+
+    color:
+        #9ca3af;
+
+
+    border-color:
+        #e5e7eb;
+
 
     box-shadow:
-        0 0 0 3px rgba(107, 114, 128, 0.10);
+        none;
+
+
+    cursor:
+        not-allowed;
+}
+
+
+data-combo[aria-disabled="true"] {
+
+    cursor:
+        not-allowed;
+}
+
+
+
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
+
+@media (max-width: 600px) {
+
+    data-combo {
+
+        width:
+            100%;
+    }
 }

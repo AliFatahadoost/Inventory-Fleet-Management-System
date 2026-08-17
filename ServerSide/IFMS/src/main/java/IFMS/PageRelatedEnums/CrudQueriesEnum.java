@@ -1,7 +1,8 @@
 
 package IFMS.PageRelatedEnums;
+import IFMS.InterFaces.CrudQueries;
 
-public enum CrudQueriesEnum {
+public enum CrudQueriesEnum implements CrudQueries{
     
     
     fakeTable(
@@ -62,10 +63,10 @@ public enum CrudQueriesEnum {
     ;
     
     
-    private String readQuery;
-    private String updateQuery;
-    private String createQuery;
-    private String deleteQuery;
+    private final String readQuery;
+    private final String updateQuery;
+    private final String createQuery;
+    private final String deleteQuery;
         
     CrudQueriesEnum(String readQuery, String updateQuery, String createQuery, String deleteQuery)
     {
@@ -75,9 +76,13 @@ public enum CrudQueriesEnum {
         this.deleteQuery = deleteQuery;   
     }
     
+    @Override
     public String getReadQuery(){return this.readQuery;}
+    @Override
     public String getUpdateQuery(){return this.updateQuery + "select 1 as status";}
+    @Override
     public String getDeleteQuery(){return this.deleteQuery + "select 1 as status";}
+    @Override
     public String getCreateQuery(){return this.createQuery + "select 1 as status";}
 
 }

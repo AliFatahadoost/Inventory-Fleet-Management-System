@@ -4,9 +4,9 @@ package IFMS.PageRelatedEnums;
 import com.sun.net.httpserver.HttpServer;
 import IFMS.ConfigAndLauncherManager.readConfig;
 import IFMS.WebServerHandlers.pageHandlerOpener;
+import IFMS.InterFaces.JaliWebPage;
 
-
-public enum WebPagesEnum {
+public enum WebPagesEnum implements JaliWebPage{
     
     test
             (
@@ -22,9 +22,10 @@ public enum WebPagesEnum {
         this.pageFile = pageFile;
     }
     
+    @Override
     public int getObjectId(){return this.objectId;}
+    @Override
     public FilesEnum getFile(){return this.pageFile;}
-    
-    public void registerRoute(HttpServer server){
-        server.createContext("/"+this.name(), new pageHandlerOpener(readConfig.BASE_FILE_ADDRESS, this.pageFile));}
+    @Override
+    public void registerRoute(HttpServer server){server.createContext("/"+this.name(), new pageHandlerOpener(readConfig.BASE_FILE_ADDRESS, this.pageFile));}
 }

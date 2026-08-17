@@ -9,14 +9,14 @@ import java.nio.file.Files;
 import java.nio.charset.StandardCharsets;
 import IFMS.DataBase.dataBaseUtils;
 import IFMS.ConfigAndLauncherManager.readConfig;
-import IFMS.PageRelatedEnums.FilesEnum;
+import IFMS.InterFaces.JaliFiles;
 
 public class pageHandlerOpener implements HttpHandler{
     
         private String fileAddress;
-        FilesEnum fileInfo;
+        JaliFiles fileInfo;
 
-        public pageHandlerOpener(String baseAddress, FilesEnum fileInfo)
+        public pageHandlerOpener(String baseAddress, JaliFiles fileInfo)
         {      
             this.fileInfo = fileInfo;
             this.fileAddress = baseAddress + this.fileInfo.relativeAddress();   

@@ -143,9 +143,9 @@ public class DataBaseInit {
                 "IF NOT EXISTS(SELECT 1 FROM USERS_DATA_AND_PERMISSIONS.SYS_USERS WHERE UPPER(SYS_USER_CODE) = UPPER(@USER_NAME)\n" +
                 "																 AND SYS_PASSWORD = HASHBYTES( 'SHA2_512', CONCAT(@USER_PASSWORD, SYS_PASSWORD_SALT)))\n" +
                 "BEGIN\n" +
-                "	DECLARE @TOKEN NVARCHAR(512) = HASHBYTES('SHA2_512',CONVERT(NVARCHAR(23), CONCAT('DATA_','_', NEWID())))\n" +
+                "	DECLARE @TOKEN VARCHAR(128) = CONVERT(VARCHAR(128),HASHBYTES('SHA2_512',CONVERT(VARCHAR(128), CONCAT('DATA_','_', NEWID()))), 2)\n" +
                 "	UPDATE USERS_DATA_AND_PERMISSIONS.SYS_USERS SET SYS_LOGIN_SESSION = @TOKEN WHERE SYS_USERNAME = @USER_NAME\n" +
-                "	SELECT @TOKEN AS TOKEN\n" +
+                "	SELECT @TOKEN AS STATUS\n" +
                 "END\n" +
                 "ELSE\n" +
                 "	SELECT 0 AS STATUS\n" +

@@ -1,6 +1,5 @@
 /* ============================================================
    JALIFRAME FIND OBJECT BOX
-   Tailwind-inspired modal table theme
    ============================================================ */
 
 
@@ -113,17 +112,176 @@
 
 
 /* ============================================================
-   MODAL BACKDROP
+   FIND OBJECT BOX ITSELF
 
-   The JS creates:
+   <find-object-box ...>
+       <div class="jali-fob">
+           <div class="jali-fob-display">
+               🔍 |
+           </div>
+       </div>
+   </find-object-box>
 
-   <div id="fobModal_x">
-       <div>...</div>
-   </div>
-
+   IMPORTANT:
+   The component itself is NOT the modal.
+   It should remain a normal-sized form control.
    ============================================================ */
 
-[id^="fobModal_"] {
+find-object-box {
+
+    display:
+        inline-block;
+
+    position:
+        relative;
+
+    width:
+        280px;
+
+    max-width:
+        100%;
+
+    min-height:
+        36px;
+
+    box-sizing:
+        border-box;
+
+    vertical-align:
+        middle;
+}
+
+
+
+/* ============================================================
+   INNER COMPONENT
+   ============================================================ */
+
+.jali-fob {
+
+    position:
+        relative;
+
+    width:
+        100%;
+
+    box-sizing:
+        border-box;
+}
+
+
+
+/* ============================================================
+   DISPLAY
+
+   This is what the user sees before opening the FOB.
+   ============================================================ */
+
+.jali-fob-display {
+
+    width:
+        100%;
+
+    min-height:
+        36px;
+
+    box-sizing:
+        border-box;
+
+    display:
+        flex;
+
+    align-items:
+        center;
+
+    padding:
+        0
+        12px;
+
+    border:
+        1px solid
+        var(--fob-border);
+
+    border-radius:
+        var(--fob-cell-radius);
+
+    background:
+        var(--fob-bg);
+
+    color:
+        var(--fob-text);
+
+    font-family:
+        var(--fob-font);
+
+    font-size:
+        13px;
+
+    font-weight:
+        500;
+
+    box-shadow:
+        0
+        1px
+        2px
+        rgba(15, 23, 42, 0.04);
+
+    cursor:
+        pointer;
+
+    user-select:
+        none;
+
+    overflow:
+        hidden;
+
+    white-space:
+        nowrap;
+
+    text-overflow:
+        ellipsis;
+
+    transition:
+        border-color var(--fob-transition-fast),
+        box-shadow var(--fob-transition-fast),
+        background-color var(--fob-transition-fast);
+}
+
+
+.jali-fob-display:hover {
+
+    border-color:
+        var(--fob-border-strong);
+
+    background:
+        var(--fob-bg-soft);
+}
+
+
+find-object-box:focus-visible
+.jali-fob-display {
+
+    outline:
+        none;
+
+    border-color:
+        var(--fob-primary);
+
+    box-shadow:
+        0
+        0
+        0
+        3px
+        var(--fob-primary-soft);
+}
+
+
+
+/* ============================================================
+   MODAL BACKDROP
+   ============================================================ */
+
+.jali-fob-modal {
 
     position:
         fixed;
@@ -140,7 +298,6 @@
     z-index:
         999999;
 
-
     display:
         flex;
 
@@ -150,38 +307,26 @@
     justify-content:
         center;
 
-
     box-sizing:
         border-box;
 
     padding:
         2rem;
 
-
-    /*
-     * Full-screen dark translucent background.
-     */
     background:
         rgba(15, 23, 42, 0.62);
 
-
-    /*
-     * Slightly soften whatever is behind the modal.
-     */
     backdrop-filter:
         blur(2px);
 
-
     -webkit-backdrop-filter:
         blur(2px);
-
 
     font-family:
         var(--fob-font);
 
     color:
         var(--fob-text);
-
 
     animation:
         fobModalFadeIn
@@ -193,27 +338,28 @@
 /* ============================================================
    MODAL CARD
 
-   This is the first child of the modal root.
-
-   It becomes the actual centered window.
+   THIS is the large window.
    ============================================================ */
 
-[id^="fobModal_"] > div {
+.jali-fob-modal > .jali-fob-card {
 
     position:
         relative;
 
-
     width:
-        min(1400px, 96vw);
+        min(1400px, 92vw);
 
     height:
-        min(850px, 92vh);
+        min(850px, 88vh);
 
+    min-width:
+        600px;
 
     max-width:
         1400px;
 
+    max-height:
+        88vh;
 
     display:
         flex;
@@ -221,31 +367,24 @@
     flex-direction:
         column;
 
-
     box-sizing:
         border-box;
 
-
     background:
         var(--fob-bg);
-
 
     border:
         1px solid
         var(--fob-border);
 
-
     border-radius:
         var(--fob-radius);
-
 
     overflow:
         hidden;
 
-
     box-shadow:
         var(--fob-card-shadow);
-
 
     animation:
         fobModalScaleIn
@@ -256,24 +395,19 @@
 
 /* ============================================================
    MODAL TITLE
-
-   h2 is the first child of the card.
    ============================================================ */
 
-[id^="fobModal_"] > div > h2 {
+.jali-fob-title {
 
     flex:
         0 0 auto;
 
-
     margin:
         0;
-
 
     padding:
         17px
         22px;
-
 
     display:
         flex;
@@ -281,27 +415,21 @@
     align-items:
         center;
 
-
     min-height:
         58px;
-
 
     box-sizing:
         border-box;
 
-
     background:
         var(--fob-bg);
-
 
     border-bottom:
         1px solid
         var(--fob-border);
 
-
     color:
         var(--fob-text);
-
 
     font-family:
         var(--fob-font);
@@ -311,7 +439,6 @@
 
     font-weight:
         700;
-
 
     letter-spacing:
         -0.01em;
@@ -323,11 +450,10 @@
    SEARCH AREA
    ============================================================ */
 
-[id^="fobSearchArea_"] {
+.jali-fob-search {
 
     flex:
         0 0 auto;
-
 
     display:
         flex;
@@ -338,24 +464,19 @@
     gap:
         10px;
 
-
     padding:
         14px
         16px;
 
-
     box-sizing:
         border-box;
-
 
     background:
         var(--fob-bg-soft);
 
-
     border-bottom:
         1px solid
         var(--fob-border);
-
 
     overflow-x:
         auto;
@@ -364,32 +485,22 @@
 
 
 /* ============================================================
-   SEARCH FIELD WRAPPER
-
-   The JS creates:
-
-   <div>
-       <label>username</label>
-       <input ...>
-   </div>
+   SEARCH FIELD
    ============================================================ */
 
-[id^="fobSearchArea_"] > div {
+.jali-fob-search-field {
 
     flex:
         1 1 180px;
 
-
     min-width:
         150px;
-
 
     display:
         flex;
 
     flex-direction:
         column;
-
 
     gap:
         5px;
@@ -401,22 +512,19 @@
    SEARCH LABEL
    ============================================================ */
 
-[id^="fobSearchArea_"] label {
+.jali-fob-search-field label {
 
     display:
         block;
 
-
     color:
         var(--fob-text-secondary);
-
 
     font-size:
         11px;
 
     font-weight:
         700;
-
 
     letter-spacing:
         0.04em;
@@ -431,45 +539,36 @@
    SEARCH INPUT
    ============================================================ */
 
-.fob-search-input {
+.jali-fob-search-input {
 
     width:
         100%;
 
-
     height:
         36px;
 
-
     padding:
         0
-        0.75rem;
-
+        12px;
 
     box-sizing:
         border-box;
-
 
     border:
         1px solid
         var(--fob-border);
 
-
     border-radius:
         var(--fob-cell-radius);
-
 
     outline:
         none;
 
-
     background:
         var(--fob-bg);
 
-
     color:
         var(--fob-text);
-
 
     font-family:
         var(--fob-font);
@@ -480,13 +579,11 @@
     font-weight:
         500;
 
-
     box-shadow:
         0
         1px
         2px
         rgba(15, 23, 42, 0.04);
-
 
     transition:
         background-color var(--fob-transition-fast),
@@ -495,18 +592,17 @@
 }
 
 
-.fob-search-input:hover {
+.jali-fob-search-input:hover {
 
     border-color:
         var(--fob-border-strong);
 }
 
 
-.fob-search-input:focus {
+.jali-fob-search-input:focus {
 
     border-color:
         var(--fob-primary);
-
 
     box-shadow:
         0
@@ -517,7 +613,7 @@
 }
 
 
-.fob-search-input::placeholder {
+.jali-fob-search-input::placeholder {
 
     color:
         var(--fob-text-muted);
@@ -527,41 +623,32 @@
 
 /* ============================================================
    SEARCH BUTTON
-
-   Last child of search area.
    ============================================================ */
 
-[id^="fobSearchArea_"] > button {
+.jali-fob-search-button {
 
     flex:
         0 0 auto;
 
-
     height:
         36px;
-
 
     padding:
         0
         14px;
 
-
     border:
         1px solid
         var(--fob-primary);
 
-
     border-radius:
         var(--fob-cell-radius);
-
 
     background:
         var(--fob-primary);
 
-
     color:
         white;
-
 
     font-family:
         var(--fob-font);
@@ -572,10 +659,8 @@
     font-weight:
         600;
 
-
     cursor:
         pointer;
-
 
     transition:
         background-color var(--fob-transition-fast),
@@ -585,7 +670,7 @@
 }
 
 
-[id^="fobSearchArea_"] > button:hover {
+.jali-fob-search-button:hover {
 
     background:
         var(--fob-primary-dark);
@@ -593,20 +678,18 @@
     border-color:
         var(--fob-primary-dark);
 
-
     box-shadow:
         0
         5px
         12px
         rgba(37, 99, 235, 0.24);
 
-
     transform:
         translateY(-1px);
 }
 
 
-[id^="fobSearchArea_"] > button:active {
+.jali-fob-search-button:active {
 
     transform:
         translateY(0)
@@ -616,101 +699,70 @@
 
 
 /* ============================================================
-   TABLE
+   TABLE CONTAINER
 
-   JS:
-   table.id = fobTable_x
+   The IMPORTANT change:
+   The table no longer controls the scrolling.
+
+   The wrapper does.
    ============================================================ */
 
-[id^="fobTable_"] {
+.jali-fob-table-container {
 
     flex:
         1 1 auto;
 
-
-    width:
-        calc(100% - 32px);
-
+    min-height:
+        0;
 
     margin:
         16px;
-
 
     border:
         1px solid
         var(--fob-border);
 
-
     border-radius:
         var(--fob-radius);
-
-
-    border-collapse:
-        separate;
-
-
-    border-spacing:
-        0;
-
 
     overflow:
         auto;
 
-
     background:
         var(--fob-bg);
 
+    box-shadow:
+        var(--fob-table-shadow);
+}
+
+
+
+/* ============================================================
+   TABLE
+   ============================================================ */
+
+.jali-fob-table {
+
+    width:
+        100%;
+
+    min-width:
+        max-content;
+
+    border-collapse:
+        separate;
+
+    border-spacing:
+        0;
 
     color:
         var(--fob-text);
-
 
     font-family:
         var(--fob-font);
 
     font-size:
         14px;
-
-
-    box-shadow:
-        var(--fob-table-shadow);
-
-
-    display:
-        block;
-
-
-    box-sizing:
-        border-box;
-
-
-    /*
-     * The table itself scrolls while the modal remains fixed.
-     */
-    max-height:
-        none;
-}
-
-
-
-/* ============================================================
-   TABLE HEAD / BODY
-
-   Since the table is display:block, keep inner table width full.
-   ============================================================ */
-
-[id^="fobTable_"] thead,
-[id^="fobTable_"] tbody {
-
-    width:
-        100%;
-}
-
-
-[id^="fobTable_"] tr {
-
-    width:
-        100%;
 }
 
 
@@ -719,39 +771,32 @@
    TABLE CELLS
    ============================================================ */
 
-[id^="fobTable_"] th,
-[id^="fobTable_"] td {
+.jali-fob-table th,
+.jali-fob-table td {
 
     min-width:
         90px;
-
 
     padding:
         10px
         13px;
 
-
     box-sizing:
         border-box;
-
 
     border-right:
         1px solid
         var(--fob-border);
 
-
     border-bottom:
         1px solid
         var(--fob-border);
 
-
     background:
         var(--fob-bg);
 
-
     color:
         var(--fob-text);
-
 
     text-align:
         center;
@@ -759,33 +804,22 @@
     vertical-align:
         middle;
 
-
     white-space:
         nowrap;
 
-
     max-width:
         360px;
-
 
     overflow:
         hidden;
 
     text-overflow:
         ellipsis;
-
-
-    transition:
-        background-color var(--fob-transition-fast),
-        border-color var(--fob-transition-fast);
 }
 
 
-
-/* Remove final right border */
-
-[id^="fobTable_"] th:last-child,
-[id^="fobTable_"] td:last-child {
+.jali-fob-table th:last-child,
+.jali-fob-table td:last-child {
 
     border-right:
         none;
@@ -794,10 +828,10 @@
 
 
 /* ============================================================
-   STICKY TABLE HEADER
+   TABLE HEADER
    ============================================================ */
 
-[id^="fobTable_"] thead {
+.jali-fob-table thead {
 
     position:
         sticky;
@@ -810,7 +844,7 @@
 }
 
 
-[id^="fobTable_"] thead th {
+.jali-fob-table thead th {
 
     background:
         var(--fob-primary);
@@ -818,20 +852,17 @@
     color:
         white;
 
-
     font-size:
         12px;
 
     font-weight:
         700;
 
-
     letter-spacing:
         0.04em;
 
     text-transform:
         uppercase;
-
 
     box-shadow:
         0
@@ -846,14 +877,14 @@
    HEADER CORNERS
    ============================================================ */
 
-[id^="fobTable_"] thead tr:first-child th:first-child {
+.jali-fob-table thead tr:first-child th:first-child {
 
     border-top-left-radius:
         var(--fob-radius);
 }
 
 
-[id^="fobTable_"] thead tr:first-child th:last-child {
+.jali-fob-table thead tr:first-child th:last-child {
 
     border-top-right-radius:
         var(--fob-radius);
@@ -862,10 +893,10 @@
 
 
 /* ============================================================
-   BODY STRIPING
+   STRIPING
    ============================================================ */
 
-[id^="fobTable_"] tbody tr:nth-child(even) td {
+.jali-fob-table tbody tr:nth-child(even) td {
 
     background:
         var(--fob-bg-soft);
@@ -874,18 +905,16 @@
 
 
 /* ============================================================
-   BODY HOVER
+   HOVER
    ============================================================ */
 
-[id^="fobTable_"] tbody tr:hover td {
+.jali-fob-table tbody tr:hover td {
 
     background:
         var(--fob-bg-hover);
 
-
     border-color:
         var(--fob-border-strong);
-
 
     cursor:
         pointer;
@@ -894,14 +923,13 @@
 
 
 /* ============================================================
-   RADIO BUTTON
+   RADIO
    ============================================================ */
 
-[id^="fobTable_"] input[type="radio"] {
+.jali-fob-table input[type="radio"] {
 
     appearance:
         none;
-
 
     width:
         17px;
@@ -909,35 +937,27 @@
     height:
         17px;
 
-
     margin:
         0;
 
-
     padding:
         0;
-
 
     border:
         2px solid
         var(--fob-border-strong);
 
-
     border-radius:
         50%;
-
 
     background:
         var(--fob-bg);
 
-
     vertical-align:
         middle;
 
-
     cursor:
         pointer;
-
 
     transition:
         border-color var(--fob-transition-fast),
@@ -946,11 +966,10 @@
 }
 
 
-[id^="fobTable_"] input[type="radio"]:hover {
+.jali-fob-table input[type="radio"]:hover {
 
     border-color:
         var(--fob-accent);
-
 
     box-shadow:
         0
@@ -961,11 +980,10 @@
 }
 
 
-[id^="fobTable_"] input[type="radio"]:checked {
+.jali-fob-table input[type="radio"]:checked {
 
     border-color:
         var(--fob-primary);
-
 
     background:
         radial-gradient(
@@ -974,7 +992,6 @@
             0 42%,
             transparent 44%
         );
-
 
     box-shadow:
         0
@@ -988,17 +1005,12 @@
 
 /* ============================================================
    SELECTED ROW
-
-   Works with the JS radio selection.
    ============================================================ */
 
-[id^="fobTable_"] tbody tr:has(
-    input[type="radio"]:checked
-) td {
+.jali-fob-table tbody tr.jali-fob-selected td {
 
     background:
         var(--fob-bg-selected);
-
 
     border-top-color:
         var(--fob-accent);
@@ -1008,9 +1020,7 @@
 }
 
 
-[id^="fobTable_"] tbody tr:has(
-    input[type="radio"]:checked
-) {
+.jali-fob-table tbody tr.jali-fob-selected {
 
     box-shadow:
         inset
@@ -1026,18 +1036,10 @@
    PAGINATION
    ============================================================ */
 
-[id^="fobTable_"] + div {
+.jali-fob-pagination {
 
     flex:
         0 0 auto;
-}
-
-
-/*
- * The pagination div is directly after the table.
- */
-
-[id^="fobModal_"] > div > div:nth-last-child(2) {
 
     display:
         flex;
@@ -1048,20 +1050,16 @@
     justify-content:
         center;
 
-
     gap:
         10px;
-
 
     padding:
         12px
         16px;
 
-
     border-top:
         1px solid
         var(--fob-border);
-
 
     background:
         var(--fob-bg-soft);
@@ -1073,37 +1071,30 @@
    PAGINATION BUTTONS
    ============================================================ */
 
-[id^="fobModal_"] > div > div:nth-last-child(2) button {
+.jali-fob-pagination button {
 
     height:
         36px;
-
 
     padding:
         0
         13px;
 
-
     border:
         1px solid
         var(--fob-border-strong);
 
-
     border-radius:
         var(--fob-cell-radius);
-
 
     background:
         var(--fob-bg);
 
-
     color:
         var(--fob-text);
 
-
     font-family:
         var(--fob-font);
-
 
     font-size:
         13px;
@@ -1111,10 +1102,8 @@
     font-weight:
         600;
 
-
     cursor:
         pointer;
-
 
     transition:
         background-color var(--fob-transition-fast),
@@ -1124,7 +1113,7 @@
 }
 
 
-[id^="fobModal_"] > div > div:nth-last-child(2) button:hover {
+.jali-fob-pagination button:hover {
 
     background:
         var(--fob-primary);
@@ -1135,7 +1124,6 @@
     color:
         white;
 
-
     box-shadow:
         0
         4px
@@ -1144,7 +1132,7 @@
 }
 
 
-[id^="fobModal_"] > div > div:nth-last-child(2) button:disabled {
+.jali-fob-pagination button:disabled {
 
     opacity:
         0.45;
@@ -1159,19 +1147,17 @@
    PAGE INFO
    ============================================================ */
 
-.fob-page-info {
+.jali-fob-pagination
+.jali-fob-page-info {
 
     min-width:
         70px;
 
-
     text-align:
         center;
 
-
     color:
         var(--fob-text-secondary);
-
 
     font-size:
         13px;
@@ -1183,10 +1169,10 @@
 
 
 /* ============================================================
-   ROW COUNT INPUT
+   ROW COUNT
    ============================================================ */
 
-[id^="fobModal_"] > div > div:nth-last-child(2) input[type="number"] {
+.jali-fob-page-count {
 
     width:
         80px;
@@ -1194,28 +1180,22 @@
     height:
         36px;
 
-
     padding:
         0
         9px;
 
-
     box-sizing:
         border-box;
-
 
     border:
         1px solid
         var(--fob-border);
 
-
     border-radius:
         var(--fob-cell-radius);
 
-
     outline:
         none;
-
 
     background:
         var(--fob-bg);
@@ -1223,13 +1203,11 @@
     color:
         var(--fob-text);
 
-
     font-family:
         var(--fob-font);
 
     font-size:
         13px;
-
 
     transition:
         border-color var(--fob-transition-fast),
@@ -1237,11 +1215,10 @@
 }
 
 
-[id^="fobModal_"] > div > div:nth-last-child(2) input[type="number"]:focus {
+.jali-fob-page-count:focus {
 
     border-color:
         var(--fob-primary);
-
 
     box-shadow:
         0
@@ -1255,15 +1232,12 @@
 
 /* ============================================================
    FOOTER
-
-   The final div inside modal card.
    ============================================================ */
 
-[id^="fobModal_"] > div > div:last-child {
+.jali-fob-footer {
 
     flex:
         0 0 auto;
-
 
     display:
         flex;
@@ -1274,24 +1248,19 @@
     justify-content:
         flex-end;
 
-
     gap:
         10px;
-
 
     padding:
         14px
         16px;
 
-
     box-sizing:
         border-box;
-
 
     border-top:
         1px solid
         var(--fob-border);
-
 
     background:
         var(--fob-bg-soft);
@@ -1303,24 +1272,20 @@
    FOOTER BUTTONS
    ============================================================ */
 
-[id^="fobModal_"] > div > div:last-child button {
+.jali-fob-footer button {
 
     min-width:
         85px;
 
-
     height:
         38px;
-
 
     padding:
         0
         16px;
 
-
     border-radius:
         var(--fob-cell-radius);
-
 
     font-family:
         var(--fob-font);
@@ -1331,10 +1296,8 @@
     font-weight:
         600;
 
-
     cursor:
         pointer;
-
 
     transition:
         background-color var(--fob-transition-fast),
@@ -1350,23 +1313,21 @@
    EXIT
    ============================================================ */
 
-[id^="fobModal_"] > div > div:last-child button:first-child {
+.jali-fob-footer button:first-child {
 
     border:
         1px solid
         var(--fob-border-strong);
 
-
     background:
         var(--fob-bg);
-
 
     color:
         var(--fob-text);
 }
 
 
-[id^="fobModal_"] > div > div:last-child button:first-child:hover {
+.jali-fob-footer button:first-child:hover {
 
     background:
         var(--fob-bg-hover);
@@ -1381,23 +1342,21 @@
    SELECT
    ============================================================ */
 
-[id^="fobModal_"] > div > div:last-child button:last-child {
+.jali-fob-footer button:last-child {
 
     border:
         1px solid
         var(--fob-primary);
 
-
     background:
         var(--fob-primary);
-
 
     color:
         white;
 }
 
 
-[id^="fobModal_"] > div > div:last-child button:last-child:hover {
+.jali-fob-footer button:last-child:hover {
 
     background:
         var(--fob-primary-dark);
@@ -1405,20 +1364,18 @@
     border-color:
         var(--fob-primary-dark);
 
-
     box-shadow:
         0
         5px
         12px
         rgba(37, 99, 235, 0.24);
 
-
     transform:
         translateY(-1px);
 }
 
 
-[id^="fobModal_"] > div > div:last-child button:last-child:active {
+.jali-fob-footer button:last-child:active {
 
     transform:
         translateY(0)
@@ -1431,7 +1388,7 @@
    TABLE SCROLLBAR
    ============================================================ */
 
-[id^="fobTable_"]::-webkit-scrollbar {
+.jali-fob-table-container::-webkit-scrollbar {
 
     width:
         9px;
@@ -1441,7 +1398,7 @@
 }
 
 
-[id^="fobTable_"]::-webkit-scrollbar-track {
+.jali-fob-table-container::-webkit-scrollbar-track {
 
     background:
         #f1f5f9;
@@ -1451,23 +1408,21 @@
 }
 
 
-[id^="fobTable_"]::-webkit-scrollbar-thumb {
+.jali-fob-table-container::-webkit-scrollbar-thumb {
 
     background:
         #cbd5e1;
-
 
     border:
         2px solid
         #f1f5f9;
 
-
     border-radius:
         999px;
 }
 
 
-[id^="fobTable_"]::-webkit-scrollbar-thumb:hover {
+.jali-fob-table-container::-webkit-scrollbar-thumb:hover {
 
     background:
         #94a3b8;
@@ -1524,31 +1479,44 @@
 
 @media (max-width: 900px) {
 
-    [id^="fobModal_"] {
+    find-object-box {
+
+        width:
+            250px;
+    }
+
+
+    .jali-fob-modal {
 
         padding:
             1rem;
     }
 
 
-    [id^="fobModal_"] > div {
+    .jali-fob-modal > .jali-fob-card {
 
         width:
             100%;
 
+        min-width:
+            0;
+
         height:
+            94vh;
+
+        max-height:
             94vh;
     }
 
 
-    [id^="fobSearchArea_"] {
+    .jali-fob-search {
 
         flex-wrap:
             wrap;
     }
 
 
-    [id^="fobSearchArea_"] > div {
+    .jali-fob-search-field {
 
         flex:
             1 1 45%;
@@ -1559,14 +1527,21 @@
 
 @media (max-width: 600px) {
 
-    [id^="fobModal_"] {
+    find-object-box {
+
+        width:
+            100%;
+    }
+
+
+    .jali-fob-modal {
 
         padding:
             0.5rem;
     }
 
 
-    [id^="fobModal_"] > div {
+    .jali-fob-modal > .jali-fob-card {
 
         width:
             100%;
@@ -1574,26 +1549,29 @@
         height:
             97vh;
 
+        max-height:
+            97vh;
+
         border-radius:
             10px;
     }
 
 
-    [id^="fobSearchArea_"] > div {
+    .jali-fob-search-field {
 
         min-width:
             100%;
     }
 
 
-    [id^="fobModal_"] > div > div:last-child {
+    .jali-fob-footer {
 
         justify-content:
             stretch;
     }
 
 
-    [id^="fobModal_"] > div > div:last-child button {
+    .jali-fob-footer button {
 
         flex:
             1;
@@ -1608,10 +1586,10 @@
 
 @media (prefers-reduced-motion: reduce) {
 
-    [id^="fobModal_"],
-    [id^="fobModal_"] *,
-    [id^="fobModal_"] *::before,
-    [id^="fobModal_"] *::after {
+    .jali-fob-modal,
+    .jali-fob-modal *,
+    .jali-fob-modal *::before,
+    .jali-fob-modal *::after {
 
         animation:
             none !important;

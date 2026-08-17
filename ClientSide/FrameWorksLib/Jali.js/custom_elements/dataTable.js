@@ -103,20 +103,48 @@ class FetchDataTable extends HTMLElement {
 
             if(tempType == "checkbox")
             {
-                inputList += `<div><label for="input${tempName}">${tempTitle} </label><input name="input${tempName}" type="${tempType}" ${tempDefaultValue == "1"? "checked" : ""} placeholder="${tempTitle}"></div>`;
+                inputList += `<div><label for="input${tempName}">${tempTitle} </label><input class="formInputform${formId}" name="input${tempName}" type="${tempType}" ${tempDefaultValue == "1"? "checked" : ""} placeholder="${tempTitle}"></div>`;
                 
             }
             else if(tempType == "radio")
             {
-                inputList += `<div><input name="input${tempName}" type="${tempType}" value="${tempDefaultValue}" ${tempDefaultValue != ""? "checked" : ""} placeholder="${tempTitle}"><label for="input${tempName}">${tempTitle} </lable></div>`;
+                inputList += `<div><input class="formInputform${formId}" name="input${tempName}" type="${tempType}" value="${tempDefaultValue}" ${tempDefaultValue != ""? "checked" : ""} placeholder="${tempTitle}"><label for="input${tempName}">${tempTitle} </lable></div>`;
             }
-            else if(tempType == "data-combo")
+            else if (tempType == "data-combo")
             {
-                inputList += `<div><label for="input${tempName}">${tempTitle} </lable><input name="${tempName}" type="${tempType}" value="${tempDefaultValue}" placeholder="${tempTitle}"></div>`;
+                inputList +=
+                    `<div>
+                        <label for="${tempName}">${tempTitle}</label>
+
+                        <data-combo
+                            class="formInputform${formId}"
+                            type="data-combo"
+                            id="${tempName}"
+                            name="${tempName}"
+                            title="${tempTitle}"
+                            value="${tempDefaultValue || ""}">
+                        </data-combo>
+                    </div>`;
+            }
+            else if (tempType == "find-object-box")
+            {
+                inputList +=
+                    `<div>
+                        <label for="${tempName}">${tempTitle}</label>
+
+                        <find-object-box
+                            class="formInputform${formId}"
+                            type="find-object-box"
+                            id="${tempName}"
+                            name="${tempName}"
+                            title="${tempTitle}"
+                            value="${tempDefaultValue || ""}">
+                        </find-object-box>
+                    </div>`;
             }
             else
             {
-                inputList += `<div><label for="input${tempName}">${tempTitle} </lable><input name="input${tempName}" type="${tempType}" value="${tempDefaultValue}" placeholder="${tempTitle}"></div>`;
+                inputList += `<div><label for="input${tempName}">${tempTitle} </lable><input class="formInputform${formId}" name="input${tempName}" type="${tempType}" value="${tempDefaultValue}" placeholder="${tempTitle}"></div>`;
             }
             tempText = tempText.slice(tempSemiColumn + 2);
         }
@@ -167,20 +195,29 @@ async  saveFormData(API,rowId, formId, action)
 {
 
     let sendingJSON = {};
-    this.shadowRoot.getElementById(formId).querySelectorAll("input").forEach(elements => {
+    console.log(`.formInput${formId}`);
+    this.shadowRoot.getElementById(formId).querySelectorAll(`.formInput${formId}`).forEach((elements, index) => {
 
         if(elements.type == "checkbox")
         {
-            sendingJSON[elements.name] = elements.checked ? 1 : 0;
+            sendingJSON[`input${index}`] = elements.checked ? 1 : 0;
         }
         else if(elements.type == "radio")
         {
             if(elements.checked)
-            sendingJSON[elements.name] = elements.value;
+            sendingJSON[`input${index}`] = elements.value;
+        }
+        else if(elements.type == "data-combo")
+        {
+            sendingJSON[`input${index}`] = elements.dataset.selectedId;
+        }
+        else if(elements.type == "find-object-box")
+        {
+            sendingJSON[`input${index}`] = elements.dataset.selectedId;
         }
         else
         {
-            sendingJSON[elements.name] = elements.value;
+            sendingJSON[`input${index}`] = elements.value;
         }
 
     });
