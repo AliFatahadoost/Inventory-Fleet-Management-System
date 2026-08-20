@@ -77,7 +77,7 @@ public class apiManagement{
             String token = webServerUtils.extractTokenFromCookie(exchange);
             //System.out.println("something is calling me");
             
-            if (this.shouldAuthenticate && dataBaseUtils.isAuthenticated(token)) {
+            if (!(!(this.shouldAuthenticate) || dataBaseUtils.isAuthenticated(token))) {
                 //System.out.println("401");
                 exchange.sendResponseHeaders(401, -1);
                 exchange.close();

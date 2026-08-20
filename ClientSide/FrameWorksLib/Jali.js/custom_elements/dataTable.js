@@ -12,6 +12,10 @@ class FetchDataTable extends HTMLElement {
         tableStyle.rel = "stylesheet";
         tableStyle.href = "http://127.0.0.1:8080/cssTableFormData";
 
+        const dateBoxStyle = document.createElement("link");
+        dateBoxStyle.rel = "stylesheet";
+        dateBoxStyle.href = "http://127.0.0.1:8080/dateBoxCss";
+
         const dataCombo = document.createElement("link");
         dataCombo.rel = "stylesheet";
         dataCombo.href = "http://127.0.0.1:8080/dataComboCss";
@@ -21,6 +25,7 @@ class FetchDataTable extends HTMLElement {
         dataFormStyle.href = "http://127.0.0.1:8080/cssDataForm";
 
         this.shadowRoot.appendChild(tableStyle);
+        this.shadowRoot.appendChild(dateBoxStyle);
         this.shadowRoot.appendChild(dataFormStyle);
         this.shadowRoot.appendChild(dataCombo);
 
@@ -124,6 +129,22 @@ class FetchDataTable extends HTMLElement {
                             title="${tempTitle}"
                             value="${tempDefaultValue || ""}">
                         </data-combo>
+                    </div>`;
+            }
+            else if (tempType == "date-box")
+            {
+                inputList +=
+                    `<div>
+                        <label for="${tempName}">${tempTitle}</label>
+
+                        <date-box
+                            class="formInputform${formId}"
+                            type="date-box"
+                            id="${tempName}"
+                            name="${tempName}"
+                            title="${tempTitle}"
+                            value="${tempDefaultValue || ""}">
+                        </date-box>
                     </div>`;
             }
             else if (tempType == "find-object-box")

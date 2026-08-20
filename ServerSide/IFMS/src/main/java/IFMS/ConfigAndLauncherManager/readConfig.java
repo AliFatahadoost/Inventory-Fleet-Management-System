@@ -654,9 +654,17 @@ public class readConfig {
         server.createContext("/dataComboCss",                                           new pageHandlerOpener(BASE_FILE_ADDRESS, FilesEnum.dataComboCss));
         server.createContext("/FindObjectBoxCss",                                       new pageHandlerOpener(BASE_FILE_ADDRESS, FilesEnum.findObjectBoxCss));
         server.createContext("/findObjectBox",                                          new pageHandlerOpener(BASE_FILE_ADDRESS, FilesEnum.findObjectBox));
+        server.createContext("/dateBox",                                                new pageHandlerOpener(BASE_FILE_ADDRESS, FilesEnum.dateBox));
+        server.createContext("/jaliForm",                                               new pageHandlerOpener(BASE_FILE_ADDRESS, FilesEnum.jaliForm));
         server.createContext("/cssTableFormData",                                       new pageHandlerOpener(BASE_FILE_ADDRESS, FilesEnum.cssTableFormData));
         server.createContext("/cssDataForm",                                            new pageHandlerOpener(BASE_FILE_ADDRESS, FilesEnum.cssDataForm));
+        server.createContext("/dateBoxCss",                                             new pageHandlerOpener(BASE_FILE_ADDRESS, FilesEnum.dateBoxCss));
        
+        
+        server.createContext("/fakeTable", new apiManagement.dataApiGen.builder().setQuery(CrudQueriesEnum.fakeTable).build());
+        
+        WebPagesEnum.test.registerRoute(server);
+        
         server.setExecutor(null);
         server.start();
         httpServer = server;

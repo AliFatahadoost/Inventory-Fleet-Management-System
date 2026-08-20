@@ -104,10 +104,13 @@ public class dataBaseUtils {
                     PreparedStatement pstmt = conn.getConnection().prepareStatement(Query);
                     ){            
                 pstmt.setString(1, token);
+                System.out.println(token);
                 try(ResultSet rs = pstmt.executeQuery()){
                 if(rs.next()){
                     isAuthenticated = rs.getInt("STATUS") == 1;
-                    System.out.println("was a Successes");
+                    System.out.println(isAuthenticated ? 1 : 0);
+                    if (isAuthenticated)
+                        System.out.println("was a Successes");
                 }
                 }
             } catch (ClassNotFoundException e) {

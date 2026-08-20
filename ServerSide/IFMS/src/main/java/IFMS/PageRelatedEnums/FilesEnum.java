@@ -31,6 +31,16 @@ public enum FilesEnum implements JaliFiles {
         true,
         FileTypesEnum.js
     ),
+    dateBox(
+        "/FrameWorksLib/Jali.js/custom_elements/dateBox.js",
+        true,
+        FileTypesEnum.js
+    ),
+    jaliForm(
+        "/FrameWorksLib/Jali.js/custom_elements/jaliForm.js",
+        true,
+        FileTypesEnum.js
+    ),
     cssTableFormData(
         "/FrameWorksLib/JaliFrame.css/readDataTable.css",
         true,
@@ -43,6 +53,11 @@ public enum FilesEnum implements JaliFiles {
     ),
     findObjectBoxCss(
         "/FrameWorksLib/JaliFrame.css/FindObjectBox.css",
+        true,
+        FileTypesEnum.css
+    ),
+    dateBoxCss(
+        "/FrameWorksLib/JaliFrame.css/dateBox.css",
         true,
         FileTypesEnum.css
     ),
