@@ -65,7 +65,21 @@ public enum FilesEnum implements JaliFiles {
         "/FrameWorksLib/JaliFrame.css/dataForm.css",
         true,
         FileTypesEnum.css
-    );
+    ),
+    
+    
+    Login
+            (
+                "/Login/Login.html",
+                false,
+                FileTypesEnum.html
+            ),
+    Dashboard
+            (
+                "/Dashboard/Dashboard.html",
+                false,
+                FileTypesEnum.html
+            );
     
     private final String relativeAddress;
     private final boolean loadedByIframe;

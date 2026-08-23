@@ -1050,192 +1050,239 @@ class JaliForm extends HTMLElement {
 
 
     // ============================================================
-    // SEND TO API
-    // ============================================================
+// SEND TO API
+// ============================================================
 
-    async sendToAPI() {
+async sendToAPI() {
+
+    if (
+        this.api == ""
+    ) {
+
+        console.error(
+            "JaliForm: api attribute is missing."
+        );
+
+        return;
+
+    }
+
+
+    let sendingJSON =
+        this.createAPIPayload();
+
+
+    console.log(
+        "JaliForm sending:",
+        sendingJSON
+    );
+
+
+    try {
+
+        const response =
+            await fetch(
+                this.api,
+                {
+
+                    method:
+                        this.apiMethod,
+
+                    headers:
+                        {
+                            "Content-Type":
+                                "application/json"
+                        },
+
+                    body:
+                        JSON.stringify(
+                            sendingJSON
+                        )
+
+                }
+            );
+
+
+        // ========================================================
+        // REDIRECT
+        //
+        // fetch() automatically follows HTTP redirects.
+        // response.redirected tells us that this happened.
+        //
+        // response.url is the final URL after the redirect.
+        // ========================================================
 
         if (
-            this.api == ""
+            response.redirected
         ) {
 
-            console.error(
-                "JaliForm: api attribute is missing."
+            console.log(
+                "JaliForm redirecting browser to:",
+                response.url
             );
+
+
+            window.location.href =
+                response.url;
+
 
             return;
 
         }
 
 
-        let sendingJSON =
-            this.createAPIPayload();
+
+        // ========================================================
+        // HTTP ERROR
+        // ========================================================
+
+        if (
+            !response.ok
+        ) {
+
+            throw new Error(
+                "HTTP error! status: " +
+                response.status
+            );
+
+        }
 
 
-        console.log(
-            "JaliForm sending:",
-            sendingJSON
+
+        // ========================================================
+        // RESPONSE DATA
+        // ========================================================
+
+        let result;
+
+
+        const contentType =
+            response.headers.get(
+                "content-type"
+            );
+
+
+        if (
+            contentType &&
+            contentType.includes(
+                "application/json"
+            )
+        ) {
+
+            result =
+                await response.json();
+
+        }
+
+        else {
+
+            result =
+                await response.text();
+
+        }
+
+
+
+        // ========================================================
+        // COLLECT VALUES
+        // ========================================================
+
+        this._values =
+            this.collectValues();
+
+
+
+        // ========================================================
+        // SUBMIT EVENT
+        // ========================================================
+
+        this.dispatchEvent(
+            new CustomEvent(
+                "submit",
+                {
+                    bubbles: true,
+                    composed: true,
+
+                    detail: {
+                        values:
+                            this._values,
+
+                        payload:
+                            sendingJSON,
+
+                        response:
+                            result,
+
+                        status:
+                            response.status
+                    }
+                }
+            )
         );
 
 
-        try {
 
-            const response =
-                await fetch(
-                    this.api,
-                    {
+        // ========================================================
+        // API SUCCESS EVENT
+        // ========================================================
 
-                        method:
-                            this.apiMethod,
+        this.dispatchEvent(
+            new CustomEvent(
+                "api-success",
+                {
+                    bubbles: true,
+                    composed: true,
 
-                        headers:
-                            {
-                                "Content-Type":
-                                    "application/json"
-                            },
+                    detail: {
+                        values:
+                            this._values,
 
-                        body:
-                            JSON.stringify(
-                                sendingJSON
-                            )
+                        payload:
+                            sendingJSON,
 
+                        response:
+                            result,
+
+                        status:
+                            response.status
                     }
-                );
+                }
+            )
+        );
 
 
-            if (
-                !response.ok
-            ) {
-
-                throw new Error(
-                    "HTTP error! status: " +
-                    response.status
-                );
-
-            }
-
-
-            let result;
-
-
-            const contentType =
-                response.headers.get(
-                    "content-type"
-                );
-
-
-            if (
-                contentType &&
-                contentType.includes(
-                    "application/json"
-                )
-            ) {
-
-                result =
-                    await response.json();
-
-            }
-
-            else {
-
-                result =
-                    await response.text();
-
-            }
-
-
-            this._values =
-                this.collectValues();
-
-
-            // ====================================================
-            // SUBMIT EVENT
-            // ====================================================
-
-            this.dispatchEvent(
-                new CustomEvent(
-                    "submit",
-                    {
-                        bubbles: true,
-                        composed: true,
-
-                        detail: {
-                            values:
-                                this._values,
-
-                            payload:
-                                sendingJSON,
-
-                            response:
-                                result,
-
-                            status:
-                                response.status
-                        }
-                    }
-                )
-            );
-
-
-            // ====================================================
-            // API SUCCESS EVENT
-            // ====================================================
-
-            this.dispatchEvent(
-                new CustomEvent(
-                    "api-success",
-                    {
-                        bubbles: true,
-                        composed: true,
-
-                        detail: {
-                            values:
-                                this._values,
-
-                            payload:
-                                sendingJSON,
-
-                            response:
-                                result,
-
-                            status:
-                                response.status
-                        }
-                    }
-                )
-            );
-
-
-            return result;
-
-        }
-
-        catch (error) {
-
-            this.dispatchEvent(
-                new CustomEvent(
-                    "api-error",
-                    {
-                        bubbles: true,
-                        composed: true,
-
-                        detail: {
-                            error:
-                                error,
-
-                            payload:
-                                sendingJSON
-                        }
-                    }
-                )
-            );
-
-
-            throw error;
-
-        }
+        return result;
 
     }
+
+    catch (
+        error
+    ) {
+
+        this.dispatchEvent(
+            new CustomEvent(
+                "api-error",
+                {
+                    bubbles: true,
+                    composed: true,
+
+                    detail: {
+                        error:
+                            error,
+
+                        payload:
+                            sendingJSON
+                    }
+                }
+            )
+        );
+
+
+        throw error;
+
+    }
+
+}
 
 
 

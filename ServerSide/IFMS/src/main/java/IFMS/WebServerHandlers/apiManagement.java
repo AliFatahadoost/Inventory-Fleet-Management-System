@@ -12,6 +12,7 @@ import java.nio.charset.StandardCharsets;
 import IFMS.DataBase.dataBaseUtils;
 import IFMS.ConfigAndLauncherManager.readConfig;
 import IFMS.InterFaces.CrudQueries;
+import java.util.Arrays;
 
 public class apiManagement{ 
 
@@ -147,6 +148,7 @@ public class apiManagement{
                             System.out.println(exchange.getResponseHeaders().toString());
                             exchange.getResponseHeaders().add("Location", this.redirectLocation);
                             exchange.sendResponseHeaders(302, -1);
+                            return;
                         }
                         else
                         exchange.sendResponseHeaders(200, -1);
@@ -175,14 +177,31 @@ public class apiManagement{
                 
                 String Result = "";
                 if(this.sendTokenToDB){
-                    String[] combinedInputs = new String[valuesSent.length + 1];
-                    combinedInputs[0] = token;
-                    System.arraycopy(valuesSent, 0, combinedInputs, 1, valuesSent.length);
+                    
                     try{
+                    
+                    String[][] emptyArray = {
+                        {"empty", "empty"},
+                        {"", ""}
+                    };
+
+                    if (Arrays.deepEquals(valuesSent, emptyArray)) {
+                        String[] combinedInputs = new String[1];
+                        combinedInputs[0] = token;
+                        Result = dataBaseUtils.runSelectQueryGetJSON(this.query.getReadQuery(), combinedInputs);
+                    }
+                    
+                    else{
+                        
+                    String[] combinedInputs = new String[valuesSent[1].length + 1];
+                    combinedInputs[0] = token;
+                    System.arraycopy(valuesSent[1], 0, combinedInputs, 1, valuesSent[1].length);
                     Result = dataBaseUtils.runSelectQueryGetJSON(this.query.getReadQuery(), combinedInputs);
                     }
+                    }
                     catch(Exception e)
-                    {System.out.println("someThing went wrong with the SQL Code for GET in function genDataAPi");}
+                    {System.out.println("someThing went wrong with the SQL Code for GET in function genDataAPI e : " + e.toString());}
+                    
                 }
                 else
                 {           

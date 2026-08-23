@@ -26,6 +26,7 @@ public class dataBaseUtils {
         static public String runSelectQueryGetJSON(String query, String... inputs) throws SQLException // everything in inputs is String so cast acording to the data type you want to pass in the query
         {
             String jsonResult = "[]";
+            
             try(
                     dataBaseManager.PooledConnection con = dataBaseManager.getPooledConnection();
                     PreparedStatement pstmt = con.getConnection().prepareStatement(query);
@@ -98,7 +99,6 @@ public class dataBaseUtils {
         {
             boolean isAuthenticated = false;
             String Query = "EXEC USERS_DATA_AND_PERMISSIONS.IS_AUTHENTICATE ?";
-            System.out.println("authentication is running");
             try(
                     dataBaseManager.PooledConnection conn = dataBaseManager.getPooledConnection();
                     PreparedStatement pstmt = conn.getConnection().prepareStatement(Query);
@@ -108,9 +108,8 @@ public class dataBaseUtils {
                 try(ResultSet rs = pstmt.executeQuery()){
                 if(rs.next()){
                     isAuthenticated = rs.getInt("STATUS") == 1;
-                    System.out.println(isAuthenticated ? 1 : 0);
-                    if (isAuthenticated)
-                        System.out.println("was a Successes");
+                    
+                    
                 }
                 }
             } catch (ClassNotFoundException e) {

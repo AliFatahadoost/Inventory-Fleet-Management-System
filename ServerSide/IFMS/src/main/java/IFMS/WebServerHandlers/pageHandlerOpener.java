@@ -32,21 +32,12 @@ public class pageHandlerOpener implements HttpHandler{
         {
             
             String token = webServerUtils.extractTokenFromCookie(exchange);
-            boolean isAuthenticated = /*token != null &&*/ dataBaseUtils.isAuthenticated(token);
-            if(!(this.fileAddress.contains("/Login/Login.html")))
-                if (!isAuthenticated) {
-                    if(this.fileInfo.loadedByIframe()){
-                        webServerUtils.refreshPage(exchange);
-                       
-                    }
-                    else
-                        webServerUtils.kickUnAuthenticated(exchange);
-                    return;
-                }
+           
 
                 File file = new File(this.fileAddress);
+                
         byte[] response;
-
+        
         if (file.exists()) {
             
             
@@ -57,7 +48,7 @@ public class pageHandlerOpener implements HttpHandler{
 
             // 2. Replace hardcoded base URL with the actual one
             String htmlString = new String(filteredBytes, StandardCharsets.UTF_8);
-            htmlString = htmlString.replace("http://192.168.100.11:55952",
+            htmlString = htmlString.replace("http://127.0.0.1:8080",
                                             readConfig.serversBaseUrl);
             response = htmlString.getBytes(StandardCharsets.UTF_8);
             

@@ -9,7 +9,16 @@ import IFMS.DataBase.DataBaseInit;
 
 public enum WebPagesEnum implements JaliWebPage{
     
-    ;
+    Login
+            (
+                1,
+                FilesEnum.Login
+            ),
+    Dashboard
+            (
+                2,
+                FilesEnum.Dashboard
+            );
     
     private final int objectId;
     private final FilesEnum pageFile;

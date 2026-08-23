@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login Page</title>
+    <style>
+        body {
+            background-color: rgb(22, 22, 22);
+            margin: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            transition: background-color 0.3s ease;
+        }
+        body.light-mode {
+            background-color: #f0f2f5;
+        }
+        .theme-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: transparent;
+            border: none;
+            font-size: 28px;
+            cursor: pointer;
+            z-index: 100000;
+            outline: none;
+            transition: transform 0.2s;
+        }
+        .theme-toggle:hover {
+            transform: scale(1.1);
+        }
+    </style>
+</head>
+<body>
+    <!-- External coreJS that defines jali-form -->
+    <script type="module" src="http://127.0.0.1:8080/coreJs"></script>
+
+    <!-- Theme toggle button -->
+    <button class="theme-toggle" id="themeToggle" title="Toggle light/dark mode">🌙</button>
+
+    <!-- Container for the jali-form (we will replace its child) -->
+    <div id="formContainer"></div>
+
+    <script>
+        (function() {
+            const toggleBtn = document.getElementById('themeToggle');
+            const formContainer = document.getElementById('formContainer');
+            let darkMode = true;
+
+            function createLoginForm(dark) {
+                // Create a fresh jali-form element
+                const form = document.createElement('jali-form');
+
+                // Set attributes
+                form.setAttribute('title', 'Login');
+                form.setAttribute('api', 'http://127.0.0.1:8080/LoginApi');
+                form.setAttribute('btn-count', '1');
+                form.setAttribute('btn-names', 'Login');
+                form.setAttribute('classes', dark ? 'red neon pastel dark' : 'red neon pastel');
+                form.setAttribute('inputs', `
+                    |name::USERNAME|title::username|type::text|value::;;
+                    |name::PASSWORD|title::Password|type::Password|value::;;
+                `);
+
+                // Clear container and append the new form
+                formContainer.innerHTML = '';
+                formContainer.appendChild(form);
+            }
+
+            function setTheme(dark) {
+                darkMode = dark;
+                if (dark) {
+                    document.body.classList.remove('light-mode');
+                    toggleBtn.textContent = '🌙';
+                } else {
+                    document.body.classList.add('light-mode');
+                    toggleBtn.textContent = '☀️';
+                }
+                createLoginForm(dark);
+            }
+
+            // Initial render
+            setTheme(true);
+
+            toggleBtn.addEventListener('click', () => {
+                setTheme(!darkMode);
+            });
+        })();
+    </script>
+</body>
+</html>

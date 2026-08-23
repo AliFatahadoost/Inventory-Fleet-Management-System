@@ -11,7 +11,8 @@ public enum CrudQueriesEnum implements CrudQueries{
                 "",
                 "",
                 "EXEC USERS_DATA_AND_PERMISSIONS.SHOULD_LOGIN ?, ?",
-                ""
+                "",
+                1
             ),
     createUser
             (
@@ -19,8 +20,14 @@ public enum CrudQueriesEnum implements CrudQueries{
                 "",
                 "EXEC USERS_DATA_AND_PERMISSIONS.MAKE_NEW_USER ?, ?, ?",
                 ""
+            ),
+    getUsernameWithToken
+            (
+                "SELECT SYS_USERNAME FROM IFMS_DB.USERS_DATA_AND_PERMISSIONS.SYS_USERS WHERE SYS_LOGIN_SESSION = ?",
+                "",
+                "",
+                "" 
             )
-    
     
     ;
     
