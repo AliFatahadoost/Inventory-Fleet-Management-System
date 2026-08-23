@@ -161,7 +161,7 @@ public byte[] filterHtmlByAccess(byte[] htmlBytes, String token) {
                     if (accessCode != null && token != null) {
                         try {
                             int code = Integer.parseInt(accessCode);
-                            allowed = dataBaseUtils.isAllowedRead(token, code);
+                            allowed = dataBaseUtils.isAllowed(token, code, "READ");
                         } catch (NumberFormatException e) {
                             // invalid code – treat as not allowed? We'll skip if denied.
                             allowed = false;
@@ -188,7 +188,7 @@ public byte[] filterHtmlByAccess(byte[] htmlBytes, String token) {
                     if (accessCode != null && token != null) {
                         try {
                             int code = Integer.parseInt(accessCode);
-                            allowed = dataBaseUtils.isAllowedRead(token, code);
+                            allowed = dataBaseUtils.isAllowed(token, code, "READ");
                         } catch (NumberFormatException e) {
                             allowed = false;
                         }

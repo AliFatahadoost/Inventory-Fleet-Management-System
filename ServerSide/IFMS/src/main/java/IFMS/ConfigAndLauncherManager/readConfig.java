@@ -19,6 +19,7 @@ import IFMS.PageRelatedEnums.FilesEnum;
 import IFMS.PageRelatedEnums.WebPagesEnum;
 import IFMS.WebServerHandlers.apiManagement;
 import IFMS.PageRelatedEnums.CrudQueriesEnum;
+import IFMS.DataBase.DataBaseInit;
 
 public class readConfig {
 
@@ -644,6 +645,7 @@ public class readConfig {
     private static HttpServer launchHttpServer() throws IOException {
         System.out.println("Server attempting to Lunch on " + serverIP + ":" + portNumber + " ...");
         // Bind to the configured IP (not just port)
+        DataBaseInit.initBasicDataBaseActions();
         HttpServer server = HttpServer.create(new InetSocketAddress(serverIP, portNumber), queueWaitLine);
 
 
@@ -660,10 +662,6 @@ public class readConfig {
         server.createContext("/cssDataForm",                                            new pageHandlerOpener(BASE_FILE_ADDRESS, FilesEnum.cssDataForm));
         server.createContext("/dateBoxCss",                                             new pageHandlerOpener(BASE_FILE_ADDRESS, FilesEnum.dateBoxCss));
        
-        
-        server.createContext("/fakeTable", new apiManagement.dataApiGen.builder().setQuery(CrudQueriesEnum.fakeTable).build());
-        
-        WebPagesEnum.test.registerRoute(server);
         
         server.setExecutor(null);
         server.start();

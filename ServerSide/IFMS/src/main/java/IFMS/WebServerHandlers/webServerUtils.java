@@ -96,7 +96,7 @@ public class webServerUtils {
                 exchange.sendResponseHeaders(302, -1); // 302 Found redirect
                 exchange.close();
                 try{
-                dataBaseUtils.runSelectQueryGetJSON("EXEC ACTIVITY_LOG_MANAGER 0, ?, ?", token, "User kicked. users token was invalid");
+                //dataBaseUtils.runSelectQueryGetJSON("EXEC ACTIVITY_LOG_MANAGER 0, ?, ?", token, "User kicked. users token was invalid");
                 return;
                 }catch(Exception e){ System.out.println("something went wrong cought in Line 135 file webServerUtils : " + e.toString()); }
             }

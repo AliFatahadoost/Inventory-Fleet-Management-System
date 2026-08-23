@@ -84,12 +84,7 @@ public class apiManagement{
                 return;
             }
             
-            /*if(!(dataBaseUtils.isAllowedRead(token, this.accessCode))){
-                        //System.out.println("403");
-                        exchange.sendResponseHeaders(403, -1);
-                        exchange.close();
-                        return;
-            }*/
+            
             
             if ("PATCH".equals(exchange.getRequestMethod())) {
                 //System.out.println("405");
@@ -100,6 +95,13 @@ public class apiManagement{
                 
             if("POST".equals(exchange.getRequestMethod()))
                 {         
+                    if(this.query.whoDoesItBelongTo() != -1)
+                    if(!(dataBaseUtils.isAllowed(token, this.query.whoDoesItBelongTo(), "CREATE" ))){
+                        //System.out.println("403");
+                        exchange.sendResponseHeaders(403, -1);
+                        exchange.close();
+                        return;
+                    }
                     
                     InputStream is = exchange.getRequestBody();
                     BufferedReader reader = new BufferedReader(new InputStreamReader(is, "UTF-8"));
@@ -157,7 +159,15 @@ public class apiManagement{
             }
             else if("GET".equals(exchange.getRequestMethod()))
             {
-            
+                
+                if(this.query.whoDoesItBelongTo() != -1)
+                    if(!(dataBaseUtils.isAllowed(token, this.query.whoDoesItBelongTo(), "READ" ))){
+                        //System.out.println("403");
+                        exchange.sendResponseHeaders(403, -1);
+                        exchange.close();
+                        return;
+                    }
+                
                 String[][] valuesSent = webServerUtils.parseGetRequestURL(exchange.getRequestURI().toString());
                 
                 int parametersCount = countParameters(this.query.getReadQuery() != null? this.query.getReadQuery() : "A");
@@ -206,6 +216,15 @@ public class apiManagement{
             else if("DELETE".equals(exchange.getRequestMethod()))
             {
             
+                
+                if(this.query.whoDoesItBelongTo() != -1)
+                    if(!(dataBaseUtils.isAllowed(token, this.query.whoDoesItBelongTo(), "DELETE" ))){
+                        //System.out.println("403");
+                        exchange.sendResponseHeaders(403, -1);
+                        exchange.close();
+                        return;
+                    }
+                
                 String[][] valuesSent = webServerUtils.parseGetRequestURL(exchange.getRequestURI().toString());
                 
                 if(valuesSent.length != 2) 
@@ -236,6 +255,15 @@ public class apiManagement{
             }
             if("PUT".equals(exchange.getRequestMethod()))
             {         
+                
+                if(this.query.whoDoesItBelongTo() != -1)
+                    if(!(dataBaseUtils.isAllowed(token, this.query.whoDoesItBelongTo(), "UPDATE" ))){
+                        //System.out.println("403");
+                        exchange.sendResponseHeaders(403, -1);
+                        exchange.close();
+                        return;
+                    }
+                
                 InputStream is = exchange.getRequestBody();
                 BufferedReader reader = new BufferedReader(new InputStreamReader(is, "UTF-8"));
                 StringBuilder sb = new StringBuilder();

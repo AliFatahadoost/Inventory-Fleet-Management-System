@@ -5,14 +5,11 @@ import com.sun.net.httpserver.HttpServer;
 import IFMS.ConfigAndLauncherManager.readConfig;
 import IFMS.WebServerHandlers.pageHandlerOpener;
 import IFMS.InterFaces.JaliWebPage;
+import IFMS.DataBase.DataBaseInit;
 
 public enum WebPagesEnum implements JaliWebPage{
     
-    test
-            (
-            1,
-                    FilesEnum.test
-            );
+    ;
     
     private final int objectId;
     private final FilesEnum pageFile;
@@ -27,5 +24,7 @@ public enum WebPagesEnum implements JaliWebPage{
     @Override
     public FilesEnum getFile(){return this.pageFile;}
     @Override
-    public void registerRoute(HttpServer server){server.createContext("/"+this.name(), new pageHandlerOpener(readConfig.BASE_FILE_ADDRESS, this.pageFile));}
+    public void registerRoute(HttpServer server){
+        DataBaseInit.loadObjectIntoObjectList(objectId, this.name());
+        server.createContext("/"+this.name(), new pageHandlerOpener(readConfig.BASE_FILE_ADDRESS, this.pageFile));}
 }

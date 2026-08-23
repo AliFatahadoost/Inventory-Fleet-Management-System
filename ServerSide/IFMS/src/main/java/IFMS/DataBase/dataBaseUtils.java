@@ -127,19 +127,42 @@ public class dataBaseUtils {
         }
         
         
-        public static boolean isAllowedRead(String token, int objectCode)
+        public static boolean isAllowed(String token, int objectCode, String Action)
         {
+            
             boolean isAllowed = false;
-            String Query = "EXEC IS_ALLOWED_READ ?, ?";
+            
+            
+            String Query = "EXEC USERS_DATA_AND_PERMISSIONS.IS_ALLOWED_READ ?, ?";
+            
+            switch(Action){
+            
+                case "CREATE":
+                    Query = "EXEC USERS_DATA_AND_PERMISSIONS.IS_ALLOWED_CREATE ?, ?";
+                    break;
+                     
+                case "READ":
+                    Query = "EXEC USERS_DATA_AND_PERMISSIONS.IS_ALLOWED_READ ?, ?";
+                    break;
+                
+                case "UPDATE":
+                    Query = "EXEC USERS_DATA_AND_PERMISSIONS.IS_ALLOWED_UPDATE ?, ?";
+                    break;
+                
+                case "DELETE":
+                    Query = "EXEC USERS_DATA_AND_PERMISSIONS.IS_ALLOWED_DELETE ?, ?";
+                    break;
+            }
+            
             try(
                     dataBaseManager.PooledConnection conn = dataBaseManager.getPooledConnection();
                     PreparedStatement pstmt = conn.getConnection().prepareStatement(Query);
                     ){             
-                pstmt.setString(1, token);
+                pstmt.setInt(1, getUserIDFromCookie(token));
                 pstmt.setInt(2, objectCode);
                 try(ResultSet rs = pstmt.executeQuery()){
                 if(rs.next()){
-                    isAllowed = rs.getInt("RESULT") == 1;
+                    isAllowed = rs.getInt("STATUS") == 1;
                 }                   
                 }
             } catch (ClassNotFoundException e) {
@@ -154,6 +177,30 @@ public class dataBaseUtils {
             //return isAllowed;
             return true;
         }
+        
+        public static int getUserIDFromCookie(String token)
+        {
+            int id = -1;
+            try(
+                dataBaseManager.PooledConnection conn = dataBaseManager.getPooledConnection();
+                PreparedStatement pstmt = conn.getConnection().prepareStatement("EXEC USERS_DATA_AND_PERMISSIONS.GET_USER_ID_FROM_TOKEN ?");
+                ){             
+                    pstmt.setString(1, token);
+                    try(ResultSet rs = pstmt.executeQuery()){
+                    if(rs.next()){
+                        id = rs.getInt("SYS_USER_CODE");
+                    }                   
+                    }
+                } catch (ClassNotFoundException e) {
+                    System.out.println("❌ Driver not found! Check if JAR is added to project.");
+                    e.printStackTrace();
+                } catch (SQLException e) {
+                    System.out.println("❌ Connection failed!");
+                    System.out.println("Error: " + e.getMessage());
+                    e.printStackTrace();
+                }
+            return id;
+            }
         
         private static String escapeJson(String value) {
             if (value == null) return "";
