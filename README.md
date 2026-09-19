@@ -1,171 +1,293 @@
 # Jali Frame + IFMS
 
-> A custom Java full-stack framework and the inventory/fleet system built on top of it.
+A from-scratch Java full-stack framework and the inventory/fleet management system built with it.
+
+**Jali Frame** provides the framework: HTTP serving, generic CRUD APIs, database integration, access control, static-file serving, and a reusable Web Component UI layer.
+
+**IFMS** is the reference application: a 27-page inventory, fleet, ticketing, and reporting system built entirely on Jali Frame.
+
+The goal of the project is simple:
+
+> **Define application structure once, reuse it everywhere, and keep the framework small enough to understand.**
 
 ---
 
 ## Table of Contents
 
-- [What is this?](#what-is-this)
-- [Jali Frame](#jali-frame)
-  - [Philosophy](#philosophy)
-  - [Architecture](#architecture)
-  - [The Enum-Driven Pattern](#the-enum-driven-pattern)
-  - [The Custom Element Ecosystem](#the-custom-element-ecosystem)
-  - [RBAC](#rbac)
-  - [Directory Structure](#directory-structure)
-  - [How to Boot](#how-to-boot)
-- [IFMS — Inventory & Fleet Management System](#ifms--inventory--fleet-management-system)
-  - [Modules](#modules)
-  - [Routes & Object Codes](#routes--object-codes)
-  - [Fleet Routing with OSRM](#fleet-routing-with-osrm)
-  - [Ticket System](#ticket-system)
-- [Tech Stack](#tech-stack)
-- [Screenshots](#screenshots)
-- [Getting Started](#getting-started)
-- [Roadmap](#roadmap)
-- [Known Limitations](#known-limitations)
-- [License](#license)
+* [Overview](#overview)
+* [Jali Frame](#jali-frame)
+
+  * [Design Philosophy](#design-philosophy)
+  * [Architecture](#architecture)
+  * [Enum-Driven Application Model](#enum-driven-application-model)
+  * [Custom Element Ecosystem](#custom-element-ecosystem)
+  * [Access Control](#access-control)
+  * [Directory Structure](#directory-structure)
+* [IFMS](#ifms)
+
+  * [Modules](#modules)
+  * [Routes and Object Codes](#routes-and-object-codes)
+  * [Fleet Routing](#fleet-routing)
+  * [Ticket System](#ticket-system)
+* [Technology](#technology)
+* [Getting Started](#getting-started)
+* [Screenshots](#screenshots)
+* [Known Limitations](#known-limitations)
+* [Roadmap](#roadmap)
+* [License](#license)
 
 ---
 
-## What is this?
+# Overview
 
-This repository contains two things:
+Jali Frame is a dependency-light Java web framework designed around **declarative application definitions** rather than a conventional MVC/ORM architecture.
 
-1. **Jali Frame** — a from-scratch full-stack Java framework for building database-backed web applications without a conventional MVC stack.
-2. **IFMS (Inventory & Fleet Management System)** — the flagship application built on Jali Frame. IFMS was developed *as* the framework's proving ground: every feature was built to stress a piece of Jali, and every framework rough edge was discovered by shipping real pages through it.
+Instead of creating separate controllers, route declarations, CRUD handlers, and UI logic for every database entity, Jali centralizes application metadata in Java enums and provides reusable client-side Web Components.
 
-The two are co-evolved. IFMS is not a demo — it's the reason Jali exists.
-
----
-
-## Jali Frame
-
-### Philosophy
-
-Jali Frame rejects the convention of controllers, routers, ORM entities, and hand-written CRUD endpoints. Instead, it treats **application structure as data**.
-
-Instead of writing:
-
-```java
-@GetMapping("/warehouse")
-public List<Warehouse> listWarehouses() { ... }
-
-@PostMapping("/warehouse")
-public ResponseEntity<Warehouse> createWarehouse(@RequestBody Warehouse w) { ... }
-```
-
-You write:
-
-```java
-Warehouse(
-    new ReadQuery().setTableName("warehouse").setColumnNames(...).getQuery(),
-    new UpdateQuery().setTableName("warehouse").setColumnNames(...).getWhereQuery("warehouse_id = ?").getQuery(),
-    new CreateQuery().setTableName("warehouse").setColumnNames(...).getQuery(),
-    "UPDATE warehouse SET is_deleted = 1 WHERE warehouse_id = ?",
-    101
-),
-```
-
-…and the framework auto-generates the API, the CRUD handlers, the permission rows, the front-end table, and the modal — all from that single enum entry.
-
-**Three principles:**
-
-1. **Everything is an enum.** Pages, API queries, static assets, and lookups are declared in Java enums. Registering a route is one line.
-2. **The framework serves the client.** The server trims HTML based on the user's permissions before it reaches the browser — no client-side auth flicker.
-3. **The client is a stack of custom elements.** `<fetch-data-table>`, `<data-combo>`, `<find-object-box>`, `<date-box>`, `<map-box>`. Every form in every app is a composition of these.
-
-### Architecture
-
-```
-┌────────────────────────────────────────────────────────────────┐
-│                        Browser (ES Modules)                    │
-│                                                                │
-│   <fetch-data-table>  <data-combo>  <map-box>  <date-box> ...  │
-│            │               │            │          │           │
-│            └───────────────┴────────────┴──────────┘           │
-│                            │                                   │
-│                            ▼  fetch() JSON                     │
-└────────────────────────────────────────────────────────────────┘
-                             │
-┌────────────────────────────┼───────────────────────────────────┐
-│                            ▼                                   │
-│  com.sun.net.httpserver.HttpServer                             │
-│                                                                │
-│  ┌──────────────────┐       ┌──────────────────────────────┐   │
-│  │  pageHandlerOpener│       │  apiManagement.dataApiGen    │   │
-│  │  • serves HTML    │       │  • GET / POST / PUT / DELETE │   │
-│  │  • filters by     │       │  • auth + permission check   │   │
-│  │    data-AccessCode│       │  • generic SQL execution     │   │
-│  └──────────────────┘       └──────────────────────────────┘   │
-│                                                                │
-│  ┌──────────────────────────────────────────────────────────┐  │
-│  │  Enum layer                                              │  │
-│  │    FilesEnum        → static assets + HTML pages         │  │
-│  │    WebPagesEnum     → route registration + object codes  │  │
-│  │    CrudQueriesEnum  → SQL for every read/write/lookup    │  │
-│  └──────────────────────────────────────────────────────────┘  │
-│                                                                │
-│  ┌──────────────────────────────────────────────────────────┐  │
-│  │  DataBase layer                                          │  │
-│  │    dataBaseManager  → connection pool                    │  │
-│  │    dataBaseUtils    → helpers (auth, isAllowed, JSON)    │  │
-│  │    DataBaseInit     → self-bootstrapping schema + SPs    │  │
-│  └──────────────────────────────────────────────────────────┘  │
-│                                                                │
-└────────────────────────────────────────────────────────────────┘
-                             │
-                             ▼
-                       SQL Server (IFMS_DB)
-```
-
-### The Enum-Driven Pattern
-
-Four enums define the entire application surface:
-
-#### `FilesEnum` — static assets
-
-```java
-coreJs("/FrameWorksLib/Jali.js/core.js", true, FileTypesEnum.js),
-Warehouse("/InventoryManagement/Warehouse.html", false, FileTypesEnum.html),
-```
-
-Every served file is registered here. The HTTP server mounts each at `/coreJs`, `/warehouse`, etc. The `loadedByIframe` flag tells the dashboard whether the asset is a full page or a shared library.
-
-#### `WebPagesEnum` — routes + object codes
-
-```java
-Warehouse(101, FilesEnum.Warehouse, "/warehouse"),
-```
-
-Each page declares:
-- An **object code** (used by RBAC)
-- Its backing file
-- Its URL route
-
-Calling `registerRoute(server)` mounts the page **and** queues the object code for `SYS_OBJECTS` registration.
-
-#### `CrudQueriesEnum` — every SQL query in the app
+A typical entity can be described through a single `CrudQueriesEnum` entry:
 
 ```java
 Warehouse(
     new ReadQuery()
         .setTableName("warehouse")
-        .setColumnNames("warehouse_id", "warehouse_title", "warehouse_code", "warehouse_lat", "warehouse_long")
-        .setColumnDataTypes("numeric", "nvarchar(50)", "numeric", "decimal(9,6)", "decimal(9,6)")
-        .setWhereQuery("AND isnull(is_deleted, 0) = 0")
+        .setColumnNames(
+            "warehouse_id",
+            "warehouse_title",
+            "warehouse_code",
+            "warehouse_lat",
+            "warehouse_long"
+        )
         .getQuery(),
-    new UpdateQuery().setTableName("warehouse").setColumnNames(...).getQuery(),
-    new CreateQuery().setTableName("warehouse").setColumnNames(...).getQuery(),
+
+    new UpdateQuery()
+        .setTableName("warehouse")
+        .setColumnNames(...)
+        .getQuery(),
+
+    new CreateQuery()
+        .setTableName("warehouse")
+        .setColumnNames(...)
+        .getQuery(),
+
     "UPDATE warehouse SET is_deleted = 1 WHERE warehouse_id = ?",
+
     101
 ),
 ```
 
-One enum entry = one full CRUD API. The framework builds the SQL, binds parameters, serializes the response to JSON, and enforces permissions — all keyed off the same object code used in `WebPagesEnum`.
+From that definition, Jali can provide the API layer, database operations, permission checks, and the information required by the front-end components.
 
-#### `FileTypesEnum` — MIME types
+IFMS was built to exercise those abstractions against a real application instead of a toy example.
+
+---
+
+# Jali Frame
+
+## Design Philosophy
+
+Jali Frame is built around three ideas.
+
+### 1. Application structure is data
+
+Pages, static files, object codes, and CRUD queries are declared through Java enums.
+
+The framework reads those definitions and uses them to construct the application's runtime surface.
+
+### 2. The server owns authorization
+
+Authorization is enforced on the server for both API requests and rendered HTML.
+
+Pages can declare access requirements such as:
+
+```html
+data-AccessCode="101"
+```
+
+When the current user does not have READ permission for that object, Jali can remove the protected HTML before sending the response.
+
+This means unauthorized UI is not merely hidden with client-side JavaScript.
+
+### 3. The browser is built from reusable Web Components
+
+Instead of writing form and table logic repeatedly for every page, Jali provides reusable custom elements:
+
+```html
+<fetch-data-table>
+<data-combo>
+<find-object-box>
+<date-box>
+<map-box>
+<jali-form>
+```
+
+Applications compose these components through HTML attributes rather than implementing their own CRUD UI from scratch.
+
+---
+
+# Architecture
+
+```text
+┌─────────────────────────────────────────────────────────────────┐
+│                         Browser                                 │
+│                                                                 │
+│  <fetch-data-table>  <data-combo>  <find-object-box>            │
+│  <date-box>          <map-box>   <jali-form>                    │
+│                                                                 │
+│                         fetch() / JSON                           │
+└──────────────────────────────┬──────────────────────────────────┘
+                               │
+                               ▼
+┌─────────────────────────────────────────────────────────────────┐
+│                     Jali HTTP Server                            │
+│                                                                 │
+│  com.sun.net.httpserver.HttpServer                              │
+│                                                                 │
+│  ┌─────────────────────┐    ┌────────────────────────────────┐  │
+│  │ Page Handler        │    │ Generic API Handler             │  │
+│  │                     │    │                                │  │
+│  │ • serves files      │    │ • GET / POST / PUT / DELETE   │  │
+│  │ • checks access     │    │ • authentication              │  │
+│  │ • trims HTML        │    │ • permission checks            │  │
+│  └─────────────────────┘    │ • generic SQL execution        │  │
+│                             └────────────────────────────────┘  │
+│                                                                 │
+│  ┌────────────────────────────────────────────────────────────┐ │
+│  │ Enum Definitions                                           │ │
+│  │                                                            │ │
+│  │ FilesEnum       → static files and pages                   │ │
+│  │ WebPagesEnum    → routes and object codes                  │ │
+│  │ CrudQueriesEnum → CRUD and lookup queries                  │ │
+│  │ FileTypesEnum   → MIME types                               │ │
+│  └────────────────────────────────────────────────────────────┘ │
+│                                                                 │
+│  ┌────────────────────────────────────────────────────────────┐ │
+│  │ Database Layer                                             │ │
+│  │                                                            │ │
+│  │ dataBaseManager → connection pool                          │ │
+│  │ dataBaseUtils   → database/authentication helpers          │ │
+│  │ DataBaseInit    → initialization and permission sync       │ │
+│  │ Query Builders  → generic SQL generation                   │ │
+│  └────────────────────────────────────────────────────────────┘ │
+└──────────────────────────────┬──────────────────────────────────┘
+                               │
+                               ▼
+                        SQL Server
+```
+
+The important property of this architecture is that **the same object definition is reused across multiple layers**.
+
+For example, object code `101` can identify the same feature in:
+
+```text
+WebPagesEnum
+       ↓
+page route
+
+CrudQueriesEnum
+       ↓
+API authorization
+
+HTML data-AccessCode
+       ↓
+server-side UI filtering
+```
+
+---
+
+# Enum-Driven Application Model
+
+Jali's application surface is primarily described through four enums.
+
+## `FilesEnum`
+
+Defines files that the server can serve.
+
+```java
+coreJs(
+    "/FrameWorksLib/Jali.js/core.js",
+    true,
+    FileTypesEnum.js
+),
+
+Warehouse(
+    "/InventoryManagement/Warehouse.html",
+    false,
+    FileTypesEnum.html
+),
+```
+
+The framework uses these definitions when serving static assets and application pages.
+
+---
+
+## `WebPagesEnum`
+
+Defines application routes and their object codes.
+
+```java
+Warehouse(
+    101,
+    FilesEnum.Warehouse,
+    "/warehouse"
+),
+```
+
+Each page contains:
+
+* an object code
+* its backing file
+* its URL route
+
+The object code is later used by the access-control system.
+
+---
+
+## `CrudQueriesEnum`
+
+Defines the database operations associated with an application object.
+
+```java
+Warehouse(
+    new ReadQuery()
+        .setTableName("warehouse")
+        .setColumnNames(
+            "warehouse_id",
+            "warehouse_title",
+            "warehouse_code"
+        )
+        .setColumnDataTypes(
+            "numeric",
+            "nvarchar(50)",
+            "numeric"
+        )
+        .setWhereQuery(
+            "AND ISNULL(is_deleted, 0) = 0"
+        )
+        .getQuery(),
+
+    new UpdateQuery()
+        .setTableName("warehouse")
+        .setColumnNames(...)
+        .getQuery(),
+
+    new CreateQuery()
+        .setTableName("warehouse")
+        .setColumnNames(...)
+        .getQuery(),
+
+    "UPDATE warehouse SET is_deleted = 1 WHERE warehouse_id = ?",
+
+    101
+),
+```
+
+The framework uses this information to provide generic CRUD operations while binding the API to the same object code used by the page and permission system.
+
+---
+
+## `FileTypesEnum`
+
+Defines MIME types for files served by the framework.
 
 ```java
 html("text/html"),
@@ -174,96 +296,167 @@ js("text/javascript"),
 png("image/png");
 ```
 
-### The Custom Element Ecosystem
+---
 
-Every UI pattern in every Jali app is a **Web Component** loaded as an ES module. No React. No Vue. No build step.
+# Custom Element Ecosystem
 
-| Element | Purpose |
-|---|---|
-| `<fetch-data-table>` | Renders a table with search, pagination, CRUD modals, and auto-wired API calls |
-| `<data-combo>` | Dropdown that fetches options from an API endpoint |
-| `<find-object-box>` | Modal picker for large lists (paginated, searchable) |
-| `<date-box>` | Calendar picker with `YYYY-MM-DD` output |
-| `<map-box>` | Leaflet map. **Write mode** picks lat/lng; **read mode** draws OSRM routes |
-| `<jali-form>` | Standalone form (used by Login) |
-| `<fleet-trip-table>` | Custom element combining table + OSRM routing (built for IFMS) |
+The client-side UI is based on standard Web Components and ES modules.
 
-All components:
-- Load their own CSS via `<link>` inside a shadow root
-- Read their config from **HTML attributes** using a small DSL
-- Emit standard `change` / `submit` / custom events
-- Work identically inside and outside modals
+No React.
 
-**The input DSL:**
+No Vue.
+
+No front-end build pipeline is required for the framework itself.
+
+| Component            | Purpose                                              |
+| -------------------- | ---------------------------------------------------- |
+| `<fetch-data-table>` | Searchable, paginated CRUD table with modal forms    |
+| `<data-combo>`       | API-backed dropdown                                  |
+| `<find-object-box>`  | Searchable picker for large datasets                 |
+| `<date-box>`         | Date selection with `YYYY-MM-DD` output              |
+| `<map-box>`          | Leaflet map for location selection and route display |
+| `<jali-form>`        | Generic standalone form component                    |
+| `<fleet-trip-table>` | IFMS-specific table with routing support             |
+
+Components use attributes as a small declarative configuration language.
+
+For example:
 
 ```html
 <fetch-data-table
     api="/warehouseApi"
     inputs="
-        |name::warehouse_title|title::Title|type::text|value::;;
-        |name::warehouse_lat,warehouse_long|title::Location|type::map-box|value::;;
+        |name::warehouse_title
+        |title::Title
+        |type::text
+        |value::;;
+        |name::warehouse_lat,warehouse_long
+        |title::Location
+        |type::map-box
+        |value::;;
     "
-    columns="Title, Location"
->
+    columns="Title,Location">
+</fetch-data-table>
 ```
 
-Each `;;`-terminated block is one form field. Supported types: `text`, `number`, `password`, `checkbox`, `radio`, `data-combo`, `find-object-box`, `date-box`, `map-box`, `current-user`.
+Supported input types include:
 
-### RBAC
-
-Jali Frame's authorization model is **object-code-based**, not role-based.
-
-- Every page has an object code (e.g. Warehouse = 101)
-- Every API request checks the user's permission for that object
-- Every HTML element with `data-AccessCode="N"` is stripped server-side before reaching the browser if the user lacks READ
-
-**Server-side HTML trimming** is the key innovation. Because the filter runs on the raw HTML response, a user without `CAN_READ` on object 101 literally never receives the Warehouse card in their Dashboard HTML. No client-side auth flicker. No hidden elements that can be unhidden with DevTools.
-
-The permission matrix lives in `USERS_DATA_AND_PERMISSIONS.OBJECT_USER_PERMISSION`:
-
+```text
+text
+number
+password
+checkbox
+radio
+data-combo
+find-object-box
+date-box
+map-box
+current-user
 ```
+
+The purpose of this layer is to make common application UI reusable across pages instead of repeatedly implementing the same form, search, pagination, and modal behavior.
+
+---
+
+# Access Control
+
+Jali uses **object-level permissions**.
+
+Every protected application object has an object code such as:
+
+```text
+101 = Warehouse
+```
+
+Permissions are stored per user and object:
+
+```text
 USER_CODE | OBJECT_CODE | CAN_READ | CAN_CREATE | CAN_UPDATE | CAN_DELETE
-----------|-------------|----------|------------|------------|------------
-1         | 101         | 1        | 1          | 1          | 1
-2         | 101         | 1        | 0          | 0          | 0
+----------|-------------|----------|------------|------------|-----------
+1         | 101         |    1     |     1      |     1      |     1
+2         | 101         |    1     |     0      |     0      |     0
 ```
 
-The framework's `DataBaseInit` class auto-syncs this table on every boot:
-- New objects inserted into `SYS_OBJECTS`
-- Cross-joined with all users to create missing rows
-- ADMIN (USER_CODE = 1) force-granted all flags
+The same object code can therefore be used by:
 
-### Directory Structure
+```text
+WebPagesEnum
+       ↓
+route registration
 
+CrudQueriesEnum
+       ↓
+API permission checking
+
+HTML
+       ↓
+data-AccessCode
+       ↓
+server-side filtering
 ```
+
+### Server-side UI filtering
+
+A protected element can declare:
+
+```html
+<div data-AccessCode="101">
+    Warehouse
+</div>
+```
+
+Jali checks the user's permission before the HTML reaches the browser.
+
+This provides a server-side alternative to simply rendering everything and hiding unauthorized controls with JavaScript.
+
+### Permission initialization
+
+`DataBaseInit` is responsible for synchronizing permission data during startup.
+
+It can:
+
+* register newly discovered system objects
+* create missing user/object permission rows
+* grant the administrator full permissions
+
+---
+
+# Directory Structure
+
+```text
 jali-frame/
 ├── backend/
 │   ├── ConfigAndLauncherManager/
-│   │   └── readConfig.java              # Config file, GUI/console, HTTP bootstrap
+│   │   └── readConfig.java
+│   │
 │   ├── DataBase/
-│   │   ├── dataBaseManager.java          # Connection pool
-│   │   ├── dataBaseUtils.java            # isAllowed, isAuthenticated, JSON helpers
-│   │   ├── DataBaseInit.java             # Self-bootstrapping schema + stored procs
-│   │   └── GenerateGenericSQLQuery.java  # Read/Update/Create/Delete builders
+│   │   ├── dataBaseManager.java
+│   │   ├── dataBaseUtils.java
+│   │   ├── DataBaseInit.java
+│   │   └── GenerateGenericSQLQuery.java
+│   │
 │   ├── InterFaces/
 │   │   ├── CrudQueries.java
 │   │   ├── JaliFiles.java
 │   │   └── JaliWebPage.java
+│   │
 │   ├── PageRelatedEnums/
-│   │   ├── FilesEnum.java                # Every static asset
-│   │   ├── WebPagesEnum.java             # Every page + object code
-│   │   ├── CrudQueriesEnum.java          # Every SQL query
+│   │   ├── FilesEnum.java
+│   │   ├── WebPagesEnum.java
+│   │   ├── CrudQueriesEnum.java
 │   │   └── FileTypesEnum.java
+│   │
 │   ├── WebServerHandlers/
-│   │   ├── pageHandlerOpener.java        # Serves files + trims by data-AccessCode
-│   │   ├── apiManagement.java            # Generic CRUD handler
-│   │   └── webServerUtils.java           # JSON parser, cookie extractor
-│   └── mainServerLaunch.java             # Wires APIs + routes at boot
+│   │   ├── pageHandlerOpener.java
+│   │   ├── apiManagement.java
+│   │   └── webServerUtils.java
+│   │
+│   └── mainServerLaunch.java
 │
 └── ClientSide/
     ├── FrameWorksLib/
     │   ├── Jali.js/
-    │   │   ├── core.js                   # Imports all custom elements
+    │   │   ├── core.js
     │   │   └── custom_elements/
     │   │       ├── dataTable.js
     │   │       ├── dataCombo.js
@@ -272,236 +465,397 @@ jali-frame/
     │   │       ├── mapBox.js
     │   │       ├── jaliForm.js
     │   │       └── fleetTripTable.js
+    │   │
     │   ├── JaliFrame.css/
-    │   │   ├── readDataTable.css
-    │   │   ├── dataCombo.css
-    │   │   ├── FindObjectBox.css
-    │   │   ├── dateBox.css
-    │   │   ├── dataForm.css
-    │   │   └── mapBox.css
-    │   └── Leaflet/                      # Bundled Leaflet
-    └── [Your app pages]/                 # Login, Dashboard, modules...
+    │   └── Leaflet/
+    │
+    └── [Application Pages]
 ```
-
-### How to Boot
-
-1. **Create `config.txt`** next to the JAR (or let Jali create it on first run):
-
-   ```properties
-   BASE_FILE_ADDRESS=/absolute/path/to/ClientSide
-   server=localhost
-   port=1433
-   databaseName=IFMS_DB
-   username=sa
-   password=your_password
-   MAX_CONNECTION_POOL=5
-   portNumber=8080
-   serverIP=127.0.0.1
-   queueWaitLine=10
-   MAX_SESSION_TIME=86400
-   ```
-
-2. **Run the server:**
-
-   ```bash
-   java -cp jali-frame.jar IFMS.mainServerLaunch
-   ```
-
-   The launcher prompts:
-   - `Y` — Swing configuration GUI
-   - `n` — Console mode
-   - `s` — Silent (jump straight to serving)
-
-3. **First boot** creates the schema, stored procedures, `SYS_OBJECTS` table, and ADMIN user. Default credentials: `ADMIN` / `12`.
-
-4. **Navigate to** `http://127.0.0.1:8080/`.
 
 ---
 
-## IFMS — Inventory & Fleet Management System
+# IFMS
 
-IFMS is a real-world logistics system handling:
+## Inventory & Fleet Management System
 
-- **Multi-location inventory** — warehouses, stores, docks, factories
-- **Stock tracking** with full historical audit trail
-- **Inter-inventory transfers** — request product from another location
-- **Fleet management** — teams, drivers, vehicles, dispatch
-- **Route planning** — OSRM-powered distance and duration calculations
-- **Approval workflows** — temp-access tickets and stock adjustments
-- **Role-based access** — users see only the pages they're permitted to see
+IFMS is the reference application built on top of Jali Frame.
 
-### Modules
+It demonstrates the framework across multiple areas of a real application:
 
-| Module | Forms | Description |
-|---|---|---|
-| **Inventory** | 11 | Type, Warehouse, Inventory, Users, Product, Stock, Stock History, Request Type/Status/Header/Details |
-| **Fleet** | 7 | Team, Drivers, Vehicles, Team Drivers, Team Manager, Trip, Team Transports |
-| **Access Management** | 3 | Requests (tickets), Object lines, Stock lines |
-| **Reports** | 4 | Low Stock, Fleet Activity, Product Movement, Ticket Summary |
-| **User Management** | 2 | Users, Permissions matrix |
+* multi-location inventory
+* stock tracking and history
+* inter-inventory requests
+* fleet management
+* trip planning
+* routing
+* approval workflows
+* access management
+* reports
+* per-user permissions
 
-**Total: 27 pages, all driven by 3 enums and 7 custom elements.**
+**27 application pages are implemented using the Jali architecture.**
 
-### Routes & Object Codes
+---
 
-Object codes are namespaced by module:
+## Modules
 
-| Range | Module |
-|---|---|
-| 1–9 | System (Login, Dashboard, Home) |
-| 10–50 | Management landing pages |
-| 100–111 | Inventory forms |
-| 200–209 | Fleet forms |
-| 300–302 | Access ticket forms |
-| 400–403 | Reports |
-| 41–42 | User Management |
+| Module            | Pages | Description                                                                 |
+| ----------------- | ----: | --------------------------------------------------------------------------- |
+| Inventory         |    11 | Warehouses, products, stock, requests, history, and inventory configuration |
+| Fleet             |     7 | Teams, drivers, vehicles, transports, and trips                             |
+| Access Management |     3 | Temporary access and stock adjustment requests                              |
+| Reports           |     4 | Inventory and fleet reporting                                               |
+| User Management   |     2 | Users and permission administration                                         |
 
-Every object code is used **three times**:
-1. In `WebPagesEnum` for the page route
-2. In `CrudQueriesEnum` for permission enforcement on its API
-3. In HTML as `data-AccessCode="N"` for server-side trimming
+---
 
-### Fleet Routing with OSRM
+# Routes and Object Codes
 
-The FleetTrip page demonstrates Jali's custom element strength:
+Object codes identify application features and connect routing, permissions, and APIs.
+
+| Range   | Module            |
+| ------- | ----------------- |
+| 1–9     | System            |
+| 10–50   | Management        |
+| 100–111 | Inventory         |
+| 200–209 | Fleet             |
+| 300–302 | Access Management |
+| 400–403 | Reports           |
+| 41–42   | User Management   |
+
+For example:
+
+```text
+Object 101
+    ↓
+WebPagesEnum
+    ↓
+/warehouse
+
+Object 101
+    ↓
+CrudQueriesEnum
+    ↓
+warehouse API
+
+Object 101
+    ↓
+data-AccessCode="101"
+    ↓
+server-side UI authorization
+```
+
+---
+
+# Fleet Routing
+
+The IFMS Fleet Trip page demonstrates how application-specific components can be built on top of Jali's generic component system.
 
 ```html
-<fleet-trip-table api="/fleetTripApi"></fleet-trip-table>
+<fleet-trip-table
+    api="/fleetTripApi">
+</fleet-trip-table>
 ```
 
-Custom element that:
-1. Lists trips in a table (like `<fetch-data-table>`)
-2. Opens a modal with dropdowns for team, product request, and status
-3. On product request selection, fetches the origin/destination warehouses
-4. Calls OSRM to compute the driving route
-5. Draws it on a `<map-box>` and fills distance/duration
-6. Saves the encoded polyline for later display
+The component can:
 
-Distance is stored as **meters**, duration as **seconds** — displayed as Km (1 decimal) and H:MM.
+1. display fleet trips
+2. open the trip form
+3. load teams, requests, and statuses
+4. resolve origin and destination warehouses
+5. request a route from OSRM
+6. display the route on a Leaflet map
+7. calculate distance and duration
+8. store the resulting route information
 
-### Ticket System
-
-Two ticket types share one header table and one approval workflow:
-
-| Type | Payload Table | Meaning |
-|---|---|---|
-| `TEMP_ACCESS` | `access_request_object` | Request read/write permission on a form |
-| `STOCK_ADJUSTMENT` | `access_request_stock` | Request write-off or correction of stock |
-
-Both go through `PENDING` → `APPROVED` / `DENIED` → `APPLIED`. Approve/Deny buttons on the header table auto-fill `decided_by_user_code` from the logged-in session.
+Distance is stored in meters and duration in seconds, then converted for display.
 
 ---
 
-## Tech Stack
+# Ticket System
 
-**Backend:**
-- Java 17+
-- `com.sun.net.httpserver.HttpServer` (built into the JDK)
-- SQL Server
-- No external framework dependencies (Spring, Hibernate, etc.)
+IFMS contains a shared approval workflow for two types of requests.
 
-**Frontend:**
-- Vanilla ES modules
-- Web Components (Custom Elements API + Shadow DOM)
-- Leaflet for maps
-- OSRM for routing
+| Ticket Type        | Payload                 | Purpose                                           |
+| ------------------ | ----------------------- | ------------------------------------------------- |
+| `TEMP_ACCESS`      | `access_request_object` | Request temporary access to an application object |
+| `STOCK_ADJUSTMENT` | `access_request_stock`  | Request a stock correction or write-off           |
 
-**Build:**
-- Maven (or plain `javac` if preferred)
+Both use the same lifecycle:
 
----
+```text
+PENDING
+   │
+   ├── APPROVED
+   │      │
+   │      └── APPLIED
+   │
+   └── DENIED
+```
 
-## Screenshots
-
-> *Add screenshots here — Dashboard, Inventory form with modal, FleetTrip with map + route, Permission matrix.*
-
-Recommended shots:
-- `docs/dashboard.png` — main dashboard with sidebar + tabs
-- `docs/warehouse-form.png` — a standard CRUD modal
-- `docs/fleet-trip.png` — FleetTrip modal with OSRM route drawn
-- `docs/permissions.png` — the permission matrix editor
-- `docs/reports.png` — Low Stock report
+The decision is associated with the authenticated user through the current session.
 
 ---
 
-## Getting Started
+# Technology
+
+## Backend
+
+* Java 17+
+* `com.sun.net.httpserver.HttpServer`
+* SQL Server
+* JDBC
+* Custom connection pooling
+* No Spring
+* No Hibernate
+* No ORM framework
+
+## Frontend
+
+* Vanilla JavaScript
+* ES modules
+* Web Components
+* Shadow DOM
+* Leaflet
+
+## Routing
+
+* OSRM
+* OpenStreetMap data
+
+## Build
+
+* Maven
+* Plain `javac` can also be used where appropriate
+
+---
+
+# Getting Started
+
+## Requirements
+
+You'll need:
+
+* Java 17 or newer
+* Maven
+* SQL Server
+* a SQL Server account with permission to create and modify the IFMS database
+
+---
+
+## 1. Clone the repository
 
 ```bash
-# 1. Clone
 git clone https://github.com/yourname/jali-frame-ifms.git
 cd jali-frame-ifms
-
-# 2. Set up the database
-#    Run the DDL scripts in /sql (dbo + USERS_DATA_AND_PERMISSIONS + INIT_DATABASE schemas)
-
-# 3. Configure
-cp config.example.txt config.txt
-# edit config.txt with your SQL Server credentials
-
-# 4. Build
-mvn clean package
-
-# 5. Run
-java -cp target/jali-frame.jar IFMS.mainServerLaunch
-
-# 6. Open http://127.0.0.1:8080/ and log in as ADMIN / 12
 ```
 
 ---
 
-## Roadmap
+## 2. Configure the application
 
-**Jali Frame 2.0:**
-- [ ] Replace positional payloads (`input0, input1, …`) with named fields
-- [ ] Split overloaded element attributes (`name` → `api` + `field-name`)
-- [ ] Single-pass boot sequence (no `finalizeRegistration` workaround)
-- [ ] Auto-generated TypeScript definitions for custom elements
-- [ ] Websocket support for live-updating tables
-- [ ] Migrate to `jdk.httpserver` → `Netty` for HTTP/2
+Create `config.txt` next to the application JAR:
 
-**IFMS:**
-- [ ] User-facing ticket submission flow (currently admin-only pages)
-- [ ] FOB / combo re-hydration on edit mode
-- [ ] Password change endpoint + UI
-- [ ] Toast notifications replacing `alert()`
-- [ ] Multi-stop fleet routes
-- [ ] Warehouse-specific inventory coordinates
-- [ ] CSV / PDF export for reports
-- [ ] Dark mode toggle persisted per user
+```properties
+BASE_FILE_ADDRESS=/absolute/path/to/ClientSide
 
----
+server=localhost
+port=1433
+databaseName=IFMS_DB
+username=sa
+password=your_password
 
-## Known Limitations
+MAX_CONNECTION_POOL=5
 
-Honestly documented so you don't discover them the hard way:
+portNumber=8080
+serverIP=127.0.0.1
 
-- **Positional JSON payloads.** Create/Update requests send `{input0, input1, …}` in enum-column order. Reordering form inputs without updating the enum breaks the save silently.
-- **Combo/FOB display doesn't re-hydrate on edit.** The selected value is preserved on save, but the visual display resets to blank when reopening the edit modal.
-- **No auto-expiry enforcement for tickets.** `expires_at` is stored but never triggers automatic permission revocation.
-- **Hardcoded admin password on first boot.** Change it via direct DB update.
-- **OSRM public demo endpoint** is used by default — rate-limited. Swap to a self-hosted instance for production.
-- **`DataBaseInit` boot order.** Pages queue their object codes during `main()`, but the queue only flushes if `finalizeRegistration()` is called at the end. This is documented in code but easy to forget.
+queueWaitLine=10
+MAX_SESSION_TIME=86400
+```
 
 ---
 
-## License
+## 3. Build
 
-MIT — do whatever you want. Attribution appreciated but not required.
+```bash
+mvn clean package
+```
 
 ---
 
-## Acknowledgements
+## 4. Start the server
 
-- **Leaflet** for map rendering
-- **OSRM** for routing calculations
-- **OpenStreetMap** contributors for the tile data
-- Every open-source contributor who ever debugged a shadow DOM boundary
+```bash
+java -cp target/jali-frame.jar IFMS.mainServerLaunch
+```
+
+The launcher supports:
+
+```text
+Y → configuration GUI
+n → console mode
+s → silent startup
+```
+
+---
+
+## 5. Initialize the database
+
+On first startup, Jali initializes the required application objects and database structures used by IFMS.
+
+Check the project SQL/bootstrap configuration for anything that must be prepared manually before first startup.
+
+---
+
+## 6. Open the application
+
+```text
+http://127.0.0.1:8080/
+```
+
+> ⚠️ Development installations may use default administrator credentials. Change the administrator password before using the system outside a local development environment.
+
+---
+
+# Screenshots
+
+Screenshots will be added here as the project documentation is expanded.
+
+Recommended examples:
+
+```text
+docs/
+├── dashboard.png
+├── warehouse-form.png
+├── fleet-trip.png
+├── permissions.png
+└── reports.png
+```
+
+Useful screenshots include:
+
+* Dashboard
+* CRUD modal
+* Fleet trip with route
+* Permission matrix
+* Report pages
+
+---
+
+# Known Limitations
+
+Jali Frame and IFMS are complete as a 1.0 development cycle, but several known limitations remain.
+
+### Positional request payloads
+
+Create and Update requests currently use positional fields such as:
+
+```text
+input0
+input1
+input2
+...
+```
+
+The positions must match the expected enum column order.
+
+Changing the UI field order without updating the corresponding backend definition can break requests.
+
+### Combo / FOB edit rehydration
+
+Some `data-combo` and `find-object-box` values are preserved correctly during save but do not always reconstruct their visual state when an edit modal is reopened.
+
+### Ticket expiration
+
+`expires_at` is stored, but automatic expiration and permission revocation are not currently enforced.
+
+### Default administrator credentials
+
+The initial administrator credentials are intended for development and must be changed before a real deployment.
+
+### Public OSRM instance
+
+The default configuration uses the public OSRM service.
+
+That service is appropriate for experimentation and development, but production deployments should use a dedicated routing service or a self-hosted OSRM instance.
+
+### Startup registration
+
+Page registration and database object registration are currently coupled to the startup sequence. The implementation works, but this area is a target for simplification in Jali 2.0.
+
+---
+
+# Roadmap
+
+## Jali Frame 2.0
+
+* [ ] Replace positional payloads with named fields
+* [ ] Replace overloaded attributes with explicit `api`, `field`, and `value` attributes
+* [ ] Simplify startup into a single deterministic registration phase
+* [ ] Generate TypeScript definitions for custom elements
+* [ ] Add WebSocket support for live-updating components
+* [ ] Evaluate a more advanced HTTP server implementation for HTTP/2 support
+
+## IFMS
+
+* [ ] User-facing ticket submission flow
+* [ ] Improve combo / FOB edit hydration
+* [ ] Password change endpoint and UI
+* [ ] Replace browser `alert()` with application notifications
+* [ ] Multi-stop fleet routing
+* [ ] Warehouse-specific inventory coordinates
+* [ ] CSV / PDF report export
+* [ ] Persisted per-user theme preferences
+
+---
+
+# Why This Project Exists
+
+Jali Frame was not designed independently and then given a demo application afterward.
+
+**IFMS was the proving ground.**
+
+The framework was developed around the problems encountered while building the application, and IFMS was repeatedly used to test whether Jali's abstractions were actually useful.
+
+That means the project contains two related artifacts:
+
+```text
+Jali Frame
+    ↓
+framework and reusable abstractions
+    ↓
+IFMS
+    ↓
+real application built with those abstractions
+```
+
+The result is intended to be useful in both directions:
+
+* **Jali Frame** demonstrates the architecture and reusable tooling.
+* **IFMS** demonstrates how that architecture behaves in a substantial application.
+
+---
+
+# License
+
+MIT License.
+
+Use it, modify it, distribute it, and build on it.
+
+Attribution is appreciated but not required.
+
+---
+
+# Acknowledgements
+
+* [Leaflet](https://leafletjs.com/) for map rendering
+* [OSRM](https://project-osrm.org/) for routing
+* [OpenStreetMap](https://www.openstreetmap.org/) contributors for map data
+* The broader open-source ecosystem
 
 ---
 
 <p align="center">
   <em>Built with Jali Frame — because the framework is the product.</em>
 </p>
-
----
-
