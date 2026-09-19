@@ -423,9 +423,107 @@ class JaliForm extends HTMLElement {
 
 
     // ============================================================
+    // FIELD EXTRACTOR
+    //
+    // Pulls a value out of a single DSL block.
+    //
+    // A block looks like this (attributes can be in any order):
+    //
+    //   |name::X|title::Y|type::Z|value::V|api::...|columns::...;;
+    //
+    // For a given marker, we find the marker's start and stop at
+    // the earliest subsequent marker (or end of block).
+    // ============================================================
+
+    extractField(
+        block,
+        marker
+    ) {
+
+        const markers = [
+            "|name::",
+            "|title::",
+            "|type::",
+            "|value::",
+            "|api::",
+            "|columns::"
+        ];
+
+        const startIndex =
+            block.indexOf(marker);
+
+        if (
+            startIndex === -1
+        ) {
+
+            return "";
+
+        }
+
+
+        const valueStart =
+            startIndex + marker.length;
+
+
+        let valueEnd =
+            block.length;
+
+
+        for (
+            const otherMarker of markers
+        ) {
+
+            if (
+                otherMarker === marker
+            ) {
+
+                continue;
+
+            }
+
+
+            const pos =
+                block.indexOf(
+                    otherMarker,
+                    valueStart
+                );
+
+
+            if (
+                pos !== -1 &&
+                pos < valueEnd
+            ) {
+
+                valueEnd = pos;
+
+            }
+
+        }
+
+
+        return block
+            .substring(
+                valueStart,
+                valueEnd
+            )
+            .trim();
+
+    }
+
+
+
+    // ============================================================
     // GENERATE INPUT HTML
     //
-    // THIS IS BASED DIRECTLY ON YOUR FETCHDATATABLE
+    // Parses the DSL and emits form controls.
+    //
+    // Supported types:
+    //   checkbox
+    //   radio
+    //   data-combo       (needs api::)
+    //   date-box
+    //   find-object-box  (needs api::, columns::)
+    //   text / number / password / email / ... (native input)
     // ============================================================
 
     generateInputHTML(
@@ -440,35 +538,16 @@ class JaliForm extends HTMLElement {
 
         for (
             let i = 0;
-
-            i < 1000 &&
-            tempText.indexOf("|value::") != -1;
-
+            i < 1000;
             i++
         ) {
 
-            let tempNameIndex =
-                tempText.indexOf("|name::");
-
-            let tempTitleIndex =
-                tempText.indexOf("|title::");
-
-            let tempTypeIndex =
-                tempText.indexOf("|type::");
-
-            let tempValueIndex =
-                tempText.indexOf("|value::");
-
-            let tempSemiColumn =
+            const blockEnd =
                 tempText.indexOf(";;");
 
 
             if (
-                tempNameIndex == -1 ||
-                tempTitleIndex == -1 ||
-                tempTypeIndex == -1 ||
-                tempValueIndex == -1 ||
-                tempSemiColumn == -1
+                blockEnd === -1
             ) {
 
                 break;
@@ -476,35 +555,52 @@ class JaliForm extends HTMLElement {
             }
 
 
-            let tempName =
-                tempText.slice(
-                    tempNameIndex +
-                    "|name::".length,
-                    tempTitleIndex
+            const block =
+                tempText.substring(
+                    0,
+                    blockEnd
                 );
 
 
-            let tempTitle =
-                tempText.slice(
-                    tempTitleIndex +
-                    "|title::".length,
-                    tempTypeIndex
+            const tempName =
+                this.extractField(
+                    block,
+                    "|name::"
                 );
 
 
-            let tempType =
-                tempText.slice(
-                    tempTypeIndex +
-                    "|type::".length,
-                    tempValueIndex
+            const tempTitle =
+                this.extractField(
+                    block,
+                    "|title::"
                 );
 
 
-            let tempDefaultValue =
-                tempText.slice(
-                    tempValueIndex +
-                    "|value::".length,
-                    tempSemiColumn
+            const tempType =
+                this.extractField(
+                    block,
+                    "|type::"
+                );
+
+
+            const tempDefaultValue =
+                this.extractField(
+                    block,
+                    "|value::"
+                );
+
+
+            const tempApi =
+                this.extractField(
+                    block,
+                    "|api::"
+                );
+
+
+            const tempColumns =
+                this.extractField(
+                    block,
+                    "|columns::"
                 );
 
 
@@ -597,8 +693,6 @@ class JaliForm extends HTMLElement {
 
             // ====================================================
             // DATA COMBO
-            //
-            // EXACT SAME STRUCTURE AS YOUR DATATABLE
             // ====================================================
 
             else if (
@@ -635,6 +729,10 @@ class JaliForm extends HTMLElement {
                     tempTitle +
                     '" ' +
 
+                    'api="' +
+                    tempApi +
+                    '" ' +
+
                     'value="' +
                     (tempDefaultValue || "") +
                     '">' +
@@ -649,8 +747,6 @@ class JaliForm extends HTMLElement {
 
             // ====================================================
             // DATE BOX
-            //
-            // EXACT SAME STRUCTURE AS YOUR DATATABLE
             // ====================================================
 
             else if (
@@ -737,6 +833,14 @@ class JaliForm extends HTMLElement {
                     tempTitle +
                     '" ' +
 
+                    'api="' +
+                    tempApi +
+                    '" ' +
+
+                    'columns="' +
+                    tempColumns +
+                    '" ' +
+
                     'value="' +
                     (tempDefaultValue || "") +
                     '">' +
@@ -795,8 +899,8 @@ class JaliForm extends HTMLElement {
             // ====================================================
 
             tempText =
-                tempText.slice(
-                    tempSemiColumn + 2
+                tempText.substring(
+                    blockEnd + 2
                 );
 
         }
@@ -953,8 +1057,6 @@ class JaliForm extends HTMLElement {
 
     // ============================================================
     // CREATE API JSON
-    //
-    // SAME FORMAT AS FETCHDATATABLE
     // ============================================================
 
     createAPIPayload() {
@@ -1050,239 +1152,239 @@ class JaliForm extends HTMLElement {
 
 
     // ============================================================
-// SEND TO API
-// ============================================================
+    // SEND TO API
+    // ============================================================
 
-async sendToAPI() {
-
-    if (
-        this.api == ""
-    ) {
-
-        console.error(
-            "JaliForm: api attribute is missing."
-        );
-
-        return;
-
-    }
-
-
-    let sendingJSON =
-        this.createAPIPayload();
-
-
-    console.log(
-        "JaliForm sending:",
-        sendingJSON
-    );
-
-
-    try {
-
-        const response =
-            await fetch(
-                this.api,
-                {
-
-                    method:
-                        this.apiMethod,
-
-                    headers:
-                        {
-                            "Content-Type":
-                                "application/json"
-                        },
-
-                    body:
-                        JSON.stringify(
-                            sendingJSON
-                        )
-
-                }
-            );
-
-
-        // ========================================================
-        // REDIRECT
-        //
-        // fetch() automatically follows HTTP redirects.
-        // response.redirected tells us that this happened.
-        //
-        // response.url is the final URL after the redirect.
-        // ========================================================
+    async sendToAPI() {
 
         if (
-            response.redirected
+            this.api == ""
         ) {
 
-            console.log(
-                "JaliForm redirecting browser to:",
-                response.url
+            console.error(
+                "JaliForm: api attribute is missing."
             );
-
-
-            window.location.href =
-                response.url;
-
 
             return;
 
         }
 
 
+        let sendingJSON =
+            this.createAPIPayload();
 
-        // ========================================================
-        // HTTP ERROR
-        // ========================================================
 
-        if (
-            !response.ok
-        ) {
+        console.log(
+            "JaliForm sending:",
+            sendingJSON
+        );
 
-            throw new Error(
-                "HTTP error! status: " +
-                response.status
+
+        try {
+
+            const response =
+                await fetch(
+                    this.api,
+                    {
+
+                        method:
+                            this.apiMethod,
+
+                        headers:
+                            {
+                                "Content-Type":
+                                    "application/json"
+                            },
+
+                        body:
+                            JSON.stringify(
+                                sendingJSON
+                            )
+
+                    }
+                );
+
+
+            // ====================================================
+            // REDIRECT
+            //
+            // fetch() automatically follows HTTP redirects.
+            // response.redirected tells us that this happened.
+            //
+            // response.url is the final URL after the redirect.
+            // ====================================================
+
+            if (
+                response.redirected
+            ) {
+
+                console.log(
+                    "JaliForm redirecting browser to:",
+                    response.url
+                );
+
+
+                window.location.href =
+                    response.url;
+
+
+                return;
+
+            }
+
+
+
+            // ====================================================
+            // HTTP ERROR
+            // ====================================================
+
+            if (
+                !response.ok
+            ) {
+
+                throw new Error(
+                    "HTTP error! status: " +
+                    response.status
+                );
+
+            }
+
+
+
+            // ====================================================
+            // RESPONSE DATA
+            // ====================================================
+
+            let result;
+
+
+            const contentType =
+                response.headers.get(
+                    "content-type"
+                );
+
+
+            if (
+                contentType &&
+                contentType.includes(
+                    "application/json"
+                )
+            ) {
+
+                result =
+                    await response.json();
+
+            }
+
+            else {
+
+                result =
+                    await response.text();
+
+            }
+
+
+
+            // ====================================================
+            // COLLECT VALUES
+            // ====================================================
+
+            this._values =
+                this.collectValues();
+
+
+
+            // ====================================================
+            // SUBMIT EVENT
+            // ====================================================
+
+            this.dispatchEvent(
+                new CustomEvent(
+                    "submit",
+                    {
+                        bubbles: true,
+                        composed: true,
+
+                        detail: {
+                            values:
+                                this._values,
+
+                            payload:
+                                sendingJSON,
+
+                            response:
+                                result,
+
+                            status:
+                                response.status
+                        }
+                    }
+                )
             );
 
-        }
 
 
+            // ====================================================
+            // API SUCCESS EVENT
+            // ====================================================
 
-        // ========================================================
-        // RESPONSE DATA
-        // ========================================================
+            this.dispatchEvent(
+                new CustomEvent(
+                    "api-success",
+                    {
+                        bubbles: true,
+                        composed: true,
 
-        let result;
+                        detail: {
+                            values:
+                                this._values,
 
+                            payload:
+                                sendingJSON,
 
-        const contentType =
-            response.headers.get(
-                "content-type"
+                            response:
+                                result,
+
+                            status:
+                                response.status
+                        }
+                    }
+                )
             );
 
 
-        if (
-            contentType &&
-            contentType.includes(
-                "application/json"
-            )
+            return result;
+
+        }
+
+        catch (
+            error
         ) {
 
-            result =
-                await response.json();
+            this.dispatchEvent(
+                new CustomEvent(
+                    "api-error",
+                    {
+                        bubbles: true,
+                        composed: true,
+
+                        detail: {
+                            error:
+                                error,
+
+                            payload:
+                                sendingJSON
+                        }
+                    }
+                )
+            );
+
+
+            throw error;
 
         }
 
-        else {
-
-            result =
-                await response.text();
-
-        }
-
-
-
-        // ========================================================
-        // COLLECT VALUES
-        // ========================================================
-
-        this._values =
-            this.collectValues();
-
-
-
-        // ========================================================
-        // SUBMIT EVENT
-        // ========================================================
-
-        this.dispatchEvent(
-            new CustomEvent(
-                "submit",
-                {
-                    bubbles: true,
-                    composed: true,
-
-                    detail: {
-                        values:
-                            this._values,
-
-                        payload:
-                            sendingJSON,
-
-                        response:
-                            result,
-
-                        status:
-                            response.status
-                    }
-                }
-            )
-        );
-
-
-
-        // ========================================================
-        // API SUCCESS EVENT
-        // ========================================================
-
-        this.dispatchEvent(
-            new CustomEvent(
-                "api-success",
-                {
-                    bubbles: true,
-                    composed: true,
-
-                    detail: {
-                        values:
-                            this._values,
-
-                        payload:
-                            sendingJSON,
-
-                        response:
-                            result,
-
-                        status:
-                            response.status
-                    }
-                }
-            )
-        );
-
-
-        return result;
-
     }
-
-    catch (
-        error
-    ) {
-
-        this.dispatchEvent(
-            new CustomEvent(
-                "api-error",
-                {
-                    bubbles: true,
-                    composed: true,
-
-                    detail: {
-                        error:
-                            error,
-
-                        payload:
-                            sendingJSON
-                    }
-                }
-            )
-        );
-
-
-        throw error;
-
-    }
-
-}
 
 
 

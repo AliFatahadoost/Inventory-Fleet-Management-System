@@ -121,8 +121,7 @@ public class dataBaseUtils {
                 e.printStackTrace();
             }
 
-            //return isAuthenticated;
-            return true;
+            return isAuthenticated;
         }
         
         
@@ -172,9 +171,12 @@ public class dataBaseUtils {
                 System.out.println("Error: " + e.getMessage());
                 e.printStackTrace();
             }
-
-            //return isAllowed;
-            return true;
+            
+            if(objectCode != 1 && objectCode != 2)
+                return isAllowed;
+            else
+                return true;
+            
         }
         
         public static int getUserIDFromCookie(String token)

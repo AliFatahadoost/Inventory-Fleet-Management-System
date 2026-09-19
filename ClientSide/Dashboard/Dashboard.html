@@ -1,36 +1,66 @@
+
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
+
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
     <title>Dashboard</title>
+
+    <!-- Jali -->
+    <script
+        type="module"
+        src="http://127.0.0.1:8080/coreJs">
+    </script>
+
+
     <style>
+
         :root {
             --sidebar-bg: #1e293b;
             --sidebar-text: #f1f5f9;
             --sidebar-active: #3b82f6;
+
             --main-bg: #f8fafc;
             --topbar-bg: #ffffff;
+
             --tab-bg: #e2e8f0;
             --tab-active-bg: #ffffff;
+
             --tab-text: #334155;
             --tab-active-text: #1e293b;
+
             --iframe-border: #cbd5e1;
             --text: #1e293b;
-            --shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+
+            --shadow:
+                0 4px 6px -1px rgba(0,0,0,0.1);
         }
+
 
         .dark {
             --main-bg: #0f172a;
             --topbar-bg: #1e293b;
+
             --tab-bg: #334155;
             --tab-active-bg: #1e293b;
+
             --tab-text: #cbd5e1;
             --tab-active-text: #f1f5f9;
+
             --iframe-border: #475569;
             --text: #f1f5f9;
-            --shadow: 0 4px 6px -1px rgba(0,0,0,0.5);
+
+            --shadow:
+                0 4px 6px -1px rgba(0,0,0,0.5);
         }
+
 
         * {
             margin: 0;
@@ -38,363 +68,1178 @@
             box-sizing: border-box;
         }
 
+
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: var(--main-bg);
-            color: var(--text);
+            font-family:
+                'Segoe UI',
+                Tahoma,
+                Geneva,
+                Verdana,
+                sans-serif;
+
+            background-color:
+                var(--main-bg);
+
+            color:
+                var(--text);
+
             display: flex;
+
             height: 100vh;
+
             overflow: hidden;
-            transition: background-color 0.3s, color 0.3s;
+
+            transition:
+                background-color 0.3s,
+                color 0.3s;
         }
 
-        /* ========== SIDEBAR ========== */
+
+        /* =====================================================
+           SIDEBAR
+           ===================================================== */
+
         .sidebar {
+
             width: 240px;
-            background-color: var(--sidebar-bg);
-            color: var(--sidebar-text);
+
+            background-color:
+                var(--sidebar-bg);
+
+            color:
+                var(--sidebar-text);
+
             display: flex;
+
             flex-direction: column;
+
             padding: 20px 0;
+
             flex-shrink: 0;
-            box-shadow: 2px 0 10px rgba(0,0,0,0.2);
+
+            box-shadow:
+                2px 0 10px rgba(0,0,0,0.2);
         }
+
 
         .sidebar h2 {
+
             text-align: center;
+
             margin-bottom: 30px;
+
             font-size: 1.5rem;
+
             letter-spacing: 1px;
         }
 
+
         .menu-item {
+
             padding: 12px 20px;
+
             cursor: pointer;
-            transition: background-color 0.2s;
+
+            transition:
+                background-color 0.2s;
+
             font-size: 1rem;
+
             display: flex;
+
             align-items: center;
+
             gap: 10px;
         }
 
+
         .menu-item:hover {
-            background-color: rgba(255,255,255,0.1);
+
+            background-color:
+                rgba(255,255,255,0.1);
         }
 
+
         .menu-item.active {
-            background-color: var(--sidebar-active);
+
+            background-color:
+                var(--sidebar-active);
+
             color: white;
         }
 
+
         .menu-item i {
+
             width: 20px;
+
             text-align: center;
         }
 
-        /* ========== MAIN AREA ========== */
+
+        /* =====================================================
+           MAIN
+           ===================================================== */
+
         .main {
+
             flex: 1;
+
             display: flex;
+
             flex-direction: column;
+
             min-width: 0;
         }
 
-        /* ========== TOP BAR ========== */
+
+        /* =====================================================
+           TOP BAR
+           ===================================================== */
+
         .topbar {
+
             height: 60px;
-            background-color: var(--topbar-bg);
-            box-shadow: var(--shadow);
+
+            background-color:
+                var(--topbar-bg);
+
+            box-shadow:
+                var(--shadow);
+
             display: flex;
+
             align-items: center;
+
             justify-content: space-between;
+
             padding: 0 20px;
+
             z-index: 100;
-            transition: background-color 0.3s;
+
+            transition:
+                background-color 0.3s;
         }
 
+
         .username {
+
             font-weight: 600;
+
             font-size: 1.1rem;
         }
 
+
         .topbar-right {
+
             display: flex;
+
             align-items: center;
+
             gap: 20px;
         }
 
+
         .clock {
+
             font-size: 1.2rem;
+
             font-weight: 500;
+
             letter-spacing: 1px;
         }
 
+
         .theme-toggle {
+
             background: none;
+
             border: none;
+
             cursor: pointer;
+
             font-size: 1.5rem;
-            color: var(--text);
-            transition: transform 0.2s;
+
+            color:
+                var(--text);
+
+            transition:
+                transform 0.2s;
         }
+
 
         .theme-toggle:hover {
-            transform: scale(1.1);
+
+            transform:
+                scale(1.1);
         }
 
-        /* ========== TAB BAR ========== */
+
+        /* =====================================================
+           TAB BAR
+           ===================================================== */
+
         .tab-bar {
+
             display: flex;
-            background-color: var(--tab-bg);
+
+            background-color:
+                var(--tab-bg);
+
             overflow-x: auto;
+
             white-space: nowrap;
+
             min-height: 40px;
+
             align-items: flex-end;
+
             padding: 0 10px;
-            box-shadow: var(--shadow);
+
+            box-shadow:
+                var(--shadow);
         }
+
 
         .tab {
+
             display: inline-flex;
+
             align-items: center;
+
             padding: 10px 15px;
+
             cursor: pointer;
-            border-radius: 8px 8px 0 0;
+
+            border-radius:
+                8px 8px 0 0;
+
             margin-right: 4px;
-            background-color: transparent;
-            color: var(--tab-text);
+
+            background-color:
+                transparent;
+
+            color:
+                var(--tab-text);
+
             font-size: 0.95rem;
-            transition: background-color 0.2s, color 0.2s;
+
+            transition:
+                background-color 0.2s,
+                color 0.2s;
+
             user-select: none;
         }
 
+
         .tab:hover {
-            background-color: rgba(255,255,255,0.3);
+
+            background-color:
+                rgba(255,255,255,0.3);
         }
 
+
         .tab.active {
-            background-color: var(--tab-active-bg);
-            color: var(--tab-active-text);
+
+            background-color:
+                var(--tab-active-bg);
+
+            color:
+                var(--tab-active-text);
+
             font-weight: 600;
         }
 
+
         .tab .close-btn {
+
             margin-left: 8px;
+
             cursor: pointer;
+
             font-size: 0.9rem;
+
             opacity: 0.7;
-            transition: opacity 0.2s;
+
+            transition:
+                opacity 0.2s;
         }
 
+
         .tab .close-btn:hover {
+
             opacity: 1;
         }
 
+
         .tab.home-tab .close-btn {
+
             display: none;
         }
 
-        /* ========== IFRAME CONTAINER ========== */
+
+        /* =====================================================
+           IFRAME
+           ===================================================== */
+
         .iframe-container {
+
             flex: 1;
+
             position: relative;
+
             background-color: #000;
         }
 
+
         iframe {
+
             width: 100%;
+
             height: 100%;
+
             border: none;
+
             display: block;
+
             background-color: white;
         }
+
     </style>
+
 </head>
+
+
 <body>
-    <!-- Sidebar -->
+
+
+    <!-- =====================================================
+         SIDEBAR
+         ===================================================== -->
+
     <div class="sidebar">
-        <h2>Dashboard</h2>
-        <div class="menu-item" data-route="/inventoryManagement">
-            <i>📦</i> Inventory Management
+
+        <h2>
+            Dashboard
+        </h2>
+
+
+        <!-- OBJECT 10 -->
+
+        <div
+            class="menu-item"
+            data-AccessCode="10"
+            data-route="/inventoryManagement"
+        >
+
+            <i>📦</i>
+
+            Inventory Management
+
         </div>
-        <div class="menu-item" data-route="/fleetManagement">
-            <i>🚛</i> Fleet Management
+
+
+        <!-- OBJECT 20 -->
+
+        <div
+            class="menu-item"
+            data-AccessCode="20"
+            data-route="/fleetManagement"
+        >
+
+            <i>🚛</i>
+
+            Fleet Management
+
         </div>
-        <div class="menu-item" data-route="/userManagement">
-            <i>👥</i> User Management
+
+
+        <!-- OBJECT 40 -->
+
+        <div
+            class="menu-item"
+            data-AccessCode="40"
+            data-route="/userManagement"
+        >
+
+            <i>👥</i>
+
+            User Management
+
         </div>
-        <div class="menu-item" data-route="/reports">
-            <i>📊</i> Reports
+
+
+        <!-- OBJECT 30 -->
+
+        <div
+            class="menu-item"
+            data-AccessCode="30"
+            data-route="/reports"
+        >
+
+            <i>📊</i>
+
+            Reports
+
         </div>
+
+
+        <!-- OBJECT 50 -->
+
+        <div
+            class="menu-item"
+            data-AccessCode="50"
+            data-route="/accessManagement"
+        >
+
+            <i>🎫</i>
+
+            Access Management
+
+        </div>
+
     </div>
 
-    <!-- Main Area -->
+
+
+    <!-- =====================================================
+         MAIN
+         ===================================================== -->
+
     <div class="main">
-        <!-- Top Bar -->
+
+
+        <!-- =================================================
+             TOP BAR
+             ================================================= -->
+
         <div class="topbar">
-            <div class="username">Loading user...</div>
-            <div class="topbar-right">
-                <div class="clock" id="clock">--:--:--</div>
-                <button class="theme-toggle" id="themeToggle" title="Toggle dark/light mode">🌙</button>
+
+            <div class="username">
+                Loading user...
             </div>
+
+
+            <div class="topbar-right">
+
+                <div
+                    class="clock"
+                    id="clock"
+                >
+                    --:--:--
+                </div>
+
+
+                <button
+                    class="theme-toggle"
+                    id="themeToggle"
+                    title="Toggle dark/light mode"
+                    type="button"
+                >
+                    🌙
+                </button>
+
+            </div>
+
         </div>
 
-        <!-- Tab Bar -->
-        <div class="tab-bar" id="tabBar">
-            <!-- Home tab will be created dynamically -->
+
+
+        <!-- =================================================
+             TABS
+             ================================================= -->
+
+        <div
+            class="tab-bar"
+            id="tabBar"
+        >
         </div>
 
-        <!-- Iframe Container -->
+
+
+        <!-- =================================================
+             CONTENT
+             ================================================= -->
+
         <div class="iframe-container">
-            <iframe id="contentFrame" src="/home"></iframe>
+
+            <iframe
+                id="contentFrame"
+                src="/home"
+                title="Dashboard Content"
+            ></iframe>
+
         </div>
+
     </div>
+
+
 
     <script>
+
         (function() {
-            // ==================== STATE ====================
+
+
+            // =================================================
+            // ROUTES
+            // =================================================
+
             const routes = {
-                '/inventoryManagement': 'Inventory Management',
-                '/fleetManagement': 'Fleet Management',
-                '/userManagement': 'User Management',
-                '/reports': 'Reports'
+
+                '/inventoryManagement':
+                    'Inventory Management',
+
+                '/fleetManagement':
+                    'Fleet Management',
+
+                '/userManagement':
+                    'User Management',
+
+                '/reports':
+                    'Reports',
+
+                '/accessManagement':
+                    'Access Management'
+
             };
 
-            let tabs = []; // {id, title, url, element}
+
+            // =================================================
+            // STATE
+            // =================================================
+
+            let tabs = [];
+
             let activeTabId = null;
-            const iframe = document.getElementById('contentFrame');
-            const tabBar = document.getElementById('tabBar');
 
-            // ==================== HELPERS ====================
-            function createTab(title, url, closeable = true) {
-                const id = 'tab-' + Date.now() + '-' + Math.random().toString(36).substr(2, 5);
-                const tab = document.createElement('div');
-                tab.className = 'tab' + (closeable ? '' : ' home-tab');
-                tab.dataset.tabId = id;
-                tab.innerHTML = `
-                    <span class="tab-title">${title}</span>
-                    ${closeable ? '<span class="close-btn">×</span>' : ''}
-                `;
-                tab.addEventListener('click', (e) => {
-                    // Ignore clicks on close button
-                    if (e.target.classList.contains('close-btn')) return;
-                    activateTab(id);
-                });
+
+            const iframe =
+                document.getElementById(
+                    'contentFrame'
+                );
+
+
+            const tabBar =
+                document.getElementById(
+                    'tabBar'
+                );
+
+
+
+            // =================================================
+            // CREATE TAB
+            // =================================================
+
+            function createTab(
+                title,
+                url,
+                closeable = true
+            ) {
+
+                const id =
+                    'tab-' +
+                    Date.now() +
+                    '-' +
+                    Math.random()
+                        .toString(36)
+                        .substring(2, 7);
+
+
+                const tab =
+                    document.createElement(
+                        'div'
+                    );
+
+
+                tab.className =
+                    closeable
+                        ? 'tab'
+                        : 'tab home-tab';
+
+
+                tab.dataset.tabId =
+                    id;
+
+
+
+                // ---------------------------------------------
+                // TITLE
+                // ---------------------------------------------
+
+                const titleElement =
+                    document.createElement(
+                        'span'
+                    );
+
+
+                titleElement.className =
+                    'tab-title';
+
+
+                titleElement.textContent =
+                    title;
+
+
+                tab.appendChild(
+                    titleElement
+                );
+
+
+
+                // ---------------------------------------------
+                // CLOSE BUTTON
+                // ---------------------------------------------
+
                 if (closeable) {
-                    tab.querySelector('.close-btn').addEventListener('click', (e) => {
-                        e.stopPropagation();
-                        closeTab(id);
-                    });
-                }
-                tabBar.appendChild(tab);
 
-                const tabObj = { id, title, url, closeable, element: tab };
-                tabs.push(tabObj);
-                return tabObj;
+                    const closeButton =
+                        document.createElement(
+                            'span'
+                        );
+
+
+                    closeButton.className =
+                        'close-btn';
+
+
+                    closeButton.textContent =
+                        '×';
+
+
+                    closeButton.addEventListener(
+                        'click',
+                        function(event) {
+
+                            event.stopPropagation();
+
+                            closeTab(id);
+
+                        }
+                    );
+
+
+                    tab.appendChild(
+                        closeButton
+                    );
+
+                }
+
+
+
+                // ---------------------------------------------
+                // TAB CLICK
+                // ---------------------------------------------
+
+                tab.addEventListener(
+                    'click',
+                    function(event) {
+
+                        if (
+                            event.target.classList.contains(
+                                'close-btn'
+                            )
+                        ) {
+                            return;
+                        }
+
+
+                        activateTab(id);
+
+                    }
+                );
+
+
+
+                tabBar.appendChild(
+                    tab
+                );
+
+
+
+                const tabObject = {
+
+                    id: id,
+
+                    title: title,
+
+                    url: url,
+
+                    closeable: closeable,
+
+                    element: tab
+
+                };
+
+
+                tabs.push(
+                    tabObject
+                );
+
+
+                return tabObject;
             }
+
+
+
+            // =================================================
+            // ACTIVATE TAB
+            // =================================================
 
             function activateTab(id) {
-                const tab = tabs.find(t => t.id === id);
-                if (!tab) return;
-                // Update active class
-                tabs.forEach(t => t.element.classList.toggle('active', t.id === id));
-                activeTabId = id;
-                iframe.src = tab.url;
-                // Update sidebar active
-                const route = tab.url;
-                document.querySelectorAll('.menu-item').forEach(item => {
-                    const itemRoute = item.getAttribute('data-route');
-                    item.classList.toggle('active', itemRoute === route);
-                });
-            }
 
-            function openTab(title, url, closeable = true) {
-                // Check if tab already exists with same url
-                const existing = tabs.find(t => t.url === url);
-                if (existing) {
-                    activateTab(existing.id);
+                const tab =
+                    tabs.find(
+                        function(t) {
+                            return t.id === id;
+                        }
+                    );
+
+
+                if (!tab) {
                     return;
                 }
-                const newTab = createTab(title, url, closeable);
-                activateTab(newTab.id);
+
+
+
+                // Update tab styling
+
+                tabs.forEach(
+                    function(t) {
+
+                        t.element.classList.toggle(
+                            'active',
+                            t.id === id
+                        );
+
+                    }
+                );
+
+
+
+                activeTabId =
+                    id;
+
+
+
+                // Load page
+
+                iframe.src =
+                    tab.url;
+
+
+
+                // Update sidebar active state
+
+                document
+                    .querySelectorAll(
+                        '.menu-item'
+                    )
+                    .forEach(
+                        function(item) {
+
+                            const route =
+                                item.getAttribute(
+                                    'data-route'
+                                );
+
+
+                            item.classList.toggle(
+                                'active',
+                                route === tab.url
+                            );
+
+                        }
+                    );
+
             }
+
+
+
+            // =================================================
+            // OPEN TAB
+            // =================================================
+
+            function openTab(
+                title,
+                url,
+                closeable = true
+            ) {
+
+                // ---------------------------------------------
+                // Don't duplicate an existing tab
+                // ---------------------------------------------
+
+                const existing =
+                    tabs.find(
+                        function(t) {
+                            return t.url === url;
+                        }
+                    );
+
+
+                if (existing) {
+
+                    activateTab(
+                        existing.id
+                    );
+
+                    return;
+
+                }
+
+
+
+                const newTab =
+                    createTab(
+                        title,
+                        url,
+                        closeable
+                    );
+
+
+                activateTab(
+                    newTab.id
+                );
+
+            }
+
+
+
+            // =================================================
+            // IMPORTANT:
+            // EXPOSE TAB CREATION TO IFRAME PAGES
+            // =================================================
+
+            window.openDashboardTab =
+                function(
+                    title,
+                    url
+                ) {
+
+                    openTab(
+                        title,
+                        url,
+                        true
+                    );
+
+                };
+
+
+
+            // =================================================
+            // CLOSE TAB
+            // =================================================
 
             function closeTab(id) {
-                const index = tabs.findIndex(t => t.id === id);
-                if (index === -1) return;
-                const wasActive = activeTabId === id;
-                // Remove tab element and object
-                tabs[index].element.remove();
-                tabs.splice(index, 1);
+
+                const index =
+                    tabs.findIndex(
+                        function(t) {
+                            return t.id === id;
+                        }
+                    );
+
+
+                if (index === -1) {
+                    return;
+                }
+
+
+                const wasActive =
+                    activeTabId === id;
+
+
+                tabs[index]
+                    .element
+                    .remove();
+
+
+                tabs.splice(
+                    index,
+                    1
+                );
+
+
+
+                // ---------------------------------------------
+                // Never allow dashboard to have zero tabs
+                // ---------------------------------------------
 
                 if (tabs.length === 0) {
-                    // Only home should remain, but ensure it exists
-                    openTab('Home', '/home', false);
-                } else if (wasActive) {
-                    // Activate adjacent tab: right if exists, else left
-                    const newActive = tabs[Math.min(index, tabs.length - 1)];
-                    activateTab(newActive.id);
-                } else {
-                    // Active tab unchanged, just update visual (no need)
+
+                    openTab(
+                        'Home',
+                        '/home',
+                        false
+                    );
+
+                    return;
+
                 }
+
+
+
+                // ---------------------------------------------
+                // Activate neighboring tab
+                // ---------------------------------------------
+
+                if (wasActive) {
+
+                    const newIndex =
+                        Math.min(
+                            index,
+                            tabs.length - 1
+                        );
+
+
+                    activateTab(
+                        tabs[newIndex].id
+                    );
+
+                }
+
             }
 
-            // ==================== INITIALIZATION ====================
-            // Create Home tab (non-closable)
-            openTab('Home', '/home', false);
 
-            // Sidebar click handlers
-            document.querySelectorAll('.menu-item').forEach(item => {
-                item.addEventListener('click', () => {
-                    const route = item.getAttribute('data-route');
-                    const title = routes[route] || route;
-                    openTab(title, route, true);
-                });
-            });
 
-            // ==================== CLOCK ====================
-            function updateClock() {
-                const now = new Date();
-                const timeStr = now.toLocaleTimeString('en-US', { hour12: false });
-                document.getElementById('clock').textContent = timeStr;
-            }
-            updateClock();
-            setInterval(updateClock, 1000);
+            // =================================================
+            // INITIALIZATION
+            // =================================================
 
-            // ==================== THEME TOGGLE ====================
-            const themeToggle = document.getElementById('themeToggle');
-            let darkMode = false;
-            themeToggle.addEventListener('click', () => {
-                darkMode = !darkMode;
-                document.body.classList.toggle('dark', darkMode);
-                themeToggle.textContent = darkMode ? '☀️' : '🌙';
-            });
+            openTab(
+                'Home',
+                '/home',
+                false
+            );
 
-            // ==================== FETCH USERNAME ====================
-            async function fetchUsername() {
-                try {
-                    const response = await fetch('http://127.0.0.1:8080/getUsername', {
-                        method : "GET"
-                    });
-                    if (!response.ok) throw new Error(`HTTP ${response.status}`);
-                    const data = await response.json();
-                    // Expecting array like [{"somethingidk":"username"}]
-                    if (Array.isArray(data) && data.length > 0) {
-                        const firstObj = data[0];
-                        const username = Object.values(firstObj)[0];
-                        if (username) {
-                            document.querySelector('.username').textContent = username;
-                        }
-                    } else {
-                        document.querySelector('.username').textContent = 'Unknown User';
+
+
+            // =================================================
+            // SIDEBAR
+            // =================================================
+
+            document
+                .querySelectorAll(
+                    '.menu-item'
+                )
+                .forEach(
+                    function(item) {
+
+                        item.addEventListener(
+                            'click',
+                            function() {
+
+                                const route =
+                                    item.getAttribute(
+                                        'data-route'
+                                    );
+
+
+                                const title =
+                                    routes[route] ||
+                                    route;
+
+
+                                openTab(
+                                    title,
+                                    route,
+                                    true
+                                );
+
+                            }
+                        );
+
                     }
-                } catch (error) {
-                    console.error('Failed to fetch username:', error);
-                    document.querySelector('.username').textContent = 'Failed to load user';
-                }
+                );
+
+
+
+            // =================================================
+            // CLOCK
+            // =================================================
+
+            function updateClock() {
+
+                const now =
+                    new Date();
+
+
+                const timeString =
+                    now.toLocaleTimeString(
+                        'en-US',
+                        {
+                            hour12: false
+                        }
+                    );
+
+
+                document
+                    .getElementById(
+                        'clock'
+                    )
+                    .textContent =
+                    timeString;
+
             }
+
+
+            updateClock();
+
+
+            setInterval(
+                updateClock,
+                1000
+            );
+
+
+
+            // =================================================
+            // THEME TOGGLE
+            // =================================================
+
+            const themeToggle =
+                document.getElementById(
+                    'themeToggle'
+                );
+
+
+            let darkMode = false;
+
+
+            themeToggle.addEventListener(
+                'click',
+                function() {
+
+                    darkMode =
+                        !darkMode;
+
+
+                    document.body
+                        .classList
+                        .toggle(
+                            'dark',
+                            darkMode
+                        );
+
+
+                    themeToggle.textContent =
+                        darkMode
+                            ? '☀️'
+                            : '🌙';
+
+                }
+            );
+
+
+
+            // =================================================
+            // FETCH USERNAME
+            // =================================================
+
+            async function fetchUsername() {
+
+                try {
+
+                    const response =
+                        await fetch(
+                            'http://127.0.0.1:8080/getUsername',
+                            {
+                                method: 'GET'
+                            }
+                        );
+
+
+                    if (!response.ok) {
+
+                        throw new Error(
+                            'HTTP ' +
+                            response.status
+                        );
+
+                    }
+
+
+                    const data =
+                        await response.json();
+
+
+                    if (
+                        Array.isArray(data) &&
+                        data.length > 0
+                    ) {
+
+                        const firstObject =
+                            data[0];
+
+
+                        const username =
+                            Object.values(
+                                firstObject
+                            )[0];
+
+
+                        if (username) {
+
+                            document
+                                .querySelector(
+                                    '.username'
+                                )
+                                .textContent =
+                                username;
+
+                        }
+                        else {
+
+                            document
+                                .querySelector(
+                                    '.username'
+                                )
+                                .textContent =
+                                'Unknown User';
+
+                        }
+
+                    }
+                    else {
+
+                        document
+                            .querySelector(
+                                '.username'
+                            )
+                            .textContent =
+                            'Unknown User';
+
+                    }
+
+                }
+                catch (error) {
+
+                    console.error(
+                        'Failed to fetch username:',
+                        error
+                    );
+
+
+                    document
+                        .querySelector(
+                            '.username'
+                        )
+                        .textContent =
+                        'Failed to load user';
+
+                }
+
+            }
+
+
             fetchUsername();
+
+
         })();
+
     </script>
+
 </body>
+
 </html>
+

@@ -14,7 +14,12 @@ public enum FileTypesEnum {
     js
     (
             "text/javascript"
+    ),
+        png
+    (
+            "image/png"
     );
+        
     
     
     private final String fileTypeTechnicalName;

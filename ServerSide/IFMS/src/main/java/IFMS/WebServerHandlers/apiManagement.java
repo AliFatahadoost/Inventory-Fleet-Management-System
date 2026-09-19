@@ -156,8 +156,11 @@ public class apiManagement{
                     }
                     else if(status.equalsIgnoreCase("0"))
                         exchange.sendResponseHeaders(500, -1);
-                    }catch(Exception e){ System.out.println("something happened in dataGenMod API management and its : " + e);}
-                    exchange.close();
+                    }catch(Exception e){
+                    System.out.println("dataGenMod POST error : " + e);
+                    try { exchange.sendResponseHeaders(500, 0); exchange.getResponseBody().close(); } catch (Exception ignore) {}
+                }
+                exchange.close();
             }
             else if("GET".equals(exchange.getRequestMethod()))
             {
@@ -197,10 +200,12 @@ public class apiManagement{
                     combinedInputs[0] = token;
                     System.arraycopy(valuesSent[1], 0, combinedInputs, 1, valuesSent[1].length);
                     Result = dataBaseUtils.runSelectQueryGetJSON(this.query.getReadQuery(), combinedInputs);
+                    
                     }
                     }
                     catch(Exception e)
-                    {System.out.println("someThing went wrong with the SQL Code for GET in function genDataAPI e : " + e.toString());}
+                    {System.out.println("someThing went wrong with the SQL Code for GET in function genDataAPI e : " + e.toString() + "\n given query : "
+                    + this.query.getReadQuery());}
                     
                 }
                 else
@@ -213,7 +218,8 @@ public class apiManagement{
                     }
                     catch(Exception e)
                     {
-                       System.out.println("Line 160 apiManamgement e : " + e.toString());
+                       System.out.println("Line 160 apiManamgement e : " + e.toString() + "\n given query : "
+                    + this.query.getReadQuery());
                     }
                 }
                 

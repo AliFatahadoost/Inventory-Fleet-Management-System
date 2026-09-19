@@ -15,14 +15,15 @@ public class pageHandlerOpener implements HttpHandler{
     
         private String fileAddress;
         JaliFiles fileInfo;
+        private boolean shouldAuth = true;
 
-        public pageHandlerOpener(String baseAddress, JaliFiles fileInfo)
+        public pageHandlerOpener(String baseAddress, JaliFiles fileInfo, boolean shouldAuth)
         {      
             this.fileInfo = fileInfo;
             this.fileAddress = baseAddress + this.fileInfo.relativeAddress();   
             File file = new File(this.fileAddress);
             String filesName = file.getName().contains(".")?file.getName().substring(0, file.getName().lastIndexOf('.')) : file.getName();
-            
+            this.shouldAuth = shouldAuth;
             //dataBaseUtils.runSelectQueryGetJSON("EXEC UPDATING_LIST_OF_SYS_OBJECTS ?, ?", filesName, this.accessId+"");
 
         }
@@ -32,40 +33,60 @@ public class pageHandlerOpener implements HttpHandler{
         {
             
             String token = webServerUtils.extractTokenFromCookie(exchange);
-           
-
+            if(!shouldAuth || dataBaseUtils.isAuthenticated(token)){
+                System.out.println("should Auth" + shouldAuth);
                 File file = new File(this.fileAddress);
-                
-        byte[] response;
-        
-        if (file.exists()) {
-            
-            
-            
-            
-            // 1. Filter by access rights
-            byte[] filteredBytes = filterHtmlByAccess(Files.readAllBytes(file.toPath()), token);
 
-            // 2. Replace hardcoded base URL with the actual one
-            String htmlString = new String(filteredBytes, StandardCharsets.UTF_8);
-            htmlString = htmlString.replace("http://127.0.0.1:8080",
-                                            readConfig.serversBaseUrl);
-            response = htmlString.getBytes(StandardCharsets.UTF_8);
-            
-            
-            
-            
-            // 3. Set content type and length
-            exchange.getResponseHeaders().set("Content-Type", this.fileInfo.getFileType());
-            exchange.sendResponseHeaders(200, response.length);
-        } else {
-            response = "404 - File not found - sorry".getBytes();
-            exchange.sendResponseHeaders(404, response.length);
-        }
+                byte[] response;
 
-        OutputStream os = exchange.getResponseBody();
-        os.write(response);
-        os.close();
+                if (file.exists()) {
+
+                    // --------------------------------------------------
+                    // Binary files (images, fonts, …) — serve raw
+                    // --------------------------------------------------
+                    String fileType = this.fileInfo.getFileType();
+
+                    if (!fileType.startsWith("text/")) {
+
+                        response = Files.readAllBytes(file.toPath());
+
+                        exchange.getResponseHeaders().set("Content-Type", fileType);
+                        exchange.sendResponseHeaders(200, response.length);
+
+                        OutputStream rawOs = exchange.getResponseBody();
+                        rawOs.write(response);
+                        rawOs.close();
+                        return;
+                    }
+
+                    // --------------------------------------------------
+                    // Text files — filter by access + rewrite base URL
+                    // --------------------------------------------------
+
+                    byte[] filteredBytes = filterHtmlByAccess(Files.readAllBytes(file.toPath()), token);
+
+                    String htmlString = new String(filteredBytes, StandardCharsets.UTF_8);
+                    htmlString = htmlString.replace("http://127.0.0.1:8080", readConfig.serversBaseUrl);
+                    response = htmlString.getBytes(StandardCharsets.UTF_8);
+
+                    exchange.getResponseHeaders().set("Content-Type", fileType);
+                    exchange.sendResponseHeaders(200, response.length);
+
+                } else {
+                    response = "404 - File not found - sorry".getBytes();
+                    exchange.sendResponseHeaders(404, response.length);
+                }
+
+                OutputStream os = exchange.getResponseBody();
+                os.write(response);
+                os.close();
+            }
+            else
+            {
+             exchange.getResponseHeaders().set("Location", "/");
+             exchange.sendResponseHeaders(302, -1);
+             exchange.close();
+            }
         }
         
         

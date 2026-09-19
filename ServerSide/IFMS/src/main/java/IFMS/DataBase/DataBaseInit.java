@@ -73,7 +73,37 @@ public class DataBaseInit {
                 "EXEC " + INIT_SCHEMA + ".SET_UP_OBJECT_USER_PERMISSION_TABLE;"
         );
     }
+    
+        /**
+     * Called by mainServerLaunch AFTER all page routes are registered.
+     *
+     * Flushes the queued object-registration SQL that
+     * WebPagesEnum.registerRoute() populated, then re-syncs the
+     * permission matrix so every user gets a row for every object
+     * and ADMIN is force-granted all four flags.
+     */
+    public static void finalizeRegistration() {
 
+        // 1. Insert / update the queued objects into SYS_OBJECTS
+        runWaitingObjectQueries();
+
+        // 2. Re-sync the permission matrix (creates one row per user × object)
+        dataBaseUtils.runStaticQuery(
+            "EXEC " + INIT_SCHEMA + ".SET_UP_OBJECT_USER_PERMISSION_TABLE;"
+        );
+
+        // 3. Defensive — force-grant everything to ADMIN (USER_CODE = 1)
+        dataBaseUtils.runStaticQuery(
+            "UPDATE P " +
+            "SET CAN_READ = 1, " +
+            "    CAN_CREATE = 1, " +
+            "    CAN_UPDATE = 1, " +
+            "    CAN_DELETE = 1 " +
+            "FROM USERS_DATA_AND_PERMISSIONS.OBJECT_USER_PERMISSION P " +
+            "WHERE P.USER_CODE = 1;"
+        );
+    }
+    
     /**
      * Creates the required schemas only if they do not already exist.
      */

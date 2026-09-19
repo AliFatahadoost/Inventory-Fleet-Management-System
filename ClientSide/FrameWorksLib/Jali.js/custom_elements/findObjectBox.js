@@ -84,9 +84,12 @@ class FindObjectBox extends HTMLElement {
         const title =
             this.getAttribute("title") || "";
         const api =
+            this.getAttribute("api") ||
             this.getAttribute("name") || "";
+
         const columns =
             (
+                this.getAttribute("columns") ||
                 this.getAttribute("value") ||
                 ""
             )

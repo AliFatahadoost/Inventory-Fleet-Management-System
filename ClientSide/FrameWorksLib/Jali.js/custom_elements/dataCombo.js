@@ -163,7 +163,8 @@ class DataCombo extends HTMLElement {
 
 
         this.apiEndpoint =
-            this.getAttribute("name") || "";
+        this.getAttribute("api") ||
+        this.getAttribute("name") || "";
 
 
         // ========================================================

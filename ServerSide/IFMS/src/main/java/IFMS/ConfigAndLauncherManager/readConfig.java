@@ -650,18 +650,31 @@ public class readConfig {
 
 
         
-        server.createContext("/coreJs",                                                 new pageHandlerOpener(BASE_FILE_ADDRESS, FilesEnum.coreJs));
-        server.createContext("/tableFormElement",                                       new pageHandlerOpener(BASE_FILE_ADDRESS, FilesEnum.tableFormElement));
-        server.createContext("/dataCombo",                                              new pageHandlerOpener(BASE_FILE_ADDRESS, FilesEnum.dataCombo));
-        server.createContext("/dataComboCss",                                           new pageHandlerOpener(BASE_FILE_ADDRESS, FilesEnum.dataComboCss));
-        server.createContext("/FindObjectBoxCss",                                       new pageHandlerOpener(BASE_FILE_ADDRESS, FilesEnum.findObjectBoxCss));
-        server.createContext("/findObjectBox",                                          new pageHandlerOpener(BASE_FILE_ADDRESS, FilesEnum.findObjectBox));
-        server.createContext("/dateBox",                                                new pageHandlerOpener(BASE_FILE_ADDRESS, FilesEnum.dateBox));
-        server.createContext("/jaliForm",                                               new pageHandlerOpener(BASE_FILE_ADDRESS, FilesEnum.jaliForm));
-        server.createContext("/cssTableFormData",                                       new pageHandlerOpener(BASE_FILE_ADDRESS, FilesEnum.cssTableFormData));
-        server.createContext("/cssDataForm",                                            new pageHandlerOpener(BASE_FILE_ADDRESS, FilesEnum.cssDataForm));
-        server.createContext("/dateBoxCss",                                             new pageHandlerOpener(BASE_FILE_ADDRESS, FilesEnum.dateBoxCss));
-       
+        server.createContext("/coreJs",                                                 new pageHandlerOpener(BASE_FILE_ADDRESS, FilesEnum.coreJs , false));
+        server.createContext("/tableFormElement",                                       new pageHandlerOpener(BASE_FILE_ADDRESS, FilesEnum.tableFormElement , false));
+        server.createContext("/dataCombo",                                              new pageHandlerOpener(BASE_FILE_ADDRESS, FilesEnum.dataCombo , false));
+        server.createContext("/dataComboCss",                                           new pageHandlerOpener(BASE_FILE_ADDRESS, FilesEnum.dataComboCss , false));
+        server.createContext("/FindObjectBoxCss",                                       new pageHandlerOpener(BASE_FILE_ADDRESS, FilesEnum.findObjectBoxCss , false));
+        server.createContext("/findObjectBox",                                          new pageHandlerOpener(BASE_FILE_ADDRESS, FilesEnum.findObjectBox , false));
+        server.createContext("/dateBox",                                                new pageHandlerOpener(BASE_FILE_ADDRESS, FilesEnum.dateBox , false));
+        server.createContext("/jaliForm",                                               new pageHandlerOpener(BASE_FILE_ADDRESS, FilesEnum.jaliForm , false));
+        server.createContext("/cssTableFormData",                                       new pageHandlerOpener(BASE_FILE_ADDRESS, FilesEnum.cssTableFormData , false));
+        server.createContext("/cssDataForm",                                            new pageHandlerOpener(BASE_FILE_ADDRESS, FilesEnum.cssDataForm , false));
+        server.createContext("/dateBoxCss",                                             new pageHandlerOpener(BASE_FILE_ADDRESS, FilesEnum.dateBoxCss , false));
+        server.createContext("/leafletJs",                                              new pageHandlerOpener(readConfig.BASE_FILE_ADDRESS, FilesEnum.leafletJs,           false));
+        server.createContext("/leafletCss",                                             new pageHandlerOpener(readConfig.BASE_FILE_ADDRESS, FilesEnum.leafletCss,          false));
+        server.createContext("/leafletMarkerIcon",                                      new pageHandlerOpener(readConfig.BASE_FILE_ADDRESS, FilesEnum.leafletMarkerIcon,   false));
+        server.createContext("/leafletMarkerIcon2x",                                    new pageHandlerOpener(readConfig.BASE_FILE_ADDRESS, FilesEnum.leafletMarkerIcon2x, false));
+        server.createContext("/leafletMarkerShadow",                                    new pageHandlerOpener(readConfig.BASE_FILE_ADDRESS, FilesEnum.leafletMarkerShadow, false));
+        server.createContext("/mapBox",                                                 new pageHandlerOpener(readConfig.BASE_FILE_ADDRESS, FilesEnum.mapBox,              false));
+        server.createContext("/mapBoxCss",                                              new pageHandlerOpener(readConfig.BASE_FILE_ADDRESS, FilesEnum.mapBoxCss,           false));
+        server.createContext("/fleetTripTable",
+            new pageHandlerOpener(
+                readConfig.BASE_FILE_ADDRESS,
+                FilesEnum.fleetTripTable,
+                false
+            ));
+        
         
         server.setExecutor(null);
         server.start();

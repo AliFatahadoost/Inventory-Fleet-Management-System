@@ -23,17 +23,17 @@ public class GenerateGenericSQLQuery {
         {
             String Query = "";
         
-            Query = "DECLARE @PAGE_ROW_COUNT INT = ? \n" + "DECLARE @WHICH_PAGE INT = ? \n";
+            Query = " DECLARE @PAGE_ROW_COUNT INT = ? \n" + "DECLARE @WHICH_PAGE INT = ? \n";
           
-            Query = Query + "DECLARE @" + columnNames[0] + " " + columnDataTypes[0] + " = ? \n";
+            Query = Query + " DECLARE @" + columnNames[0] + " " + columnDataTypes[0] + " = 0 \n";
             for(int i = 1; i < this.columnNames.length; i++)
             {
             
-                Query = Query + "DECLARE @" + columnNames[i] + " " + columnDataTypes[i] + " = ? \n";
+                Query = Query + " DECLARE @" + columnNames[i] + " " + columnDataTypes[i] + " = NULLIF(?, N'') \n";
             
             }
 
-            Query += "SELECT \n";
+            Query += " SELECT \n";
             
             Query = Query + " " + columnNames[0] + " \n";
             for(int i = 1; i < this.columnNames.length; i++)
@@ -43,16 +43,24 @@ public class GenerateGenericSQLQuery {
             
             }        
             
-            Query += "FROM \n" + this.tableName + "\n WHERE \n";
+            Query += " FROM \n" + this.tableName + "\n WHERE 1 = 1\n";
+            
+            for(int i = 1; i < this.columnNames.length; i++)
+            {
+            
+                Query += " AND CAST(" + columnNames[i] + " AS NVARCHAR) LIKE N'%'+ISNULL(CAST(@" + columnNames[i] +" AS NVARCHAR), N'')+N'%'";
+            
+            }
+            
             Query += this.whereQuery + "\n";
             
             if(this.orderByQuery == "")
-                Query += "ORDER BY \n" + this.columnNames[0];
+                Query += " ORDER BY \n" + this.columnNames[0];
             else
-                Query += "ORDER BY \n" + this.orderByQuery;
+                Query += " ORDER BY \n" + this.orderByQuery;
             
-            Query += "OFFSET ((@WHICH_PAGE - 1) * @PAGE_ROW_COUNT) ROWS FETCH NEXT @PAGE_ROW_COUNT ROWS ONLY ";
-            
+            Query += " OFFSET ((@WHICH_PAGE - 1) * @PAGE_ROW_COUNT) ROWS FETCH NEXT @PAGE_ROW_COUNT ROWS ONLY ";
+            System.out.println(Query + "\n\n\n\n");
             return Query;
         }
     }
@@ -80,7 +88,7 @@ public class GenerateGenericSQLQuery {
         {
             StringBuilder query = new StringBuilder();
 
-            query.append("INSERT INTO ")
+            query.append(" INSERT INTO ")
                  .append(tableName)
                  .append(" (");
 
@@ -92,16 +100,16 @@ public class GenerateGenericSQLQuery {
                      .append(columnNames[i]);
             }
 
-            query.append(") VALUES (");
+            query.append(" ) VALUES (");
 
-            query.append("?");
+            query.append(" ?");
 
             for (int i = 1; i < columnNames.length; i++)
             {
-                query.append(", ?");
+                query.append(" , ?");
             }
 
-            query.append(")");
+            query.append(" )");
 
             return query.toString() + " SELECT 1 AS STATUS ";
         }
@@ -136,28 +144,28 @@ public class GenerateGenericSQLQuery {
         {
             StringBuilder query = new StringBuilder();
 
-            query.append("UPDATE ")
+            query.append(" UPDATE ")
                  .append(tableName)
                  .append(" SET ");
 
             query.append(columnNames[0])
                  .append(" = ISNULL(NULLIF(?, ''), ")
                  .append(columnNames[0])
-                 .append(")");
+                 .append(" )");
 
             for (int i = 1; i < columnNames.length; i++)
             {
-                query.append(",\n")
+                query.append(" ,\n")
                      .append(columnNames[i])
                      .append(" = ISNULL(NULLIF(?, ''), ")
                      .append(columnNames[i])
-                     .append(")");
+                     .append(" )");
             }
 
-            query.append("\nWHERE ")
+            query.append("\n WHERE ")
                  .append(whereQuery);
 
-            return query.toString() + " SELECT 1 AS STATUS ";
+            return query.toString() + "  SELECT 1 AS STATUS ";
         }
     }
     
@@ -181,7 +189,7 @@ public class GenerateGenericSQLQuery {
 
         public String getQuery()
         {
-            return "DELETE FROM " + tableName +
+            return " DELETE FROM " + tableName +
                    " WHERE " + whereQuery + " SELECT 1 AS STATUS ";
         }
     }
