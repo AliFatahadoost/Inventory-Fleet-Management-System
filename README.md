@@ -1,566 +1,507 @@
-# Inventory & Fleet Management System
+# Jali Frame + IFMS
 
-<div align="center">
-
-![Version](https://img.shields.io/badge/version-1.0-blue.svg)
-![Java](https://img.shields.io/badge/Java-1.8+-orange.svg)
-![SQL Server](https://img.shields.io/badge/SQL%20Server-2019+-red.svg)
-![License](https://img.shields.io/badge/license-MIT-green.svg)
-![Build](https://img.shields.io/badge/build-Maven-brightgreen.svg)
-![Status](https://img.shields.io/badge/status-active-brightgreen.svg)
-
-**A full‑stack, zero‑dependency inventory and fleet management platform built from the ground up.**
-
-[Key Features](#-key-features) •
-[Tech Stack](#-tech-stack) •
-[Quick Start](#-quick-start) •
-[Architecture](#-architecture) •
-[Documentation](#-documentation)
-
-</div>
+> A custom Java full-stack framework and the inventory/fleet system built on top of it.
 
 ---
 
-## 📖 Overview
+## Table of Contents
 
-The **Inventory & Fleet Management System (IFMS)** is a complete business management solution designed for companies that need to track inventory across multiple warehouses, manage vehicle fleets, assign tasks to drivers, and monitor user activity — all in one place.
-
-
-Built primarily with core Java and minimal dependencies to better understand HTTP serving, authentication, authorization, connection pooling, and business application architecture. (except the SQL Server JDBC driver), this project demonstrates pure, hand‑crafted software engineering. No Spring, no React, no Angular, no Bootstrap — just raw **HTML**, **CSS**, **JavaScript**, **Java**, and **SQL**. allthough i will add Frame Works in the Later Versions To shows i can use industry Standard tools
-
-> ⚡ **Philosophy**: Write everything yourself. Understand every layer. Build something that works.
-
----
-
-## ✨ Key Features
-
-### 📦 Inventory Management
-- **Product catalog** — Create, edit, delete, and search products with category assignment
-- **Product categories** — Organise items with custom categories
-- **Stock levels** — Real‑time visibility of inventory across multiple warehouse locations
-- **Low‑stock alerts** — Dashboard shows products below threshold (5 units)
-- **Stock requests** — Request stock transfers between locations, with approval workflow
-- **Live dashboard** — Key metrics at a glance: total products, categories, locations, active movements
-
-### 🚚 Fleet Management
-- **Vehicle management** — Add, edit, and delete vehicles with licence plates
-- **Driver management** — Manage driver profiles with contact details
-- **Trip management** — Create and track product movement trips between locations
-- **Route tracking** — Assign drivers and vehicles to trips with estimated arrival times
-
-### 👥 User & Access Control
-- **User management** — Create user accounts, change passwords, assign roles
-- **Role‑based access control (RBAC)** — Granular permissions: `Can Read` / `Can Write` per page
-- **Access codes** — Every page has a unique `data-AccessCode` attribute for fine‑grained control
-- **Activity logging** — Full audit trail of all user actions
-
-### 📊 Reporting & Analytics
-- **Activity Log** — View all user actions with filters (date, user, remarks)
-- **Work Hours Report** — Track time spent on tasks, calculate earnings
-- **Tasks Report** — View and manage user tasks with Start / Finish actions
-- **Login History** — See when users logged in, with time‑of‑day breakdown
-- **Role Assignment History** — Track when roles were assigned to users
-
-### 🎨 User Experience
-- **Dark / Light mode** — Toggle themes with persistent preference
-- **Tab‑based interface** — Multi‑tab browsing within the dashboard
-- **Responsive sidebar** — Collapsible navigation with hover reveal
-- **Real‑time clock** — Live date/time display in the header
+- [What is this?](#what-is-this)
+- [Jali Frame](#jali-frame)
+  - [Philosophy](#philosophy)
+  - [Architecture](#architecture)
+  - [The Enum-Driven Pattern](#the-enum-driven-pattern)
+  - [The Custom Element Ecosystem](#the-custom-element-ecosystem)
+  - [RBAC](#rbac)
+  - [Directory Structure](#directory-structure)
+  - [How to Boot](#how-to-boot)
+- [IFMS — Inventory & Fleet Management System](#ifms--inventory--fleet-management-system)
+  - [Modules](#modules)
+  - [Routes & Object Codes](#routes--object-codes)
+  - [Fleet Routing with OSRM](#fleet-routing-with-osrm)
+  - [Ticket System](#ticket-system)
+- [Tech Stack](#tech-stack)
+- [Screenshots](#screenshots)
+- [Getting Started](#getting-started)
+- [Roadmap](#roadmap)
+- [Known Limitations](#known-limitations)
+- [License](#license)
 
 ---
 
-## 🧰 Tech Stack
+## What is this?
 
-| Layer          | Technology                                                                 |
-|----------------|----------------------------------------------------------------------------|
-| **Frontend**   | HTML5, CSS3, Vanilla JavaScript (no frameworks)                            |
-| **Backend**    | Java 1.8+ (no frameworks — pure `com.sun.net.httpserver`)                  |
-| **Database**   | Microsoft SQL Server 2019+                                                 |
-| **Build Tool** | Maven                                                                      |
-| **JDBC**       | `mssql-jdbc` (the only external dependency)                               |
-| **Auth**       | Token‑based session management (HTTP‑only cookies)                         |
-| **Architecture** | Monolithic with modular separation (page handlers + API handlers)        |
+This repository contains two things:
+
+1. **Jali Frame** — a from-scratch full-stack Java framework for building database-backed web applications without a conventional MVC stack.
+2. **IFMS (Inventory & Fleet Management System)** — the flagship application built on Jali Frame. IFMS was developed *as* the framework's proving ground: every feature was built to stress a piece of Jali, and every framework rough edge was discovered by shipping real pages through it.
+
+The two are co-evolved. IFMS is not a demo — it's the reason Jali exists.
 
 ---
 
-## 🏗️ Architecture
+## Jali Frame
 
-```
-┌─────────────────────────────────────────────────────────────────────┐
-│                         CLIENT (Browser)                            │
-│  ┌───────────────────────────────────────────────────────────────┐  │
-│  │   Login.html  →  Dashboard.html  →  IFrame‑based pages       │  │
-│  └───────────────────────────────────────────────────────────────┘  │
-└─────────────────────────────┬───────────────────────────────────────┘
-                              │ HTTP (REST‑style)
-┌─────────────────────────────▼───────────────────────────────────────┐
-│                      HTTP SERVER (Java)                             │
-│  ┌───────────────────────────────────────────────────────────────┐  │
-│  │              readConfig.launchHttpServer()                     │  │
-│  │  • Context: /          → Login.html                           │  │
-│  │  • Context: /Dashboard → Dashboard.html                       │  │
-│  │  • Context: /API/*     → Various API handlers                 │  │
-│  └───────────────────────────────────────────────────────────────┘  │
-└─────────────────────────────┬───────────────────────────────────────┘
-                              │
-┌─────────────────────────────▼───────────────────────────────────────┐
-│                      APPLICATION LAYER                              │
-│  ┌───────────────────────────────────────────────────────────────┐  │
-│  │  pageHandlerOpener    → Serves HTML, filters by access rights │  │
-│  │  apiManagement        → Handles API requests (POST only)      │  │
-│  │  webServerUtils       → Cookie parsing, JSON parsing, etc.    │  │
-│  └───────────────────────────────────────────────────────────────┘  │
-└─────────────────────────────┬───────────────────────────────────────┘
-                              │
-┌─────────────────────────────▼───────────────────────────────────────┐
-│                      DATA ACCESS LAYER                              │
-│  ┌───────────────────────────────────────────────────────────────┐  │
-│  │  dataBaseManager    → Connection pooling (hand‑rolled)        │  │
-│  │  dataBaseUtils      → Executes queries, returns JSON          │  │
-│  └───────────────────────────────────────────────────────────────┘  │
-└─────────────────────────────┬───────────────────────────────────────┘
-                              │ JDBC
-┌─────────────────────────────▼───────────────────────────────────────┐
-│                   MICROSOFT SQL SERVER                              │
-│  ┌───────────────────────────────────────────────────────────────┐  │
-│  │  Stored Procedures: LOGIN_VALID, SIGNUP_NEWUSER,             │  │
-│  │  IS_AUTHENTICATED, IS_ALLOWED_READ, TASKS_REPORT, etc.      │  │
-│  └───────────────────────────────────────────────────────────────┘  │
-└─────────────────────────────────────────────────────────────────────┘
+### Philosophy
+
+Jali Frame rejects the convention of controllers, routers, ORM entities, and hand-written CRUD endpoints. Instead, it treats **application structure as data**.
+
+Instead of writing:
+
+```java
+@GetMapping("/warehouse")
+public List<Warehouse> listWarehouses() { ... }
+
+@PostMapping("/warehouse")
+public ResponseEntity<Warehouse> createWarehouse(@RequestBody Warehouse w) { ... }
 ```
 
-### 🔐 Authentication & Authorisation Flow
+You write:
 
-1. **Login** → User submits credentials → `LOGIN_VALID` SP returns a session token
-2. **Token** → Stored as `HttpOnly` cookie (valid for `MAX_SESSION_TIME` seconds)
-3. **Page Access** → `pageHandlerOpener` checks `IS_AUTHENTICATED(token)` and `IS_ALLOWED_READ(token, accessCode)`
-4. **API Access** → All API endpoints validate the token before executing queries
-5. **Filtering** → HTML elements with `data-AccessCode` are filtered out if the user lacks permission
+```java
+Warehouse(
+    new ReadQuery().setTableName("warehouse").setColumnNames(...).getQuery(),
+    new UpdateQuery().setTableName("warehouse").setColumnNames(...).getWhereQuery("warehouse_id = ?").getQuery(),
+    new CreateQuery().setTableName("warehouse").setColumnNames(...).getQuery(),
+    "UPDATE warehouse SET is_deleted = 1 WHERE warehouse_id = ?",
+    101
+),
+```
 
----
+…and the framework auto-generates the API, the CRUD handlers, the permission rows, the front-end table, and the modal — all from that single enum entry.
 
-## 📁 Project Structure
+**Three principles:**
+
+1. **Everything is an enum.** Pages, API queries, static assets, and lookups are declared in Java enums. Registering a route is one line.
+2. **The framework serves the client.** The server trims HTML based on the user's permissions before it reaches the browser — no client-side auth flicker.
+3. **The client is a stack of custom elements.** `<fetch-data-table>`, `<data-combo>`, `<find-object-box>`, `<date-box>`, `<map-box>`. Every form in every app is a composition of these.
+
+### Architecture
 
 ```
-Inventory-Fleet-Management-System/
+┌────────────────────────────────────────────────────────────────┐
+│                        Browser (ES Modules)                    │
+│                                                                │
+│   <fetch-data-table>  <data-combo>  <map-box>  <date-box> ...  │
+│            │               │            │          │           │
+│            └───────────────┴────────────┴──────────┘           │
+│                            │                                   │
+│                            ▼  fetch() JSON                     │
+└────────────────────────────────────────────────────────────────┘
+                             │
+┌────────────────────────────┼───────────────────────────────────┐
+│                            ▼                                   │
+│  com.sun.net.httpserver.HttpServer                             │
+│                                                                │
+│  ┌──────────────────┐       ┌──────────────────────────────┐   │
+│  │  pageHandlerOpener│       │  apiManagement.dataApiGen    │   │
+│  │  • serves HTML    │       │  • GET / POST / PUT / DELETE │   │
+│  │  • filters by     │       │  • auth + permission check   │   │
+│  │    data-AccessCode│       │  • generic SQL execution     │   │
+│  └──────────────────┘       └──────────────────────────────┘   │
+│                                                                │
+│  ┌──────────────────────────────────────────────────────────┐  │
+│  │  Enum layer                                              │  │
+│  │    FilesEnum        → static assets + HTML pages         │  │
+│  │    WebPagesEnum     → route registration + object codes  │  │
+│  │    CrudQueriesEnum  → SQL for every read/write/lookup    │  │
+│  └──────────────────────────────────────────────────────────┘  │
+│                                                                │
+│  ┌──────────────────────────────────────────────────────────┐  │
+│  │  DataBase layer                                          │  │
+│  │    dataBaseManager  → connection pool                    │  │
+│  │    dataBaseUtils    → helpers (auth, isAllowed, JSON)    │  │
+│  │    DataBaseInit     → self-bootstrapping schema + SPs    │  │
+│  └──────────────────────────────────────────────────────────┘  │
+│                                                                │
+└────────────────────────────────────────────────────────────────┘
+                             │
+                             ▼
+                       SQL Server (IFMS_DB)
+```
+
+### The Enum-Driven Pattern
+
+Four enums define the entire application surface:
+
+#### `FilesEnum` — static assets
+
+```java
+coreJs("/FrameWorksLib/Jali.js/core.js", true, FileTypesEnum.js),
+Warehouse("/InventoryManagement/Warehouse.html", false, FileTypesEnum.html),
+```
+
+Every served file is registered here. The HTTP server mounts each at `/coreJs`, `/warehouse`, etc. The `loadedByIframe` flag tells the dashboard whether the asset is a full page or a shared library.
+
+#### `WebPagesEnum` — routes + object codes
+
+```java
+Warehouse(101, FilesEnum.Warehouse, "/warehouse"),
+```
+
+Each page declares:
+- An **object code** (used by RBAC)
+- Its backing file
+- Its URL route
+
+Calling `registerRoute(server)` mounts the page **and** queues the object code for `SYS_OBJECTS` registration.
+
+#### `CrudQueriesEnum` — every SQL query in the app
+
+```java
+Warehouse(
+    new ReadQuery()
+        .setTableName("warehouse")
+        .setColumnNames("warehouse_id", "warehouse_title", "warehouse_code", "warehouse_lat", "warehouse_long")
+        .setColumnDataTypes("numeric", "nvarchar(50)", "numeric", "decimal(9,6)", "decimal(9,6)")
+        .setWhereQuery("AND isnull(is_deleted, 0) = 0")
+        .getQuery(),
+    new UpdateQuery().setTableName("warehouse").setColumnNames(...).getQuery(),
+    new CreateQuery().setTableName("warehouse").setColumnNames(...).getQuery(),
+    "UPDATE warehouse SET is_deleted = 1 WHERE warehouse_id = ?",
+    101
+),
+```
+
+One enum entry = one full CRUD API. The framework builds the SQL, binds parameters, serializes the response to JSON, and enforces permissions — all keyed off the same object code used in `WebPagesEnum`.
+
+#### `FileTypesEnum` — MIME types
+
+```java
+html("text/html"),
+css("text/css"),
+js("text/javascript"),
+png("image/png");
+```
+
+### The Custom Element Ecosystem
+
+Every UI pattern in every Jali app is a **Web Component** loaded as an ES module. No React. No Vue. No build step.
+
+| Element | Purpose |
+|---|---|
+| `<fetch-data-table>` | Renders a table with search, pagination, CRUD modals, and auto-wired API calls |
+| `<data-combo>` | Dropdown that fetches options from an API endpoint |
+| `<find-object-box>` | Modal picker for large lists (paginated, searchable) |
+| `<date-box>` | Calendar picker with `YYYY-MM-DD` output |
+| `<map-box>` | Leaflet map. **Write mode** picks lat/lng; **read mode** draws OSRM routes |
+| `<jali-form>` | Standalone form (used by Login) |
+| `<fleet-trip-table>` | Custom element combining table + OSRM routing (built for IFMS) |
+
+All components:
+- Load their own CSS via `<link>` inside a shadow root
+- Read their config from **HTML attributes** using a small DSL
+- Emit standard `change` / `submit` / custom events
+- Work identically inside and outside modals
+
+**The input DSL:**
+
+```html
+<fetch-data-table
+    api="/warehouseApi"
+    inputs="
+        |name::warehouse_title|title::Title|type::text|value::;;
+        |name::warehouse_lat,warehouse_long|title::Location|type::map-box|value::;;
+    "
+    columns="Title, Location"
+>
+```
+
+Each `;;`-terminated block is one form field. Supported types: `text`, `number`, `password`, `checkbox`, `radio`, `data-combo`, `find-object-box`, `date-box`, `map-box`, `current-user`.
+
+### RBAC
+
+Jali Frame's authorization model is **object-code-based**, not role-based.
+
+- Every page has an object code (e.g. Warehouse = 101)
+- Every API request checks the user's permission for that object
+- Every HTML element with `data-AccessCode="N"` is stripped server-side before reaching the browser if the user lacks READ
+
+**Server-side HTML trimming** is the key innovation. Because the filter runs on the raw HTML response, a user without `CAN_READ` on object 101 literally never receives the Warehouse card in their Dashboard HTML. No client-side auth flicker. No hidden elements that can be unhidden with DevTools.
+
+The permission matrix lives in `USERS_DATA_AND_PERMISSIONS.OBJECT_USER_PERMISSION`:
+
+```
+USER_CODE | OBJECT_CODE | CAN_READ | CAN_CREATE | CAN_UPDATE | CAN_DELETE
+----------|-------------|----------|------------|------------|------------
+1         | 101         | 1        | 1          | 1          | 1
+2         | 101         | 1        | 0          | 0          | 0
+```
+
+The framework's `DataBaseInit` class auto-syncs this table on every boot:
+- New objects inserted into `SYS_OBJECTS`
+- Cross-joined with all users to create missing rows
+- ADMIN (USER_CODE = 1) force-granted all flags
+
+### Directory Structure
+
+```
+jali-frame/
+├── backend/
+│   ├── ConfigAndLauncherManager/
+│   │   └── readConfig.java              # Config file, GUI/console, HTTP bootstrap
+│   ├── DataBase/
+│   │   ├── dataBaseManager.java          # Connection pool
+│   │   ├── dataBaseUtils.java            # isAllowed, isAuthenticated, JSON helpers
+│   │   ├── DataBaseInit.java             # Self-bootstrapping schema + stored procs
+│   │   └── GenerateGenericSQLQuery.java  # Read/Update/Create/Delete builders
+│   ├── InterFaces/
+│   │   ├── CrudQueries.java
+│   │   ├── JaliFiles.java
+│   │   └── JaliWebPage.java
+│   ├── PageRelatedEnums/
+│   │   ├── FilesEnum.java                # Every static asset
+│   │   ├── WebPagesEnum.java             # Every page + object code
+│   │   ├── CrudQueriesEnum.java          # Every SQL query
+│   │   └── FileTypesEnum.java
+│   ├── WebServerHandlers/
+│   │   ├── pageHandlerOpener.java        # Serves files + trims by data-AccessCode
+│   │   ├── apiManagement.java            # Generic CRUD handler
+│   │   └── webServerUtils.java           # JSON parser, cookie extractor
+│   └── mainServerLaunch.java             # Wires APIs + routes at boot
 │
-├── ClientSide/                           # All front‑end files
-│   ├── Login/
-│   │   └── Login.html                    # Authentication page
-│   │
-│   ├── Dashboard/
-│   │   ├── Dashboard.html                # Main application shell
-│   │   ├── dashboardSubSections/
-│   │   │   ├── Home.html                 # Landing page
-│   │   │   ├── userProfile/              # User profile, tasks, work hours, activity log
-│   │   │   ├── inventoryManagement/      # Products, categories, stock levels, requests
-│   │   │   ├── userManagement/           # Users, roles, permissions
-│   │   │   ├── fleetManagement.html      # Fleet management (WIP)
-│   │   │   ├── warehouseManagement.html  # Warehouse management (WIP)
-│   │   │   └── reportSection.html        # Reports (WIP)
-│   │   └── [assets/]                     # (optional)
-│   │
-│   └── [config.txt]                      # Generated on first run
-│
-├── src/
-│   └── main/
-│       └── java/
-│           └── IFMS/                     # All Java source files
-│               ├── mainServerLaunch.java         # Entry point
-│               ├── readConfig.java               # Configuration + HTTP server
-│               ├── pageHandlerOpener.java        # Page serving + access filtering
-│               ├── apiManagement.java            # API endpoint handlers
-│               ├── webServerUtils.java           # Utilities (cookie, JSON, etc.)
-│               ├── dataBaseManager.java          # Connection pooling
-│               ├── dataBaseUtils.java            # Query execution → JSON
-│               └── [IFMS.class]                  # (compiled)
-│
-├── pom.xml                               # Maven configuration
-└── README.md                             # This file
+└── ClientSide/
+    ├── FrameWorksLib/
+    │   ├── Jali.js/
+    │   │   ├── core.js                   # Imports all custom elements
+    │   │   └── custom_elements/
+    │   │       ├── dataTable.js
+    │   │       ├── dataCombo.js
+    │   │       ├── findObjectBox.js
+    │   │       ├── dateBox.js
+    │   │       ├── mapBox.js
+    │   │       ├── jaliForm.js
+    │   │       └── fleetTripTable.js
+    │   ├── JaliFrame.css/
+    │   │   ├── readDataTable.css
+    │   │   ├── dataCombo.css
+    │   │   ├── FindObjectBox.css
+    │   │   ├── dateBox.css
+    │   │   ├── dataForm.css
+    │   │   └── mapBox.css
+    │   └── Leaflet/                      # Bundled Leaflet
+    └── [Your app pages]/                 # Login, Dashboard, modules...
 ```
+
+### How to Boot
+
+1. **Create `config.txt`** next to the JAR (or let Jali create it on first run):
+
+   ```properties
+   BASE_FILE_ADDRESS=/absolute/path/to/ClientSide
+   server=localhost
+   port=1433
+   databaseName=IFMS_DB
+   username=sa
+   password=your_password
+   MAX_CONNECTION_POOL=5
+   portNumber=8080
+   serverIP=127.0.0.1
+   queueWaitLine=10
+   MAX_SESSION_TIME=86400
+   ```
+
+2. **Run the server:**
+
+   ```bash
+   java -cp jali-frame.jar IFMS.mainServerLaunch
+   ```
+
+   The launcher prompts:
+   - `Y` — Swing configuration GUI
+   - `n` — Console mode
+   - `s` — Silent (jump straight to serving)
+
+3. **First boot** creates the schema, stored procedures, `SYS_OBJECTS` table, and ADMIN user. Default credentials: `ADMIN` / `12`.
+
+4. **Navigate to** `http://127.0.0.1:8080/`.
 
 ---
 
-## 🚀 Quick Start
+## IFMS — Inventory & Fleet Management System
 
-### Prerequisites
+IFMS is a real-world logistics system handling:
 
-| Requirement | Minimum Version |
-|-------------|-----------------|
-| Java JDK    | 1.8             |
-| Maven       | 3.6+            |
-| SQL Server  | 2019+ (or Express) |
-| OS          | Windows / Linux / macOS |
+- **Multi-location inventory** — warehouses, stores, docks, factories
+- **Stock tracking** with full historical audit trail
+- **Inter-inventory transfers** — request product from another location
+- **Fleet management** — teams, drivers, vehicles, dispatch
+- **Route planning** — OSRM-powered distance and duration calculations
+- **Approval workflows** — temp-access tickets and stock adjustments
+- **Role-based access** — users see only the pages they're permitted to see
 
-### 1. Clone the Repository
+### Modules
+
+| Module | Forms | Description |
+|---|---|---|
+| **Inventory** | 11 | Type, Warehouse, Inventory, Users, Product, Stock, Stock History, Request Type/Status/Header/Details |
+| **Fleet** | 7 | Team, Drivers, Vehicles, Team Drivers, Team Manager, Trip, Team Transports |
+| **Access Management** | 3 | Requests (tickets), Object lines, Stock lines |
+| **Reports** | 4 | Low Stock, Fleet Activity, Product Movement, Ticket Summary |
+| **User Management** | 2 | Users, Permissions matrix |
+
+**Total: 27 pages, all driven by 3 enums and 7 custom elements.**
+
+### Routes & Object Codes
+
+Object codes are namespaced by module:
+
+| Range | Module |
+|---|---|
+| 1–9 | System (Login, Dashboard, Home) |
+| 10–50 | Management landing pages |
+| 100–111 | Inventory forms |
+| 200–209 | Fleet forms |
+| 300–302 | Access ticket forms |
+| 400–403 | Reports |
+| 41–42 | User Management |
+
+Every object code is used **three times**:
+1. In `WebPagesEnum` for the page route
+2. In `CrudQueriesEnum` for permission enforcement on its API
+3. In HTML as `data-AccessCode="N"` for server-side trimming
+
+### Fleet Routing with OSRM
+
+The FleetTrip page demonstrates Jali's custom element strength:
+
+```html
+<fleet-trip-table api="/fleetTripApi"></fleet-trip-table>
+```
+
+Custom element that:
+1. Lists trips in a table (like `<fetch-data-table>`)
+2. Opens a modal with dropdowns for team, product request, and status
+3. On product request selection, fetches the origin/destination warehouses
+4. Calls OSRM to compute the driving route
+5. Draws it on a `<map-box>` and fills distance/duration
+6. Saves the encoded polyline for later display
+
+Distance is stored as **meters**, duration as **seconds** — displayed as Km (1 decimal) and H:MM.
+
+### Ticket System
+
+Two ticket types share one header table and one approval workflow:
+
+| Type | Payload Table | Meaning |
+|---|---|---|
+| `TEMP_ACCESS` | `access_request_object` | Request read/write permission on a form |
+| `STOCK_ADJUSTMENT` | `access_request_stock` | Request write-off or correction of stock |
+
+Both go through `PENDING` → `APPROVED` / `DENIED` → `APPLIED`. Approve/Deny buttons on the header table auto-fill `decided_by_user_code` from the logged-in session.
+
+---
+
+## Tech Stack
+
+**Backend:**
+- Java 17+
+- `com.sun.net.httpserver.HttpServer` (built into the JDK)
+- SQL Server
+- No external framework dependencies (Spring, Hibernate, etc.)
+
+**Frontend:**
+- Vanilla ES modules
+- Web Components (Custom Elements API + Shadow DOM)
+- Leaflet for maps
+- OSRM for routing
+
+**Build:**
+- Maven (or plain `javac` if preferred)
+
+---
+
+## Screenshots
+
+> *Add screenshots here — Dashboard, Inventory form with modal, FleetTrip with map + route, Permission matrix.*
+
+Recommended shots:
+- `docs/dashboard.png` — main dashboard with sidebar + tabs
+- `docs/warehouse-form.png` — a standard CRUD modal
+- `docs/fleet-trip.png` — FleetTrip modal with OSRM route drawn
+- `docs/permissions.png` — the permission matrix editor
+- `docs/reports.png` — Low Stock report
+
+---
+
+## Getting Started
 
 ```bash
-git clone https://github.com/AliFatahadoost/Inventory-Fleet-Management-System.git
-cd Inventory-Fleet-Management-System
-```
+# 1. Clone
+git clone https://github.com/yourname/jali-frame-ifms.git
+cd jali-frame-ifms
 
-### 2. Set Up the Database
+# 2. Set up the database
+#    Run the DDL scripts in /sql (dbo + USERS_DATA_AND_PERMISSIONS + INIT_DATABASE schemas)
 
-Run the `dataBaseScript.sql` script (provided in the repository) on your SQL Server instance. This creates:
+# 3. Configure
+cp config.example.txt config.txt
+# edit config.txt with your SQL Server credentials
 
-- All tables (`SYS_USERS`, `PRODUCTS`, `INVENTORY_LOCATION`, `VEHICLES`, `TASKS`, etc.)
-- All stored procedures (`LOGIN_VALID`, `IS_AUTHENTICATED`, `TASKS_REPORT`, etc.)
-- Default roles and permissions --> will be added soon
-
-### 3. Configure the Application
-
-Instead of forcing you to manually edit a config.txt file (or hardcode values), the server gives you three ways to start up when you run the JAR:
-🚀 The Launcher Modes (in readConfig.initiate())
-
-When you run java -jar IFMS-1.0-SNAPSHOT.jar, you see this prompt:
-text
-
-Launch GUI server configuration? (Y/n/s S stands for start with no questions):
-
-1. GUI Launcher (Press Y or just Enter)
-
-A Swing-based configuration window pops up. It looks like a desktop app and lets you:
-
-    Edit all server settings visually (DB host, port, username, password, HTTP port, server IP, file paths).
-
-    Test the database connection with a single click.
-
-    Save the config to config.txt.
-
-    Launch the HTTP server directly from the GUI.
-
-    It even has a live output console to show logs and errors.
-
-This is fully cross-platform because Swing runs on Windows, macOS, and Linux without any extra dependencies.
-2. Console Launcher (Press n)
-
-If you're on a headless server (no GUI), you get a command-line interface:
-text
-
-> help
-Commands:
-  get <property>        - show a property value
-  set <property> <val>  - change a property
-  load                  - reload from config.txt
-  save                  - save to config.txt
-  testdb                - test database connection
-  launch                - start the HTTP server
-  end / exit            - shut down server and exit
-
-You can configure everything via CLI, test the DB, and then launch the server — all without ever touching a text editor.
-3. Silent Launch (Press s)
-
-Skips all questions and immediately launches the HTTP server using the existing config.txt (or defaults). Perfect for production scripts or Docker containers.
-🔧 Why This Design Matters
-Feature	Benefit
-No manual config editing	The GUI/CLI writes config.txt for you, avoiding syntax errors.
-Cross‑platform	Pure Java (Swing + Scanner) works everywhere.
-Production‑ready	The "silent" mode makes it easy to integrate with systemd or Docker.
-Runtime safety	The launcher disables config changes while the server is running (prevents corruption).
-Self‑contained	No need for a separate installer or setup script — the JAR is the launcher.
-> **Note:** The `BASE_FILE_ADDRESS` is relative to the JAR's location. Adjust accordingly.
-
-### 4. Build & Run
-
-```bash
-# Build the JAR file
+# 4. Build
 mvn clean package
 
-# Run the application
-java -jar target/IFMS-1.0-SNAPSHOT.jar
-```
+# 5. Run
+java -cp target/jali-frame.jar IFMS.mainServerLaunch
 
-### 5. Launch the Application
-
-Open your browser and go to:
-
-```
-http://127.0.0.1:55952 --> this is default so if you had something on 8080 it wouldn't fail
-```
-
-Default credentials (after running the database script):
-- **Username:** `admin`
-- **Password:** `12`
-
-> **Important:** Change the default password immediately after first login.
-
----
-
-## 🧩 Backend API Endpoints
-
-All endpoints are `POST`-only and require a valid session token (sent via `Cookie: token=...`).
-
-| Endpoint                                | Description                                  |
-|-----------------------------------------|----------------------------------------------|
-| `/Login`                                | Authentication (login / signup)              |
-| `/selectUserLoginLogAPI`                | Get login history for the current user       |
-| `/selectUserRolesLogAPI`                | Get role assignment history                  |
-| `/changeUserName`                       | Change the current user's username           |
-| `/changePassword`                       | Change the current user's password           |
-| `/tasksReportAPI`                       | Get all tasks assigned to the user           |
-| `/changeTaskStatus`                     | Start or finish a task                       |
-| `/workHourReportAPI`                    | Get work hour reports with earnings          |
-| `/auditLogAPI`                          | Get full activity log (admin only)           |
-| `/userListAPI`                          | List all users (admin only)                  |
-| `/usersRoleListAPI`                     | List users with their roles                  |
-| `/roleListAPI`                          | List all available roles                     |
-| `/createNewUserAPI`                     | Create a new user (admin only)               |
-| `/addRevokeRolesAPI`                    | Assign or revoke a role (admin only)         |
-| `/updateUserCredByAdmin`                | Update another user's credentials (admin)    |
-| `/rolesAndPermissionsListAPI`           | List all roles and permissions               |
-| `/featuresListAPI`                      | List all system features (pages)             |
-| `/createUpdateDeleteRolesAPI`           | Create, update, or delete a role (admin)     |
-| `/manageProductsMovementTripsAPI`       | Create/update/delete movement trips          |
-| `/manageInventoryInfstructureAPI`       | Manage products, categories, locations       |
-| `/createUpdateDeleteVehicleAPI`         | Manage vehicles                              |
-| `/createUpdateDeleteInventoryLocationAPI`| Manage warehouses/locations                  |
-| `/createUpdateDeleteDriverAPI`          | Manage drivers                               |
-| `/productsCountAPI`                     | Total product count                          |
-| `/productsCategoryCountAPI`             | Total category count                         |
-| `/inventoryLocationCountAPI`            | Total location count                         |
-| `/activeMovementsCountAPI`              | Active movement trips count                  |
-| `/allMovementsCountAPI`                 | All movement trips count                     |
-| `/lowStockProductsAPI`                  | Products with stock below 5 units            |
-| `/productsCategoryListAPI`              | List all product categories                  |
-| `/productsWithCategoryAPI`              | List products with category names            |
-| `/handleInventoryRequestAPI`            | Create or accept stock transfer requests     |
-| `/inventoryLocationsWithTypeAPI`        | List all inventory locations with types      |
-| `/inventoryStockRequestsAPI`            | List all stock requests                      |
-| `/productStocksAPI`                     | List all product stock levels                |
-
----
-
-## 🔒 Access Control & Permissions
-
-### How It Works
-
-1. Every HTML element that should be protected has a `data-AccessCode` attribute:
-   ```html
-   <div data-AccessCode="5" data-direction="userProfile">
-       <p>User Profile</p>
-   </div>
-   ```
-
-2. The `pageHandlerOpener.filterHtmlByAccess()` method scans the HTML and checks `IS_ALLOWED_READ(token, accessCode)`.
-
-3. If the user lacks permission, the element (and its children) are **removed** from the response.
-
-### Pre‑defined Access Codes
-
-| Code | Page / Feature                      |
-|------|-------------------------------------|
-| 1    | Login page                          |
-| 2    | Login page (redirect)               |
-| 3    | Dashboard shell                     |
-| 4    | Home page                           |
-| 5    | User Profile                        |
-| 6    | Tasks                               |
-| 7    | Work Hour Reports                   |
-| 8    | Activity Log                        |
-| 9    | Inventory Management                |
-| 10   | Warehouse Management                |
-| 11   | Fleet Management                    |
-| 12   | Reports Section                     |
-| 13   | Users Management                    |
-| 14   | Edit Users Form                     |
-| 15   | Edit Roles Form                     |
-| 16   | Products                            |
-| 17   | Product Categories                  |
-| 18   | Stock Levels                        |
-| 19   | Inventory Users Tasks               |
-| 20   | Products Movement & Log             |
-
----
-
-## 🛠️ Development
-
-### Building from Source
-
-```bash
-mvn clean compile
-mvn package
-```
-
-### Running in Development Mode
-
-```bash
-mvn exec:java -Dexec.mainClass="IFMS.mainServerLaunch"
-```
-
-### Adding a New Page
-
-1. Create an HTML file in the appropriate `ClientSide/Dashboard/dashboardSubSections/` folder.
-2. Add a new context mapping in `readConfig.launchHttpServer()`:
-   ```java
-   server.createContext("/Dashboard/yourPage", new pageHandlerOpener(
-       BASE_FILE_ADDRESS + "/Dashboard/dashboardSubSections/yourPage.html", true, accessCode));
-   ```
-3. Add the page to your sidebar with the matching `data-AccessCode`.
-
-### Adding a New API Endpoint
-
-1. In `apiManagement.java`, create a static inner class that implements `HttpHandler`.
-2. In `readConfig.launchHttpServer()`, add a context mapping to your new handler.
-3. Write the corresponding stored procedure in SQL Server.
-
----
-
-## 📊 Database Schema (Key Tables)
-
-```
-SYS_USERS
-├── SYS_USER_ID (PK)
-├── USERNAME (unique)
-├── PASSWORD_HASH
-├── BASE_SALARY
-└── IS_ACTIVE
-
-PRODUCTS
-├── PRODUCTS_ID (PK)
-├── PRODUCTS_NAME
-├── PRODUCTS_CATEGORY_ID (FK → PRODUCTS_CATEGORY)
-└── IS_DELETED
-
-PRODUCTS_CATEGORY
-├── PRODUCTS_CATEGORY_ID (PK)
-├── PRODUCTS_CATEGORY_NAME
-└── IS_DELETED
-
-INVENTORY_LOCATION
-├── INVENTORY_LOCATION_ID (PK)
-├── INVENTORY_LOCATION_NAME
-├── INVENTORY_LOCATION_ADDRESS
-├── INVENTORY_LOCATION_LAT
-├── INVENTORY_LOCATION_LONG
-├── LT_INVENTORY_LOCATION_TYPE_ID (FK)
-└── IS_DELETED
-
-PRODUCTS_STOCKS
-├── PRODUCTS_STOCKS_ID (PK)
-├── PRODUCTS_ID (FK → PRODUCTS)
-├── INVENTORY_LOCATION_ID (FK → INVENTORY_LOCATION)
-└── PRODUCT_COUNT_IN_STOCK
-
-VEHICLES
-├── VEHICLE_ID (PK)
-├── VEHICLE_NAME
-├── VEHICLE_LICENCE_PLATE
-└── IS_DELETED
-
-DRIVERS
-├── DRIVER_ID (PK)
-├── DRIVER_NAME
-├── DRIVER_LAST_NAME
-├── DRIVERS_NATIONAL_CODE
-├── DRIVERS_PHONE_NUMBER
-└── IS_DELETED
-
-TASKS
-├── TASKS_ID (PK)
-├── TASK_NAME
-├── TASK_DESCRIPTION
-├── START_DATE_TIME
-├── END_DATE_TIME
-├── EST_HOURS_IT_WILL_TAKE
-├── HOURLY_RATE_FOR_TASK
-├── TASK_CREATED_BY (FK → SYS_USERS)
-└── TASK_STATUS (0=pending, 1=in progress, 2=finished)
+# 6. Open http://127.0.0.1:8080/ and log in as ADMIN / 12
 ```
 
 ---
 
-## 🤖 AI Usage Transparency
+## Roadmap
 
-This project is **mostly written by me** (Ali FatahDoost). However, AI tools (ChatGPT, etc.) were used in specific areas:
+**Jali Frame 2.0:**
+- [ ] Replace positional payloads (`input0, input1, …`) with named fields
+- [ ] Split overloaded element attributes (`name` → `api` + `field-name`)
+- [ ] Single-pass boot sequence (no `finalizeRegistration` workaround)
+- [ ] Auto-generated TypeScript definitions for custom elements
+- [ ] Websocket support for live-updating tables
+- [ ] Migrate to `jdk.httpserver` → `Netty` for HTTP/2
 
-- **CSS styling** — AI assisted with modern UI design, dark mode, and responsive layouts.
-- **repetitive work** - AI has done things that i have done my self when it got repetitive. mostly didn't happen cause i tried my best on the abstractions but it still happened sometimes.
-All core business logic, authentication, database connection pooling, HTTP server, and access control were **written entirely by hand**.
-
----
-
-## 🧪 Testing
-
-Currently, the project includes minimal automated testing. Manual testing is recommended (though JUnit is on the road map to be added later)
-
-- ✅ Login / Signup
-- ✅ Session expiration
-- ✅ Role-based access control
-- ✅ CRUD operations (products, categories, locations, vehicles, drivers)
-- ✅ Stock request workflow
-- ✅ Task start / finish
-- ✅ Activity logging
-- ✅ Dark / Light mode persistence
+**IFMS:**
+- [ ] User-facing ticket submission flow (currently admin-only pages)
+- [ ] FOB / combo re-hydration on edit mode
+- [ ] Password change endpoint + UI
+- [ ] Toast notifications replacing `alert()`
+- [ ] Multi-stop fleet routes
+- [ ] Warehouse-specific inventory coordinates
+- [ ] CSV / PDF export for reports
+- [ ] Dark mode toggle persisted per user
 
 ---
 
-## 📝 Roadmap
+## Known Limitations
 
-### ✅ Completed
-- [x] User authentication & session management
-- [x] Role-based access control (RBAC)
-- [x] Product & category management
-- [x] Inventory location management
-- [x] Stock level tracking
-- [x] Stock transfer requests
-- [x] Vehicle management
-- [x] Driver management
-- [x] Task management (start / finish)
-- [x] Work hour reporting
-- [x] Activity logging
-- [x] Dark / Light mode
-- [x] Tab-based dashboard interface
+Honestly documented so you don't discover them the hard way:
 
-### 🚧 In Progress
-- [ ] Fleet management (trip planning & tracking)
-- [ ] Warehouse management (advanced location features)
-- [ ] Comprehensive reports section
-
-### 📅 Planned
-- [ ] Unit tests (JUnit)
-- [ ] Docker containerisation
-- [ ] CI/CD pipeline (most likely i will use Github Actions instead of jenkins to learn something new)
-- [ ] after all of that i'm most likely going to add SpringBoot for modern Java ecosystem
-- [ ] hibernate JPA again i'm going to add these for modern Java ecosystem and learning experience 
+- **Positional JSON payloads.** Create/Update requests send `{input0, input1, …}` in enum-column order. Reordering form inputs without updating the enum breaks the save silently.
+- **Combo/FOB display doesn't re-hydrate on edit.** The selected value is preserved on save, but the visual display resets to blank when reopening the edit modal.
+- **No auto-expiry enforcement for tickets.** `expires_at` is stored but never triggers automatic permission revocation.
+- **Hardcoded admin password on first boot.** Change it via direct DB update.
+- **OSRM public demo endpoint** is used by default — rate-limited. Swap to a self-hosted instance for production.
+- **`DataBaseInit` boot order.** Pages queue their object codes during `main()`, but the queue only flushes if `finalizeRegistration()` is called at the end. This is documented in code but easy to forget.
 
 ---
 
-## 🤝 Contributing
+## License
 
-Contributions are welcome! Please follow these steps:
-
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/your-feature`)
-3. Commit your changes (`git commit -m 'Add some feature'`)
-4. Push to the branch (`git push origin feature/your-feature`)
-5. Open a Pull Request
-
-### Contribution Guidelines
-
-- Follow the existing code style (no external libraries for core features at least for now)
-- Document new endpoints in this README
-- Test your changes thoroughly
-- Update the roadmap if adding new features
-- your code needs to be read-able so later maintaining it would become a problem
+MIT — do whatever you want. Attribution appreciated but not required.
 
 ---
 
-## 📄 License
+## Acknowledgements
 
-no Licenses.
+- **Leaflet** for map rendering
+- **OSRM** for routing calculations
+- **OpenStreetMap** contributors for the tile data
+- Every open-source contributor who ever debugged a shadow DOM boundary
 
 ---
 
-## 👨‍💻 Author
+<p align="center">
+  <em>Built with Jali Frame — because the framework is the product.</em>
+</p>
 
-**Ali FatahDoost**
+---
 
-- GitHub: [@AliFatahadoost](https://github.com/AliFatahadoost)
-
-If you use this project, please mention my name somewhere visible (the Home page already does 😄).
-
-<div align="center">
-
-**[⬆ Back to top](#inventory--fleet-management-system)**
-
-</div>
